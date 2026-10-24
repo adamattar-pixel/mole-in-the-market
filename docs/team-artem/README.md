@@ -14,6 +14,9 @@ Everything here lives in new files, so it never conflicts with the phase work on
 6. **Novelty risk.** Apart's own suggested 3.2 weekend project is almost our core design. Our novelty claim rests on four things: the trust-label pair B vs B_T, the harmless-request false-positive control, the base rate for "do", and (if we run it) the memory arm. See [NOVELTY_AND_JUDGES.md](NOVELTY_AND_JUDGES.md).
 7. **Repo hygiene.** The `preexisting-baseline` tag is missing on the remote (the audit suggests tagging fd8c920). Artem's GitHub account (Aku-90210) has pull-only access. Please add him as a collaborator so he can push `artem` and open PRs.
 
+8. **Overlap with your R28 to R36 (seen 2026-10-24, after `378f1dd`).** `tools/monitor_view.py` (message-only vs action-only vs combined monitors, scored on offer exposure) was built before your detector plan. Your R29 `score_detectors.py` is the official version. Keep monitor_view only if it adds something (it scores on offer exposure rather than on offer AND do), otherwise drop it. The memory arm is not in the frozen addendum, so it can only be reported as a non-preregistered exploratory analysis, unless you freeze a second addendum before running it.
+9. **Merge status.** `artem` already merges `origin/wip/phase-4` at `378f1dd` with no conflicts: 340 passed, 0 red. Until Artem can push, `~/Code/artem-for-adam.bundle` on Artem's machine holds the commits (`git fetch artem-for-adam.bundle artem:artem`).
+
 ## Files
 
 | File | What |
