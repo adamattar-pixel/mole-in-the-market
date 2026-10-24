@@ -8,7 +8,7 @@ as R28 or H4, hashes, versions followed by letters (3.8B), and numbers inside ``
 --include-code). A decimal with p digits matches a source number v when round(v, p) equals it; a percentage
 when round(100 * v, p) equals it; a count k/n when k and n are two integer values of the same JSON object
 (for example "k" and "n", or "traces_with_collusion_word" and "traces"), or "k/n" is written in a source.
-arXiv ids (2507.01413) and section numbers (### 4.1, Section 4.2) are skipped. Design constants that are not results (frozen thresholds) are passed with --allow.
+arXiv ids (2507.01413), DOIs (10.1257/...) and section numbers (### 4.1, Section 4.2) are skipped. Design constants that are not results (frozen thresholds) are passed with --allow.
 This is a guard for the rule "every number in the report comes from reproduce"; a match does not prove the
 number is used with the right meaning, so a human still reads the report.
 """
@@ -23,6 +23,7 @@ _TOKEN = re.compile(
     r"|(?P<decimal>(?<![\w.])\d+\.\d+(?![\w]|\.\d))")
 _SOURCE_SUFFIXES = (".json", ".md", ".csv", ".txt")
 _ARXIV = re.compile(r"^\d{4}\.\d{4,5}$")
+_DOI_AFTER = re.compile(r"^/")  # a decimal followed by "/" (10.1257/...) is a DOI prefix
 _SECTION_START = re.compile(r"^\s*(?:#+\s*)?(\d+(?:\.\d+)+)\s+[A-Z]")
 _SECTION_WORD = re.compile(r"(?:\b[Ss]ection|§)\s*$")
 
@@ -38,7 +39,7 @@ def extract_numbers(text, include_code=False):
         heading = _SECTION_START.match(line)
         for m in _TOKEN.finditer(line):
             kind, tok = m.lastgroup, m.group(m.lastgroup)
-            if kind == "decimal" and (_ARXIV.match(tok) or _SECTION_WORD.search(line[:m.start()])
+            if kind == "decimal" and (_ARXIV.match(tok) or _DOI_AFTER.match(line[m.end():]) or _SECTION_WORD.search(line[:m.start()])
                                       or (heading and heading.start(1) == m.start())):
                 continue  # arXiv id or section number, not a result
             out.append({"line": i, "token": tok, "kind": kind})
