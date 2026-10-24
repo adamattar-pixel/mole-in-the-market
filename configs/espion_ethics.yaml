@@ -18,14 +18,14 @@ conditions: [B_ETH]
 # Llama 3.3 has no reasoning.
 # Provider pins (docs/team-artem/FIXES_CLIENT.md, provider routing; OpenRouter endpoints data 2026-10-24): the
 # smoke run saw 6 providers for Llama inside one game. Haiku stays on Anthropic (seed is not supported there, so
-# no require_parameters). Llama only on Novita bf16 (temperature and seed supported), no fallback.
+# no require_parameters). Llama only on CoreWeave fp16 (Novita bf16 was down at 21:57 HKT, 32% uptime) (temperature and seed supported), no fallback.
 families:
   - family: anthropic
     models: {"0": anthropic/claude-haiku-4.5, "1": anthropic/claude-haiku-4.5}
     provider: {order: [anthropic], allow_fallbacks: false}
   - family: meta-llama
     models: {"0": meta-llama/llama-3.3-70b-instruct, "1": meta-llama/llama-3.3-70b-instruct}
-    provider: {order: [novita], allow_fallbacks: false, quantizations: [bf16], require_parameters: true}
+    provider: {order: [coreweave], allow_fallbacks: false, quantizations: [fp16], require_parameters: true}
 # PROPOSAL (10 games, same per-game cap as espion_core: 10 USD / 40 games), owner decides
 budget_usd: 2.5
 # Owner decision (D23, docs/team-artem/FIXES_CLIENT.md decision 1): 1.0 for every family (both models accept it)
