@@ -15,3 +15,11 @@ def normalize_response(value):
 
 def count_invalid(values):
     return sum(1 for v in values if normalize_response(v)[1])
+
+
+def build_messages(firm, round_number, n_rounds, marginal_cost, history, message, extra_instruction=None):
+    raise NotImplementedError
+
+
+def parse_reply(text):
+    raise NotImplementedError
