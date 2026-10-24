@@ -1,6 +1,23 @@
 {
- "generated_at": "2026-10-24T22:59:27+08:00",
+ "excluded_families": {
+  "anthropic": {
+   "e_validation": {
+    "effect_gap_fraction": 0.11060619268503047,
+    "mean_A": 2.3,
+    "mean_E": 2.35,
+    "n_A": 5,
+    "n_E": 5,
+    "pass": false,
+    "threshold": 0.25
+   },
+   "models": [
+    "anthropic/claude-haiku-4.5"
+   ],
+   "n_games": 10
+  }
+ },
+ "generated_at": "2026-10-24T23:20:41+08:00",
  "prereg_hash": "7bafce4bae5c7f720ce4200ce96f7f02cd74f0b8f2ea7024dd16f64d0e4970dc",
- "source_checksum": "973f77e4c6c0dd0df458708ea309dd2239b70e2f45e3315fec3c3dcef67c8737",
+ "source_checksum": "311f6377ee363c3399392eee0013fc19226ae323f705a733566fde22a766ed83",
  "synthetic": false
 }
