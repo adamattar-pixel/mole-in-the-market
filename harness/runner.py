@@ -56,12 +56,17 @@ def validate_config(cfg):
             raise ValueError(f"family {fam['family']!r} mixes or mislabels model families: {sorted(families)}")
     if float(cfg["budget_usd"]) <= 0:
         raise ValueError("budget_usd must be > 0")
+    if not isinstance(cfg.get("memory", False), bool):
+        raise ValueError("memory must be true or false")
     if "out_dir" in cfg:
         out = str(cfg["out_dir"]).replace("\\", "/").strip("/")
         in_runs = out == "runs" or out.startswith("runs/")
-        if cfg["mock"] and in_runs:
+        in_exploratory = out.startswith("runs_exploratory/")
+        if cfg["mock"] and (in_runs or in_exploratory):
             raise ValueError("a mock (dry) config must never write to runs/")
-        if not cfg["mock"] and out != "runs":
+        if not cfg["mock"] and cfg.get("memory", False) and not in_exploratory:
+            raise ValueError("an exploratory memory config writes to runs_exploratory/<arm>, never to runs/")
+        if not cfg["mock"] and not cfg.get("memory", False) and out != "runs":
             raise ValueError("a real config writes to runs/")
 
 
@@ -81,6 +86,8 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
     cond = build_condition(spec.condition, texts, gc.deal_price)
     spy = ScriptedSpy(cond.message, gc.spy_start, firm_ids=FIRMS)
     history = {f: [] for f in FIRMS}
+    memory = bool(cfg.get("memory", False))  # EXPLORATORY arm, off in every frozen config
+    past_messages = {f: [] for f in FIRMS}
     prev_price = {f: None for f in FIRMS}
     rounds, cost = [], 0.0
     invalid_prices = invalid_responses = 0
@@ -89,7 +96,7 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
         firms = {}
         for f in FIRMS:
             prompt = build_messages(f, r, gc.n_rounds, demand.unit_cost, history[f], msgs[f],
-                                    cond.extra_instruction)
+                                    cond.extra_instruction, past_messages[f] if memory else None)
             text, call_cost = client.complete(prompt, spec.models[f], spec.seed)
             cost += call_cost
             budget.add(call_cost)  # raises BudgetExceeded: the game is dropped, no log written
@@ -110,6 +117,7 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
             firms[f]["quantity"], firms[f]["profit"] = q[i], pi[i]
             history[f].append({"round": r, "own_price": firms[f]["price"], "rival_price": firms[other]["price"],
                                "own_quantity": q[i], "own_profit": pi[i]})
+            past_messages[f].append({"round": r, "message": msgs[f], "response": firms[f]["response_to_message"]})
             prev_price[f] = firms[f]["price"]
         rounds.append({"round": r, "firms": firms})
     log = {
@@ -122,6 +130,8 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
         "demand": gc.demand_params, "cost_usd": cost, "invalid_prices": invalid_prices,
         "invalid_responses": invalid_responses, "rounds": rounds,
     }
+    if memory:
+        log["memory"] = True
     write_game_log(log, runs_dir)
     return log
 

@@ -104,6 +104,8 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     prereg_path = Path(prereg_path or PREREG_PATH)
     out_dir.mkdir(parents=True, exist_ok=True)
     logs = load_logs(runs_dir)
+    if len({bool(g.get("memory", False)) for g in logs}) > 1:
+        raise ValueError("runs dir mixes exploratory memory logs with frozen logs: reproduce each folder separately")
     texts = load_prereg_texts(prereg_path)
     summary, base = build_summary(logs, texts, n_draws, seed)
     rows = make_labels(logs, n_draws=n_draws, seed=seed, base_rates=base)

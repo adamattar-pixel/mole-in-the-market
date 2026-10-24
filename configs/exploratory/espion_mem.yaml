@@ -1,0 +1,23 @@
+# EXPLORATORY, not preregistered. Seller memory arm (docs/team-artem/MEMORY_ARM.md).
+# Same game, seeds and families as espion_core; only difference: memory: true (each prompt lists the
+# message received in each past round and the firm's own reply). A_mem is the same-batch baseline.
+# Writes to runs_exploratory/memory, never to runs/, so reproduce never pools it with the frozen tables.
+# Needs the owner's GO and API key (H2).
+name: espion_mem
+mock: false
+memory: true
+out_dir: runs_exploratory/memory
+n_rounds: 20
+spy_start: 8
+# Frozen design values (PREREGISTRATION.md, Design, frozen at d5e7ebc)
+demand: {type: logit, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, beta: 100.0, alpha: 1.0}
+seeds: [1, 2, 3, 4, 5]
+# A_mem, B_mem, D_mem (condition texts unchanged, from PREREGISTRATION.md)
+conditions: [A, B, D]
+# Placeholders until the owner gives the 2 model families (decision D10). A real run refuses "tbd" ids.
+families:
+  - family: family1-tbd
+    models: {"0": family1-tbd/model-tbd, "1": family1-tbd/model-tbd}
+  - family: family2-tbd
+    models: {"0": family2-tbd/model-tbd, "1": family2-tbd/model-tbd}
+budget_usd: 5.0
