@@ -58,11 +58,12 @@ def test_upstream_inference_cost_logged_when_present(fake_http, prices):
 
 
 @pytest.mark.parametrize("details", [None, {}, {"upstream_inference_cost": None}])
-def test_upstream_inference_cost_is_none_when_absent(fake_http, details):
+def test_upstream_inference_cost_not_logged_when_absent(fake_http, details):
+    # only when present: older provenance tests pin the exact last_call keys of a response without it
     fake_http["response"] = response(0.0001, details)
     c = OpenRouterClient(prices=PRICES)
     c.complete(MSGS, "fam/m1", 1)
-    assert "upstream_inference_cost" in c.last_call and c.last_call["upstream_inference_cost"] is None
+    assert "upstream_inference_cost" not in c.last_call
 
 
 def test_upstream_cost_never_lowers_the_charged_cost(fake_http):
