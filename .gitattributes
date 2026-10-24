@@ -1,0 +1,5 @@
+# Every working copy is byte-identical to the repository (LF), so reproduce checksums do not depend on the OS.
+# OPEN_ISSUES #19. Binary files are detected by git (text=auto) and left untouched.
+* text=auto eol=lf
+*.pdf binary
+*.png binary
