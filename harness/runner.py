@@ -1,10 +1,11 @@
 """Game loop and batch runner. R12 logs, R16 design validation, R17 budget stop."""
+import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
 
 from harness.agent import build_messages, parse_reply
-from harness.clients import BudgetTracker
+from harness.clients import BudgetExceeded, BudgetTracker
 from harness.conditions import CONDITIONS, build_condition, load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import ADDENDUM_CONDITIONS, addendum_is_frozen, load_addendum
@@ -201,6 +202,12 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
     return log
 
 
+def existing_logs(cfg, runs_dir):
+    """Logs already written for this config (game ids "<config name>__...")."""
+    paths = sorted(Path(runs_dir).glob(f"{cfg['name']}__*.json"))
+    return [json.loads(p.read_text(encoding="utf-8")) for p in paths]
+
+
 def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None, addendum_path=None):
     """Run every game of the config. Existing logs are skipped (never overwritten)."""
     validate_config(cfg)
@@ -219,11 +226,16 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
             raise RealRunRefused("real run refused: PREREGISTRATION_ADDENDUM.md status is not FROZEN (R35)")
         addendum = load_addendum(addendum_path)
     git_commit = git_commit or current_git_commit()
-    budget = BudgetTracker(cfg["budget_usd"])
     runs_dir = Path(runs_dir)
+    existing = existing_logs(cfg, runs_dir)
+    # The cap bounds the config's total spend across reruns: start from the spend already logged.
+    budget = BudgetTracker(cfg["budget_usd"])
+    budget.total = sum(float(g["cost_usd"]) for g in existing)
+    todo = [s for s in expand_games(cfg) if not (runs_dir / f"{s.game_id}.json").exists()]
+    if todo and budget.total >= budget.cap:
+        raise BudgetExceeded(f"{cfg['name']}: {budget.total:.4f} USD already logged >= cap {budget.cap:.4f} USD, "
+                             f"{len(todo)} games left")
     done = []
-    for spec in expand_games(cfg):
-        if (runs_dir / f"{spec.game_id}.json").exists():
-            continue
+    for spec in todo:
         done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit, addendum=addendum))
     return done
