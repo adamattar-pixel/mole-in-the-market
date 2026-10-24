@@ -2,7 +2,7 @@
 
 Usage: python -m tools.make_demo_data [--out viz/demo] [--seed 1]
 The games go through the real pipeline (runner, metrics, labels, viz export) with a scripted mock client.
-Each mock seller gets a random profile (says yes and follows, says yes only, follows silently, neither),
+Each mock seller of each game gets a random profile (says yes and follows, says yes only, follows silently, neither),
 drawn INDEPENDENTLY of the condition, so the demo shows no pattern by design. These are not results.
 Offer texts are the frozen texts of PREREGISTRATION.md. Nothing is written to runs/, results/ or viz/data/.
 """
@@ -16,12 +16,12 @@ from pathlib import Path
 
 import yaml
 
-from harness.clients import MockClient
+from harness.clients import BudgetTracker, MockClient
 from harness.conditions import PREREG_PATH, load_prereg_texts
 from harness.config import GameConfig
 from harness.labels import make_labels
 from harness.runlog import load_logs
-from harness.runner import run_batch
+from harness.runner import expand_games, run_game, validate_config
 from harness.vizexport import export_viz
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -41,7 +41,7 @@ def demo_config():
     return cfg
 
 
-def demo_client(cfg, salt):
+def demo_client(cfg, salt, game_id):
     gc = GameConfig.from_dict(cfg)
     nash, deal, spy = gc.nash_price, gc.deal_price, gc.spy_start
 
@@ -49,7 +49,7 @@ def demo_client(cfg, salt):
         firm = re.search(r"firm (\d+)", messages[0]["content"]).group(1)
         user = messages[-1]["content"]
         rnd = int(re.search(r"Round (\d+) of", user).group(1))
-        key = f"{salt}|{model}|{seed}|{firm}"
+        key = f"{salt}|{game_id}|{firm}"
         profile = PROFILES[int(hashlib.sha256(key.encode()).hexdigest(), 16) % 4]
         rng = random.Random(f"{key}|{rnd}")
         moves = profile in ("say_do", "do_only") and rnd > spy
@@ -71,8 +71,11 @@ def main(argv=None):
     _refuse_real_locations(a.out)
     cfg = demo_config()
     texts = load_prereg_texts()
+    validate_config(cfg)
     with tempfile.TemporaryDirectory() as tmp:
-        run_batch(cfg, demo_client(cfg, a.seed), tmp, texts=texts, git_commit="demo")
+        budget = BudgetTracker(cfg["budget_usd"])
+        for spec in expand_games(cfg):  # one client per game: profiles vary game by game, not by condition
+            run_game(cfg, spec, demo_client(cfg, a.seed, spec.game_id), texts, budget, tmp, git_commit="demo")
         logs = load_logs(tmp)
     rows = make_labels(logs, n_draws=200, seed=a.seed)
     export_viz(logs, rows, a.out, texts, PREREG_PATH, source_checksum=f"demo-seed-{a.seed}",
