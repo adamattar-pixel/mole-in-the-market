@@ -1,5 +1,5 @@
 # PLAN - phases and gates
-Claude works only on the phase marked CURRENT and stops at each gate. The owner says "GO" to open the next phase.
+Claude works in autonomous mode: it passes each gate by itself when all evidence is green (see CLAUDE.md), logs it in PROGRESS.md, and moves on. It stops only at the hard stops H1 to H6 in CLAUDE.md. Hard stops that are certain: owner approval of the preregistration freeze (before Phase 4) and the owner's GO plus API key before the first real run (Phase 4).
 Times are a proposal for Saturday Oct 24 and Sunday Oct 25 (deadline Sunday 11:59 PM AoE). Runs freeze Sunday at noon (to confirm).
 
 | Phase | Content | Gate (evidence required) | Status |

@@ -20,21 +20,29 @@ Read in this order: docs/context/contexte_projet_v7.md, SPEC.md, PREREGISTRATION
 8. Keep preexisting and third-party code separate and recorded in THIRD_PARTY.md. Never present it as new work.
 9. Dual-use: do not write or optimize persuasive offers beyond the frozen texts.
 10. Secrets: never read, print or commit .env or API keys.
-11. If blocked or unsure, ask one short question instead of guessing.
+11. If blocked or unsure on a hard stop (see below), ask one short question instead of guessing. Otherwise keep going.
 
-## Phase-gated workflow
-For the current phase in PLAN.md only:
-1. Restate the requirement IDs (SPEC.md) you are about to satisfy.
-2. Write the tests first and show them failing.
+## Continuous phase-gated workflow (autonomous mode)
+Work through PLAN.md phase after phase WITHOUT waiting for the owner, as long as every gate is green. For each requirement:
+1. Restate the requirement ID(s) from SPEC.md.
+2. Write the test first, run it, see it fail for the right reason.
 3. Implement the minimum to pass.
-4. Run the full test suite and show the output.
-5. Update TRACEABILITY.md (requirement -> test -> status).
-6. Tick the AUDIT.md checklist honestly (unchecked is fine, hiding is not).
-7. STOP, report the evidence, wait for the owner's "GO". Do not start the next phase.
+4. Mutation check for definition-critical code (R06 to R11): temporarily break the code (for example change 10% to 20%, or off-by-one on the 3 rounds), confirm a test fails, restore. A test that cannot fail is worthless.
+5. Run the FULL test suite. Commit only when everything is green.
+6. Commit after every green requirement (small commits, at least one per requirement). Never leave a long stretch of work uncommitted.
 
-## Git rules
-- Use the repo's configured git identity. Never change git config. Never use --author or --reset-author.
-- Commits must carry only the owner's name. No "Co-Authored-By", no "Generated with Claude Code", no "Claude-Session" trailer, no mention of Claude or Anthropic in commit messages or PR text.
-- Small commits, one logical change each. Format: type(scope): summary (feat, fix, test, docs, chore).
-- After each commit run `git log -1 --format=fuller` and check author = committer = owner and no trailer. If a trailer slipped in, amend that local unpushed commit and tell the owner.
-- Never push without being asked. Never force push. Tag gates as gate-N only when asked.
+Self-gate at the end of each phase (the /gate checks, done by yourself):
+- full tests green, TRACEABILITY.md updated, AUDIT.md checklist items ticked only with evidence, commit identity verified, no deviation from SPEC.md or PREREGISTRATION.md.
+- If ALL green: write the result in PROGRESS.md, commit, `git push origin main` (plain push only), then continue to the next phase immediately.
+- If something is red: fix it. After 3 failed attempts on the same problem, stop and ask.
+
+Memory across long sessions: PROGRESS.md is your memory. After any context reset or compaction, read PROGRESS.md, PLAN.md and TRACEABILITY.md first, then resume where you stopped. Update PROGRESS.md at the end of every phase (what is done, evidence, deviations, open questions).
+
+## When you MUST stop and ask (hard stops, and only these)
+H1. Freezing PREREGISTRATION.md (offer texts, E threshold, hypotheses). Draft proposals in the file marked PROPOSED, use placeholders in tests, keep going with phases that do not need the final texts, but do not freeze and do not start real runs.
+H2. Any real API call or spend (Phase 4 and later), and the API key. Needs the owner's GO and a frozen preregistration.
+H3. A requirement is ambiguous, or SPEC.md and PREREGISTRATION.md or v7 contradict each other, in a way that changes a definition.
+H4. A test looks wrong, or passing it would require weakening it.
+H5. The same failure survives 3 fix attempts.
+H6. Anything touching frozen items, secrets, force push, git config, or deleting runs/ logs.
+When a question does not block other work, write it in QUESTIONS.md and continue with work that does not depend on it.

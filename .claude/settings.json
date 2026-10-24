@@ -1,16 +1,30 @@
 {
   "attribution": { "commit": "", "pr": "" },
   "permissions": {
+    "allow": [
+      "Bash(pytest:*)",
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(pip install:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git tag gate-:*)",
+      "Bash(git push origin main)"
+    ],
     "deny": [
       "Read(./.env)",
       "Read(./.env.local)",
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
-      "Bash(git config:*)"
-    ],
-    "ask": [
-      "Bash(git push:*)",
-      "Bash(git tag:*)"
+      "Bash(git config:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(rm -rf:*)"
     ]
   }
 }
