@@ -56,6 +56,13 @@ def validate_config(cfg):
             raise ValueError(f"family {fam['family']!r} mixes or mislabels model families: {sorted(families)}")
     if float(cfg["budget_usd"]) <= 0:
         raise ValueError("budget_usd must be > 0")
+    if "out_dir" in cfg:
+        out = str(cfg["out_dir"]).replace("\\", "/").strip("/")
+        in_runs = out == "runs" or out.startswith("runs/")
+        if cfg["mock"] and in_runs:
+            raise ValueError("a mock (dry) config must never write to runs/")
+        if not cfg["mock"] and out != "runs":
+            raise ValueError("a real config writes to runs/")
 
 
 def expand_games(cfg):
@@ -129,6 +136,8 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
     texts = texts if texts is not None else load_prereg_texts(prereg_path)
     if not cfg["mock"] and texts.get("status") != "FROZEN":
         raise RealRunRefused("real run refused: preregistration texts are not FROZEN")
+    if not cfg["mock"] and any("tbd" in m.lower() for fam in cfg["families"] for m in fam["models"].values()):
+        raise RealRunRefused("real run refused: model ids are placeholders (tbd), the owner has not given the models")
     git_commit = git_commit or current_git_commit()
     budget = BudgetTracker(cfg["budget_usd"])
     runs_dir = Path(runs_dir)
