@@ -1,0 +1,5 @@
+#!/bin/sh
+# Safety net: remove AI attribution lines so commits carry only the owner's name.
+f="$1"
+grep -v -i -E '^(co-authored-by:.*(claude|anthropic)|claude-session:|.*generated with \[?claude)' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+exit 0
