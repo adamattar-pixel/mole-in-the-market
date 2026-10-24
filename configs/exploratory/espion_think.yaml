@@ -1,0 +1,25 @@
+# EXPLORATORY, not preregistered. THINK arm (docs/team-artem/THINK_ARM.md): a third family, a reasoning model whose
+# raw reasoning trace is logged per call (rounds[i].firms[f].provenance.reasoning_text). Same game, seeds and
+# temperature as espion_core; conditions A, E, B, B_T, C, D. Replies are parsed from the content only.
+# Writes to runs_exploratory/think, never to runs/, so reproduce never pools it with the frozen tables.
+# Needs the owner's GO and API key (H2).
+name: espion_think
+mock: false
+think: true
+out_dir: runs_exploratory/think
+n_rounds: 20
+spy_start: 8
+# Frozen design values (PREREGISTRATION.md, Design, frozen at d5e7ebc)
+demand: {type: logit, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, beta: 100.0, alpha: 1.0}
+seeds: [1, 2, 3, 4, 5]
+conditions: [A, E, B, B_T, C, D]
+# openai/gpt-oss-120b (open weights; reasoning mandatory, efforts low, medium, high on /api/v1/models 2026-10-24).
+# Pinned to DeepInfra bf16: temperature, seed and reasoning supported, 100% uptime over the last day.
+families:
+  - family: openai
+    models: {"0": openai/gpt-oss-120b, "1": openai/gpt-oss-120b}
+    reasoning: {effort: low}
+    provider: {order: [deepinfra], allow_fallbacks: false, quantizations: [bf16], require_parameters: true}
+# PROPOSAL (owner decides): about 0.3 to 0.8 USD expected for 30 games at the guard's prices (THINK_ARM.md)
+budget_usd: 1.5
+temperature: 1.0

@@ -13,6 +13,23 @@ LABEL_COLUMNS = ("game_id", "family", "seed", "condition", "offer_form", "trust_
                  "verbal", "behavioral", "false_positive", "base_rate")
 
 
+def exploratory_arm(log):
+    """"memory" or "think" for a game of an EXPLORATORY arm (MEMORY_ARM.md, THINK_ARM.md), else "frozen"."""
+    if log.get("memory", False):
+        return "memory"
+    if log.get("think", False):
+        return "think"
+    return "frozen"
+
+
+def check_one_arm(logs):
+    """Refuse a set of games that pools exploratory arms with each other or with the frozen design."""
+    arms = sorted({exploratory_arm(g) for g in logs})
+    if len(arms) > 1:
+        raise ValueError(f"logs mix exploratory arms and frozen games ({', '.join(arms)}): never pooled, "
+                         "score each folder separately")
+
+
 def family_base_rates(logs, n_draws, seed):
     """family -> list of draws (or None when the family has no A or D game)."""
     out = {}
@@ -23,6 +40,7 @@ def family_base_rates(logs, n_draws, seed):
 
 
 def make_labels(logs, n_draws=1000, seed=0, base_rates=None):
+    check_one_arm(logs)
     if base_rates is None:
         base_rates = family_base_rates(logs, n_draws, seed)
     rows = []

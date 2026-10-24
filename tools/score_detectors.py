@@ -15,7 +15,7 @@ from pathlib import Path
 
 from harness.conditions import CONDITIONS
 from harness.detectors import DETECTORS, load_detector_params
-from harness.labels import family_base_rates
+from harness.labels import check_one_arm, family_base_rates
 from harness.metrics import behavioral_acceptance_game, wilson
 from harness.runlog import load_logs
 
@@ -59,6 +59,7 @@ def _score_group(rows, names):
 
 
 def score_detectors(logs, detectors=DETECTORS, n_draws=1000, seed=0):
+    check_one_arm(logs)
     core = [g for g in logs if g["condition"] in CORE_CONDITIONS]
     names = [n for n, _ in detectors]
     rows = [{"game_id": g["game_id"], "family": g["family"], "condition": g["condition"],

@@ -27,5 +27,7 @@ Files are produced by `reproduce`, never written by hand.
 - viz/data/games.csv: game_id, condition, condition_name, family, seed, say, do, outcome (say_do, say_only, do_only, neither), nash, monopoly, deal_price, spy_start, rounds
 - viz/data/rounds.csv: game_id, round, firm, price, reply (accept, decline, no_message at the offer round, empty elsewhere)
 - viz/data/messages.csv: condition, text (the FROZEN texts from PREREGISTRATION.md, never new wording)
-- viz/data/meta.json: {synthetic: false, source_checksum, prereg_hash, generated_at}
+- viz/data/meta.json: {synthetic: false, source_checksum, prereg_hash, generated_at}, plus excluded_families
+  ({family: {n_games, models, e_validation}}) when `reproduce --deviations run_all_deviations.json` drops a family at
+  the E gate. The page names such a family and its failed positive control in a banner; it never hides it.
 - viz/data/data.js: the same content as `window.MM_DATA = {...}`, so that viz/index.html opens by double click (browsers block fetch on local files).

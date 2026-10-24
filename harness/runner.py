@@ -1,11 +1,14 @@
 """Game loop and batch runner. R12 logs, R16 design validation, R17 budget stop."""
 import json
 import math
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 
 from harness.agent import build_messages, parse_reply
-from harness.clients import BudgetExceeded, BudgetTracker
+from harness.clients import DEFAULT_TIMEOUT_S, MAX_TOKENS_DEFAULT, MAX_TOKENS_REASONING, BudgetExceeded
+from harness.concurrency import ConcurrentBudget, GuardedClient, RetryingClient, fork_client
 from harness.conditions import CONDITIONS, build_condition, load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import ADDENDUM_CONDITIONS, addendum_is_frozen, load_addendum
@@ -15,10 +18,23 @@ from harness.spy import ScriptedSpy
 FIRMS = ("0", "1")
 # OpenRouter `reasoning` request object (docs/team-artem/FIXES_CLIENT.md).
 REASONING_EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh", "max")
+# OpenRouter `provider` routing object, the subset used here (docs/team-artem/FIXES_CLIENT.md, provider routing).
+PROVIDER_KEYS = ("order", "allow_fallbacks", "quantizations", "require_parameters")
+QUANTIZATIONS = ("int4", "int8", "fp4", "mxfp4", "nvfp4", "fp6", "fp8", "mxfp8", "fp16", "bf16", "fp32", "unknown")
 
 
 class RealRunRefused(RuntimeError):
     pass
+
+
+class BatchFailed(RuntimeError):
+    """Some games of a concurrent batch raised: they have no log (rerun to retry them), the others are logged.
+    failed: {game id: error text}; done: the logs written, sorted by game id."""
+
+    def __init__(self, failed, done):
+        self.failed, self.done = dict(sorted(failed.items())), done
+        super().__init__(f"{len(failed)} game(s) failed, not logged: " +
+                         "; ".join(f"{k}: {v}" for k, v in self.failed.items()))
 
 
 @dataclass(frozen=True)
@@ -63,6 +79,46 @@ def _check_reasoning(r):
             raise ValueError("reasoning max_tokens must be an integer >= 0")
 
 
+def _check_provider(p):
+    if p is None:
+        return
+    if not isinstance(p, dict) or not p or set(p) - set(PROVIDER_KEYS):
+        raise ValueError(f"provider must be null or an object with {PROVIDER_KEYS}: {p!r}")
+    if "order" in p:
+        o = p["order"]
+        if not isinstance(o, list) or not o or not all(isinstance(s, str) and s for s in o):
+            raise ValueError(f"provider order must be a non-empty list of provider slugs: {o!r}")
+    if "quantizations" in p:
+        q = p["quantizations"]
+        if not isinstance(q, list) or not q or any(x not in QUANTIZATIONS for x in q):
+            raise ValueError(f"provider quantizations must be a non-empty list from {QUANTIZATIONS}: {q!r}")
+    for k in ("allow_fallbacks", "require_parameters"):
+        if k in p and not isinstance(p[k], bool):
+            raise ValueError(f"provider {k} must be true or false")
+    if p.get("allow_fallbacks") is False and "order" not in p:
+        raise ValueError("provider allow_fallbacks false needs an order (the providers allowed)")
+
+
+def family_provider(cfg, family):
+    """The family's OpenRouter provider routing object. None = not sent (OpenRouter load-balances)."""
+    for fam in cfg["families"]:
+        if fam["family"] == family:
+            return fam.get("provider")
+    return None
+
+
+def family_max_tokens(cfg, family, real=True):
+    """max_tokens sent for the family: its own max_tokens if set, else (real client only: a mock generates no
+    tokens) MAX_TOKENS_REASONING when reasoning is set, else MAX_TOKENS_DEFAULT. None = not sent.
+    Not a game log field, so the resume guard and config_hash are unchanged."""
+    for fam in cfg["families"]:
+        if fam["family"] == family and "max_tokens" in fam:
+            return fam["max_tokens"]
+    if not real:
+        return None
+    return MAX_TOKENS_REASONING if family_reasoning(cfg, family) is not None else MAX_TOKENS_DEFAULT
+
+
 def family_reasoning(cfg, family):
     """Per-family reasoning wins over the top-level one. None = not sent."""
     for fam in cfg["families"]:
@@ -76,6 +132,10 @@ def validate_config(cfg):
         if key not in cfg:
             raise ValueError(f"config is missing {key!r}")
     GameConfig.from_dict(cfg)
+    if "timeout_s" in cfg:
+        t = cfg["timeout_s"]
+        if isinstance(t, bool) or not isinstance(t, (int, float)) or not math.isfinite(t) or t <= 0:
+            raise ValueError(f"timeout_s must be a positive number of seconds: {t!r}")
     if not isinstance(cfg["mock"], bool):
         raise ValueError("mock must be true or false")
     bad = [c for c in cfg["conditions"] if c not in CONDITIONS + ADDENDUM_CONDITIONS]
@@ -89,6 +149,10 @@ def validate_config(cfg):
         models = fam["models"]
         if set(models) != set(FIRMS):
             raise ValueError(f"family {fam['family']}: need one model per firm {FIRMS}")
+        if "max_tokens" in fam:
+            mt = fam["max_tokens"]
+            if isinstance(mt, bool) or not isinstance(mt, int) or mt < 1:
+                raise ValueError(f"family {fam['family']}: max_tokens must be an integer >= 1: {mt!r}")
         families = {model_family(m) for m in models.values()}
         # A fallback family may be labelled "<provider>-fb", so its logs never pool with the primary's.
         if len(families) != 1 or fam["family"] not in {p + s for p in families for s in ("", "-fb")}:
@@ -97,19 +161,26 @@ def validate_config(cfg):
     _check_reasoning(cfg.get("reasoning"))
     for fam in cfg["families"]:
         _check_reasoning(fam.get("reasoning"))
+        _check_provider(fam.get("provider"))
     if float(cfg["budget_usd"]) <= 0:
         raise ValueError("budget_usd must be > 0")
     if not isinstance(cfg.get("memory", False), bool):
         raise ValueError("memory must be true or false")
+    if not isinstance(cfg.get("think", False), bool):
+        raise ValueError("think must be true or false")
+    if cfg.get("memory", False) and cfg.get("think", False):
+        raise ValueError("one exploratory arm per config: memory and think are not both set")
+    arm = cfg.get("memory", False) or cfg.get("think", False)
     if "out_dir" in cfg:
         out = str(cfg["out_dir"]).replace("\\", "/").strip("/")
         in_runs = out == "runs" or out.startswith("runs/")
         in_exploratory = out.startswith("runs_exploratory/")
         if cfg["mock"] and (in_runs or in_exploratory):
             raise ValueError("a mock (dry) config must never write to runs/")
-        if not cfg["mock"] and cfg.get("memory", False) and not in_exploratory:
-            raise ValueError("an exploratory memory config writes to runs_exploratory/<arm>, never to runs/")
-        if not cfg["mock"] and not cfg.get("memory", False) and out != "runs":
+        if not cfg["mock"] and arm and not in_exploratory:
+            raise ValueError("an exploratory memory or think config writes to runs_exploratory/<arm>, never "
+                             "to runs/")
+        if not cfg["mock"] and not arm and out != "runs":
             raise ValueError("a real config writes to runs/")
 
 
@@ -136,7 +207,10 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
     prev_price = {f: None for f in FIRMS}
     temperature = cfg.get("temperature")
     reasoning = family_reasoning(cfg, spec.family)
-    settings = {k: v for k, v in (("temperature", temperature), ("reasoning", reasoning)) if v is not None}
+    provider = family_provider(cfg, spec.family)
+    max_tokens = family_max_tokens(cfg, spec.family, real=not getattr(client, "is_mock", True))
+    settings = {k: v for k, v in (("temperature", temperature), ("reasoning", reasoning), ("provider", provider),
+                                  ("max_tokens", max_tokens)) if v is not None}
     reasoning_counts = []
     rounds, cost = [], 0.0
     invalid_prices = invalid_responses = 0
@@ -148,6 +222,9 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
                                     cond.extra_instruction, past_messages[f] if memory else None)
             text, call_cost = client.complete(prompt, spec.models[f], spec.seed, **settings)
             provenance = getattr(client, "last_call", None)
+            retries = getattr(client, "last_retries", 0)
+            if provenance is not None and retries:
+                provenance = dict(provenance, retries=retries)
             cost += call_cost
             budget.add(call_cost)  # raises BudgetExceeded: the game is dropped, no log written
             parsed = parse_reply(text)
@@ -185,6 +262,8 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
     }
     if memory:
         log["memory"] = True
+    if cfg.get("think", False):
+        log["think"] = True  # EXPLORATORY THINK arm (docs/team-artem/THINK_ARM.md)
     if cond.base_condition is not None:
         log["base_condition"] = cond.base_condition
         log["addendum_status"] = addendum.get("status")
@@ -197,6 +276,8 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
         log["temperature"] = temperature
     if reasoning is not None:
         log["reasoning"] = reasoning
+    if provider is not None:
+        log["provider_routing"] = provider
     if reasoning_counts:
         known = [n for n in reasoning_counts if n is not None]
         log["reasoning_tokens"] = sum(known) if known else None
@@ -244,7 +325,8 @@ def check_resume(cfg, existing, runs_dir):
         if fam is None:
             raise ResumeMismatch(f"{where} family {g['family']!r}, which the current config no longer has")
         current = {"models": dict(fam["models"]), "temperature": cfg.get("temperature"),
-                   "reasoning": family_reasoning(cfg, g["family"])}
+                   "reasoning": family_reasoning(cfg, g["family"]),
+                   "provider_routing": family_provider(cfg, g["family"])}
         for field, now in current.items():
             if g.get(field) != now:
                 raise ResumeMismatch(f"{where} {field} {g.get(field)!r}, the current config has {now!r}. "
@@ -254,8 +336,19 @@ def check_resume(cfg, existing, runs_dir):
                                  "change on a resume). Restore it or run it under a new config name.")
 
 
-def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None, addendum_path=None):
-    """Run every game of the config. Existing logs are skipped (never overwritten)."""
+def check_workers(workers):
+    if isinstance(workers, bool) or not isinstance(workers, int) or workers < 1:
+        raise ValueError(f"workers must be an integer >= 1: {workers!r}")
+
+
+def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None, addendum_path=None,
+              workers=1):
+    """Run every game of the config. Existing logs are skipped (never overwritten).
+
+    workers=1: one game after the other, in expand_games order. workers>1: the games run in a thread pool
+    (games are independent, so the logs are byte-identical) and the logs come back sorted by game id; the
+    budget bound is in harness/concurrency.py. Both modes retry HTTP 429 and 5xx (RetryingClient)."""
+    check_workers(workers)
     validate_config(cfg)
     if cfg["mock"] and not getattr(client, "is_mock", False):
         raise RealRunRefused("dry run (mock: true) must use the mock client")
@@ -271,12 +364,14 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
         if not cfg["mock"] and not addendum_is_frozen(addendum_path):
             raise RealRunRefused("real run refused: PREREGISTRATION_ADDENDUM.md status is not FROZEN (R35)")
         addendum = load_addendum(addendum_path)
+    if not cfg["mock"] and hasattr(client, "timeout"):
+        client.timeout = cfg.get("timeout_s", DEFAULT_TIMEOUT_S)
     git_commit = git_commit or current_git_commit()
     runs_dir = Path(runs_dir)
     existing = existing_logs(cfg, runs_dir)
     check_resume(cfg, existing, runs_dir)
     # The cap bounds the config's total spend across reruns: start from the spend already logged.
-    budget = BudgetTracker(cfg["budget_usd"])
+    budget = ConcurrentBudget(cfg["budget_usd"])
     budget.total = sum(float(g["cost_usd"]) for g in existing)
     todo = [s for s in expand_games(cfg) if not (runs_dir / f"{s.game_id}.json").exists()]
     if todo and budget.total >= budget.cap:
@@ -284,7 +379,50 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
                              f"{len(todo)} games left")
     if todo:
         record_budget(cfg, runs_dir)
-    done = []
-    for spec in todo:
-        done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit, addendum=addendum))
+    if workers == 1:
+        client = RetryingClient(client)
+        done = []
+        for spec in todo:
+            done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit,
+                                 addendum=addendum))
+        return done
+    return _run_concurrent(cfg, todo, client, texts, budget, runs_dir, git_commit, addendum, workers)
+
+
+def _run_concurrent(cfg, todo, client, texts, budget, runs_dir, git_commit, addendum, workers):
+    stop = threading.Event()
+
+    def one(spec):
+        if stop.is_set():
+            raise BudgetExceeded("batch stopped before this game started")
+        own = RetryingClient(GuardedClient(fork_client(client), [budget], stop))
+        try:
+            return run_game(cfg, spec, own, texts, budget, runs_dir, git_commit=git_commit, addendum=addendum)
+        except BudgetExceeded:
+            stop.set()
+            raise
+
+    done, failed, over = [], {}, []
+    pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="game")
+    try:
+        futures = [(spec, pool.submit(one, spec)) for spec in todo]
+        for spec, fut in futures:
+            try:
+                done.append(fut.result())
+            except BudgetExceeded as exc:
+                over.append((spec.game_id, exc))
+            except Exception as exc:  # one game's error never stops or corrupts the others
+                failed[spec.game_id] = f"{type(exc).__name__}: {exc}"
+    except BaseException:
+        stop.set()  # Ctrl-C: no new call; games already in a call finish or are dropped
+        raise
+    finally:
+        pool.shutdown(wait=True, cancel_futures=True)
+    done.sort(key=lambda g: g["game_id"])
+    if over:
+        first = sorted(over, key=lambda x: x[0])[0][1]
+        extra = f"; {len(failed)} other game(s) failed: {sorted(failed)}" if failed else ""
+        raise BudgetExceeded(f"{first} ({len(over)} game(s) dropped, {len(done)} logged in this batch{extra})")
+    if failed:
+        raise BatchFailed(failed, done)
     return done

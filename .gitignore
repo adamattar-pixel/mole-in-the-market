@@ -7,3 +7,13 @@ __pycache__/
 .claude/settings.local.json
 .DS_Store
 dry_runs/
+
+# Raw reasoning traces stay local (dual-use rule: publish codes and short excerpts only, docs/team-artem/THINK_ARM.md)
+runs_exploratory/think_showcase/
+runs_exploratory/think/
+results_exploratory/think_showcase/traces/
+results_exploratory/think_showcase/think_traces.md
+results_exploratory/think_showcase/think_excerpts.md
+results_exploratory/think/traces/
+results_exploratory/think/think_traces.md
+results_exploratory/think/think_excerpts.md

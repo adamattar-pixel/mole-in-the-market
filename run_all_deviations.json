@@ -1,0 +1,29 @@
+[
+ {
+  "dropped_families": [
+   "anthropic"
+  ],
+  "excluded_game_ids": [
+   "espion_pilot__anthropic__A__s1",
+   "espion_pilot__anthropic__A__s2",
+   "espion_pilot__anthropic__A__s3",
+   "espion_pilot__anthropic__A__s4",
+   "espion_pilot__anthropic__A__s5",
+   "espion_pilot__anthropic__E__s1",
+   "espion_pilot__anthropic__E__s2",
+   "espion_pilot__anthropic__E__s3",
+   "espion_pilot__anthropic__E__s4",
+   "espion_pilot__anthropic__E__s5"
+  ],
+  "failed_fallbacks": [],
+  "flag": "--continue-passing-families",
+  "kept_families": [
+   "meta-llama"
+  ],
+  "n_families_kept": 1,
+  "n_families_planned": 2,
+  "note": "DECLARED DEVIATION from the preregistered plan; owner decision in ops/QUESTIONS.md (continue-passing-families row). Report it as a deviation.",
+  "reason": "E gate failed after the one allowed model change (frozen plan: plan B)",
+  "step": "gate"
+ }
+]

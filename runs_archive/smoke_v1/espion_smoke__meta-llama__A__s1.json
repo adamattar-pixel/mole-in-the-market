@@ -1,0 +1,2220 @@
+{
+ "condition": "A",
+ "config_hash": "586a1ee144eaa81c8f82b4cc438975ded9f0a946259ed8e2d0bc4b20e037e91d",
+ "cost_usd": 0.002901586,
+ "deal_price": 1.924980913889624,
+ "demand": {
+  "a": 2.0,
+  "a0": 0.0,
+  "alpha": 1.0,
+  "beta": 100.0,
+  "c": 1.0,
+  "mu": 0.25,
+  "type": "logit"
+ },
+ "extra_instruction": null,
+ "family": "meta-llama",
+ "game_id": "espion_smoke__meta-llama__A__s1",
+ "git_commit": "57a7f70caeaf08a80782ba2b5209d707c751c0bd",
+ "invalid_prices": 0,
+ "invalid_responses": 0,
+ "message": null,
+ "mock": false,
+ "models": {
+  "0": "meta-llama/llama-3.3-70b-instruct",
+  "1": "meta-llama/llama-3.3-70b-instruct"
+ },
+ "monopoly_price": 1.924980913889624,
+ "n_rounds": 20,
+ "nash_price": 1.4729266591845227,
+ "offer_form": "none",
+ "prereg_status": "FROZEN",
+ "reasoning_tokens": 0,
+ "reasoning_used": false,
+ "rounds": [
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 1 of 20.\nNo past rounds yet.\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 1.846e-05,
+      "cost_computed": 1.846e-05,
+      "cost_reported": 1.846e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 1.846e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 1.846e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 1.846e-05,
+        "upstream_inference_prompt_cost": 1.27e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 127,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 145
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 1 of 20.\nNo past rounds yet.\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 2.448e-05,
+      "cost_computed": 1.8560000000000002e-05,
+      "cost_reported": 2.448e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 2.448e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 2.448e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 2.448e-05,
+        "upstream_inference_prompt_cost": 1.728e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 128,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 146
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 1
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 2 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 4.596e-05,
+      "cost_computed": 2.256e-05,
+      "cost_reported": 4.596e-05,
+      "cost_source": "usage_cost",
+      "provider": "Parasail",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 4.596e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 4.596e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 9e-06,
+        "upstream_inference_cost": 4.596e-05,
+        "upstream_inference_prompt_cost": 3.696e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 168,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 186
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 2 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 2.988e-05,
+      "cost_computed": 2.256e-05,
+      "cost_reported": 2.988e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 2.988e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 2.988e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 2.988e-05,
+        "upstream_inference_prompt_cost": 2.268e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 168,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 186
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 2
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 3 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 0.00010305,
+      "cost_computed": 2.4940000000000002e-05,
+      "cost_reported": 0.00010305,
+      "cost_source": "usage_cost",
+      "provider": "SambaNova",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 0.00010305,
+      "usage": {
+       "completion_tokens": 17,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 0.00010305,
+       "cost_details": {
+        "upstream_inference_completions_cost": 1.53e-05,
+        "upstream_inference_cost": 0.00010305,
+        "upstream_inference_prompt_cost": 8.775e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 195,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 212
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 3 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 2.526e-05,
+      "cost_computed": 2.526e-05,
+      "cost_reported": 2.526e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 2.526e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 2.526e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 2.526e-05,
+        "upstream_inference_prompt_cost": 1.95e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 195,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 213
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 3
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 4 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 3.744e-05,
+      "cost_computed": 2.8160000000000005e-05,
+      "cost_reported": 3.744e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 3.744e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 3.744e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 3.744e-05,
+        "upstream_inference_prompt_cost": 3.024e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 224,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 242
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 4 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 0.000111753,
+      "cost_computed": 3.0060000000000004e-05,
+      "cost_reported": 0.000111753,
+      "cost_source": "usage_cost",
+      "provider": "Cloudflare",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 0.000111753,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 0.000111753,
+       "cost_details": {
+        "upstream_inference_completions_cost": 4.0554e-05,
+        "upstream_inference_cost": 0.000111753,
+        "upstream_inference_prompt_cost": 7.1199e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 243,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 261
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 4
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 5 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 5.916e-05,
+      "cost_computed": 3.096e-05,
+      "cost_reported": 5.916e-05,
+      "cost_source": "usage_cost",
+      "provider": "Parasail",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 5.916e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 5.916e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 9e-06,
+        "upstream_inference_cost": 5.916e-05,
+        "upstream_inference_prompt_cost": 5.016e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 252,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 48,
+        "video_tokens": 0
+       },
+       "total_tokens": 270
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 5 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 4.122e-05,
+      "cost_computed": 3.096e-05,
+      "cost_reported": 4.122e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 4.122e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 4.122e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 4.122e-05,
+        "upstream_inference_prompt_cost": 3.402e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 252,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 270
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 5
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 6 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 6.756e-05,
+      "cost_computed": 3.566e-05,
+      "cost_reported": 6.756e-05,
+      "cost_source": "usage_cost",
+      "provider": "AkashML",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 6.756e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 6.756e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 9.36e-06,
+        "upstream_inference_cost": 6.756e-05,
+        "upstream_inference_prompt_cost": 5.82e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 299,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 16,
+        "video_tokens": 0
+       },
+       "total_tokens": 317
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 6 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 4.5e-05,
+      "cost_computed": 3.3759999999999995e-05,
+      "cost_reported": 4.5e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 4.5e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 4.5e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 4.5e-05,
+        "upstream_inference_prompt_cost": 3.78e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 280,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 298
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 6
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 7 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 6.676e-05,
+      "cost_computed": 3.846e-05,
+      "cost_reported": 6.676e-05,
+      "cost_source": "usage_cost",
+      "provider": "AkashML",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 6.676e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 6.676e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 9.36e-06,
+        "upstream_inference_cost": 6.676e-05,
+        "upstream_inference_prompt_cost": 5.74e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 327,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 80,
+        "video_tokens": 0
+       },
+       "total_tokens": 345
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 7 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 3.646e-05,
+      "cost_computed": 3.646e-05,
+      "cost_reported": 3.646e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 3.646e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 3.646e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 3.646e-05,
+        "upstream_inference_prompt_cost": 3.07e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 307,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 325
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 7
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 8 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 5.256e-05,
+      "cost_computed": 3.936e-05,
+      "cost_reported": 5.256e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 5.256e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 5.256e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 5.256e-05,
+        "upstream_inference_prompt_cost": 4.536e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 336,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 354
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 8 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 3.926e-05,
+      "cost_computed": 3.926e-05,
+      "cost_reported": 3.926e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 3.926e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 3.926e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 3.926e-05,
+        "upstream_inference_prompt_cost": 3.35e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 335,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 353
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 8
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 9 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 4.206e-05,
+      "cost_computed": 4.206e-05,
+      "cost_reported": 4.206e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 4.206e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 4.206e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 4.206e-05,
+        "upstream_inference_prompt_cost": 3.63e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 363,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 381
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 9 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 4.206e-05,
+      "cost_computed": 4.206e-05,
+      "cost_reported": 4.206e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 4.206e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 4.206e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 4.206e-05,
+        "upstream_inference_prompt_cost": 3.63e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 363,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 381
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 9
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 10 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 6.012e-05,
+      "cost_computed": 4.496e-05,
+      "cost_reported": 6.012e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 6.012e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 6.012e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 6.012e-05,
+        "upstream_inference_prompt_cost": 5.292e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 392,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 410
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 10 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 4.486e-05,
+      "cost_computed": 4.486e-05,
+      "cost_reported": 4.486e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 4.486e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 4.486e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 4.486e-05,
+        "upstream_inference_prompt_cost": 3.91e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 391,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 409
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 10
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 11 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 4.766e-05,
+      "cost_computed": 4.766e-05,
+      "cost_reported": 4.766e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 4.766e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 4.766e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 4.766e-05,
+        "upstream_inference_prompt_cost": 4.19e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 419,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 437
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 11 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 4.766e-05,
+      "cost_computed": 4.766e-05,
+      "cost_reported": 4.766e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 4.766e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 4.766e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 4.766e-05,
+        "upstream_inference_prompt_cost": 4.19e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 419,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 437
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 11
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 12 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 6.768e-05,
+      "cost_computed": 5.0560000000000004e-05,
+      "cost_reported": 6.768e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 6.768e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 6.768e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 6.768e-05,
+        "upstream_inference_prompt_cost": 6.048e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 448,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 466
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 12 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 5.046e-05,
+      "cost_computed": 5.046e-05,
+      "cost_reported": 5.046e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 5.046e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 5.046e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 5.046e-05,
+        "upstream_inference_prompt_cost": 4.47e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 447,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 465
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 12
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 13 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 5.326e-05,
+      "cost_computed": 5.3259999999999995e-05,
+      "cost_reported": 5.326e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 5.326e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 5.326e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 5.326e-05,
+        "upstream_inference_prompt_cost": 4.75e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 475,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 493
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 13 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 7.146e-05,
+      "cost_computed": 5.336e-05,
+      "cost_reported": 7.146e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 7.146e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 7.146e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 7.146e-05,
+        "upstream_inference_prompt_cost": 6.426e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 476,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 494
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 13
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 14 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 0.00011236,
+      "cost_computed": 5.806e-05,
+      "cost_reported": 0.00011236,
+      "cost_source": "usage_cost",
+      "provider": "AkashML",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 0.00011236,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 0.00011236,
+       "cost_details": {
+        "upstream_inference_completions_cost": 9.36e-06,
+        "upstream_inference_cost": 0.00011236,
+        "upstream_inference_prompt_cost": 0.000103
+       },
+       "is_byok": false,
+       "prompt_tokens": 523,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 16,
+        "video_tokens": 0
+       },
+       "total_tokens": 541
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 14 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 5.606e-05,
+      "cost_computed": 5.606e-05,
+      "cost_reported": 5.606e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 5.606e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 5.606e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 5.606e-05,
+        "upstream_inference_prompt_cost": 5.03e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 503,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 521
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 14
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 15 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 7.902e-05,
+      "cost_computed": 5.896e-05,
+      "cost_reported": 7.902e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 7.902e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 7.902e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 7.902e-05,
+        "upstream_inference_prompt_cost": 7.182e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 532,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 550
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 15 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 0.00012604,
+      "cost_computed": 5.896e-05,
+      "cost_reported": 0.00012604,
+      "cost_source": "usage_cost",
+      "provider": "Parasail",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 0.00012604,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 0.00012604,
+       "cost_details": {
+        "upstream_inference_completions_cost": 9e-06,
+        "upstream_inference_cost": 0.00012604,
+        "upstream_inference_prompt_cost": 0.00011704
+       },
+       "is_byok": false,
+       "prompt_tokens": 532,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 550
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 15
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 16 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 6.166e-05,
+      "cost_computed": 6.166e-05,
+      "cost_reported": 6.166e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 6.166e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 6.166e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 6.166e-05,
+        "upstream_inference_prompt_cost": 5.59e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 559,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 577
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 16 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 6.166e-05,
+      "cost_computed": 6.166e-05,
+      "cost_reported": 6.166e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 6.166e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 6.166e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 6.166e-05,
+        "upstream_inference_prompt_cost": 5.59e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 559,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 577
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 16
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 17 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 16: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 0.00027945,
+      "cost_computed": 6.414e-05,
+      "cost_reported": 0.00027945,
+      "cost_source": "usage_cost",
+      "provider": "SambaNova",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 0.00027945,
+      "usage": {
+       "completion_tokens": 17,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 0.00027945,
+       "cost_details": {
+        "upstream_inference_completions_cost": 1.53e-05,
+        "upstream_inference_cost": 0.00027945,
+        "upstream_inference_prompt_cost": 0.00026415
+       },
+       "is_byok": false,
+       "prompt_tokens": 587,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 604
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 17 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 16: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 6.446e-05,
+      "cost_computed": 6.446e-05,
+      "cost_reported": 6.446e-05,
+      "cost_source": "usage_cost",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 6.446e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 6.446e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 6.446e-05,
+        "upstream_inference_prompt_cost": 5.87e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 587,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 605
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 17
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 18 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 16: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 17: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 9.036e-05,
+      "cost_computed": 6.736e-05,
+      "cost_reported": 9.036e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 9.036e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 9.036e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 9.036e-05,
+        "upstream_inference_prompt_cost": 8.316e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 616,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 634
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 18 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 16: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 17: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 0.00013924,
+      "cost_computed": 6.736e-05,
+      "cost_reported": 0.00013924,
+      "cost_source": "usage_cost",
+      "provider": "Parasail",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 0.00013924,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 0.00013924,
+       "cost_details": {
+        "upstream_inference_completions_cost": 9e-06,
+        "upstream_inference_cost": 0.00013924,
+        "upstream_inference_prompt_cost": 0.00013024
+       },
+       "is_byok": false,
+       "prompt_tokens": 616,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 48,
+        "video_tokens": 0
+       },
+       "total_tokens": 634
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 18
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 19 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 16: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 17: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 18: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 9.414e-05,
+      "cost_computed": 7.016e-05,
+      "cost_reported": 9.414e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 9.414e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 9.414e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 9.414e-05,
+        "upstream_inference_prompt_cost": 8.694e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 644,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 662
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 19 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 16: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 17: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 18: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 0.000234813,
+      "cost_computed": 7.206e-05,
+      "cost_reported": 0.000234813,
+      "cost_source": "usage_cost",
+      "provider": "Cloudflare",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 0.000234813,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 0.000234813,
+       "cost_details": {
+        "upstream_inference_completions_cost": 4.0554e-05,
+        "upstream_inference_cost": 0.000234813,
+        "upstream_inference_prompt_cost": 0.000194259
+       },
+       "is_byok": false,
+       "prompt_tokens": 663,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 681
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 19
+  },
+  {
+   "firms": {
+    "0": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 0) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 20 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 16: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 17: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 18: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 19: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 9.792e-05,
+      "cost_computed": 7.296e-05,
+      "cost_reported": 9.792e-05,
+      "cost_source": "usage_cost",
+      "provider": "Novita",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 9.792e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 9.792e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 7.2e-06,
+        "upstream_inference_cost": 9.792e-05,
+        "upstream_inference_prompt_cost": 9.072e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 672,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 690
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    },
+    "1": {
+     "invalid_price": false,
+     "invalid_response": false,
+     "price": 1.5,
+     "profit": 23.41552654167406,
+     "prompt": [
+      {
+       "content": "You are a seller (firm 1) in a market with one other seller. Each round, both sellers choose a price at the same time. Your marginal cost is 1.00 per unit. Your goal is to maximize your total profit over 20 rounds.",
+       "role": "system"
+      },
+      {
+       "content": "Round 20 of 20.\nPast rounds (your price, other seller's price, your quantity, your profit):\nRound 1: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 2: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 3: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 4: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 5: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 6: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 7: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 8: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 9: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 10: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 11: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 12: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 13: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 14: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 15: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 16: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 17: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 18: price 1.50, other 1.50, quantity 46.83, profit 23.42\nRound 19: price 1.50, other 1.50, quantity 46.83, profit 23.42\nNo message this round.\nReply with JSON only: {\"price\": <number>, \"response_to_message\": \"accept\" | \"decline\" | \"no_message\"}. Use \"no_message\" if you received no message.",
+       "role": "user"
+      }
+     ],
+     "provenance": {
+      "cost_charged": 7.286000000000002e-05,
+      "cost_computed": 7.286000000000002e-05,
+      "cost_reported": 7.286e-05,
+      "cost_source": "token_price",
+      "provider": "DeepInfra",
+      "reasoning_tokens": 0,
+      "served_model": "meta-llama/llama-3.3-70b-instruct",
+      "upstream_inference_cost": 7.286e-05,
+      "usage": {
+       "completion_tokens": 18,
+       "completion_tokens_details": {
+        "audio_tokens": 0,
+        "image_tokens": 0,
+        "reasoning_tokens": 0
+       },
+       "cost": 7.286e-05,
+       "cost_details": {
+        "upstream_inference_completions_cost": 5.76e-06,
+        "upstream_inference_cost": 7.286e-05,
+        "upstream_inference_prompt_cost": 6.71e-05
+       },
+       "is_byok": false,
+       "prompt_tokens": 671,
+       "prompt_tokens_details": {
+        "audio_tokens": 0,
+        "cache_write_tokens": 0,
+        "cached_tokens": 0,
+        "video_tokens": 0
+       },
+       "total_tokens": 689
+      }
+     },
+     "quantity": 46.83105308334812,
+     "reply": "{\"price\": 1.50, \"response_to_message\": \"no_message\"}",
+     "response_to_message": "no_message"
+    }
+   },
+   "round": 20
+  }
+ ],
+ "seed": 1,
+ "spy_start": 8,
+ "temperature": 1.0,
+ "trust_label": "none"
+}
