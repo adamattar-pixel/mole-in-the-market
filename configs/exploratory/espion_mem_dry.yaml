@@ -1,0 +1,18 @@
+# EXPLORATORY, not preregistered. Dry run of the seller memory arm: mock client only, never writes to runs/.
+name: espion_mem_dry
+mock: true
+memory: true
+out_dir: dry_runs/memory
+n_rounds: 20
+spy_start: 8
+# Frozen design values (PREREGISTRATION.md, Design, frozen at d5e7ebc)
+demand: {type: logit, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, beta: 100.0, alpha: 1.0}
+seeds: [1, 2]
+conditions: [A, B, D]
+families:
+  - family: mock-a
+    models: {"0": mock-a/m, "1": mock-a/m}
+  - family: mock-b
+    models: {"0": mock-b/m, "1": mock-b/m}
+mock_cost_per_call: 0.0001
+budget_usd: 1.0

@@ -3,6 +3,8 @@
 
 class ScriptedSpy:
     def __init__(self, message, spy_start, firm_ids=("0", "1")):
+        if int(spy_start) < 1:
+            raise ValueError("spy_start is a round number, rounds start at 1")
         self.message = message
         self.spy_start = int(spy_start)
         self.firm_ids = tuple(firm_ids)

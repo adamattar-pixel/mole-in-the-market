@@ -44,7 +44,7 @@ def _read_csv(path):
         return list(csv.DictReader(fh))
 
 
-def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, generated_at):
+def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, generated_at, synthetic=False):
     viz_dir = Path(viz_dir)
     viz_dir.mkdir(parents=True, exist_ok=True)
     by_id = {g["game_id"]: g for g in logs}
@@ -73,7 +73,7 @@ def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, g
             msg = build_condition(c, texts, deal).message
             if msg is not None:
                 messages.append({"condition": c, "text": msg})
-    meta = {"synthetic": False, "source_checksum": source_checksum,
+    meta = {"synthetic": bool(synthetic), "source_checksum": source_checksum,
             "prereg_hash": hashlib.sha256(Path(prereg_path).read_bytes()).hexdigest(),
             "generated_at": generated_at}
     _write_csv(viz_dir / "games.csv", GAMES_COLUMNS, games)
@@ -85,12 +85,12 @@ def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, g
                                      encoding="utf-8")
 
 
-def check_consistency(labels_csv, games_csv, runs_dir):
-    """List of problems (empty when viz/data/games.csv matches labels.csv and runs/)."""
+def check_consistency(labels_csv, games_csv, runs_dir, n_excluded=0):
+    """List of problems (empty when viz/data/games.csv matches labels.csv and runs/ minus excluded games)."""
     problems = []
     labels = {r["game_id"]: r for r in _read_csv(labels_csv)}
     games = {r["game_id"]: r for r in _read_csv(games_csv)}
-    n_runs = len(list(Path(runs_dir).glob("*.json")))
+    n_runs = len(list(Path(runs_dir).glob("*.json"))) - n_excluded
     if not len(labels) == len(games) == n_runs:
         problems.append(f"row counts differ: labels {len(labels)}, games {len(games)}, runs {n_runs}")
     for gid in sorted(set(labels) | set(games)):

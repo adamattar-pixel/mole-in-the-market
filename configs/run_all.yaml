@@ -1,0 +1,25 @@
+# tools/run_all (R36): settings of the one-command pipeline. The step configs (espion_smoke, espion_pilot,
+# espion_core, espion_monitor, espion_ethics, exploratory/espion_mem) keep their own games, seeds and
+# per-config caps; their `families` blocks must be identical (matched episodes).
+# PROPOSAL (owner decides): global cap over every step, counting the spend already in the logs (charged
+# cost per call: max of usage.cost and tokens x configs/prices.yaml).
+# Sum of the per-config caps: 1 + 5 + 10 + 7.5 + 2.5 = 26 USD (+ 5 memory arm, + 10 O1).
+budget_usd: 30.0
+# E gate (ops/PLAN.md Phase 4): a family whose E fails is replaced ONCE by its fallback here, keyed by the
+# primary family label; the fallback pilot runs as espion_pilot_fb. Fallback failing too = plan B (stop).
+# The fallback label must not equal another primary family label. `fallback: {}` = no fallback.
+# Owner decision D23 (docs/context/DECISIONS.md; ids, prices and parameters checked on OpenRouter 2026-10-24).
+# anthropic -> claude-sonnet-4.5 (3.00 / 15.00 per 1M, same BYOK key): accepts temperature, reasoning not on by
+# default, so no reasoning key, same settings as Haiku 4.5. Cheaper Anthropic models fail one test: haiku-5.5 has
+# no temperature. Label anthropic-fb, not anthropic: Sonnet logs must not share a family label with the Haiku logs.
+# meta-llama -> qwen3-235b-a22b-2507 (open weights, non-thinking, OpenRouter credits).
+fallback:
+  anthropic:
+    family: anthropic-fb
+    models: {"0": anthropic/claude-sonnet-4.5, "1": anthropic/claude-sonnet-4.5}
+  meta-llama:
+    family: qwen
+    models: {"0": qwen/qwen3-235b-a22b-2507, "1": qwen/qwen3-235b-a22b-2507}
+# Option O1 (--o1 only, last step): espion_core with these seeds, written as espion_o1, its own cap.
+o1_seeds: [6, 7, 8, 9, 10]
+o1_budget_usd: 10.0

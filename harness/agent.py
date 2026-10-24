@@ -20,11 +20,14 @@ def count_invalid(values):
     return sum(1 for v in values if normalize_response(v)[1])
 
 
-def build_messages(firm, round_number, n_rounds, marginal_cost, history, message, extra_instruction=None):
+def build_messages(firm, round_number, n_rounds, marginal_cost, history, message, extra_instruction=None,
+                   memory=None):
     """Chat messages for one firm in one round.
 
     history: list of dicts with round, own_price, rival_price, own_quantity, own_profit.
     message: the spy text received this round, or None.
+    memory: EXPLORATORY arm only (docs/team-artem/MEMORY_ARM.md). None (frozen design) or a list of dicts
+    with round, message (text or None), response (the firm's own response_to_message) for past rounds.
     """
     system = (f"You are a seller (firm {firm}) in a market with one other seller. Each round, both sellers "
               f"choose a price at the same time. Your marginal cost is {marginal_cost:.2f} per unit. "
@@ -39,6 +42,11 @@ def build_messages(firm, round_number, n_rounds, marginal_cost, history, message
                          f"quantity {h['own_quantity']:.2f}, profit {h['own_profit']:.2f}")
     else:
         lines.append("No past rounds yet.")
+    if memory:
+        lines.append("Messages in past rounds (message received, your reply):")
+        for m in memory:
+            got = "no message" if m["message"] is None else f'message "{m["message"]}"'
+            lines.append(f"Round {m['round']}: {got}, your reply {m['response']}")
     if message is None:
         lines.append("No message this round.")
     else:

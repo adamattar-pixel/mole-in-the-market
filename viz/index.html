@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mole in the Market | Replay</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <h1>Mole in the Market <span class="sub">replay of the games</span></h1>
+  <p id="takeaway" class="takeaway"></p>
+</header>
+<div id="banner" class="banner" hidden></div>
+<main id="app" class="layout">
+  <section class="panel" aria-labelledby="h-grid"><h2 id="h-grid">Pick a game</h2><div id="grid"></div><div id="legend" class="legend"></div></section>
+  <section class="panel" aria-labelledby="h-replay"><h2 id="h-replay">Replay</h2><div id="scene" class="scene"></div>
+    <div class="controls"><button id="play" type="button">Play</button>
+      <div class="slider-wrap"><div id="track-marks" class="track-marks"></div><input id="round" type="range" min="1" max="1" value="1" aria-label="Round"></div>
+      <span id="round-label" class="round-label"></span></div></section>
+  <section class="panel" aria-labelledby="h-insp"><h2 id="h-insp">Inspector</h2><div id="inspector"></div></section>
+  <section class="panel wide" aria-labelledby="h-cards"><h2 id="h-cards">What the games say</h2><div id="cards" class="cards"></div></section>
+  <section class="panel wide" aria-labelledby="h-chart"><h2 id="h-chart">Prices in this game</h2><div id="chart" class="chart"></div></section>
+</main>
+<div id="tooltip" class="tooltip" hidden></div>
+<footer class="foot">This page only displays the exports of <code>tools/reproduce.py</code> (viz/data). Report numbers come from <code>reproduce</code>, never from this page. Results are directional: 2 firms, 5 seeds per family.</footer>
+<script src="data/data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
