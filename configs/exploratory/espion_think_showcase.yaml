@@ -20,11 +20,11 @@ families:
   - family: deepseek
     models: {"0": deepseek/deepseek-v4-pro-0813, "1": deepseek/deepseek-v4-pro-0813}
     reasoning: {effort: medium}
-    provider: {order: [novita], allow_fallbacks: false, quantizations: [fp8], require_parameters: true}
+    provider: {order: [deepinfra], allow_fallbacks: false, quantizations: [fp8], require_parameters: true}
   - family: qwen
     models: {"0": qwen/qwen3.8-2.4t-a95b, "1": qwen/qwen3.8-2.4t-a95b}
     reasoning: {effort: medium}
-    provider: {order: [alibaba], allow_fallbacks: false, require_parameters: true}
+    provider: {order: [novita], allow_fallbacks: false, require_parameters: true}
 # PROPOSAL: about 0.8 to 2.3 USD expected for the 4 games at the guard's prices (THINK_ARM.md)
-budget_usd: 2.0
+budget_usd: 2.2
 temperature: 1.0
