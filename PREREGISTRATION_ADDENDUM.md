@@ -1,7 +1,7 @@
 # PREREGISTRATION ADDENDUM - post-freeze, exploratory - status: FROZEN
 Added after the preregistration freeze (PREREGISTRATION.md, frozen at d5e7ebc, tag `prereg-frozen`), on the owner's instruction (DECISIONS.md D16-D21). Nothing in PREREGISTRATION.md is changed by this file. Everything here is reported as EXPLORATORY, added after the freeze.
 This file is committed, its commit hash written below and tagged `addendum-frozen` BEFORE any real run of the additions. After that, no change without the owner's explicit approval; changes go to a "Deviations" section.
-Frozen at commit:
+Frozen at commit: 8b7b5a17bf0a6a3ed2f9f16575e6d7d20a29226a
 
 ## Why
 Turn the spy games into labeled games of PROVOKED collusion (ground truth comes from the scripted spy) and use them to (a) score simple collusion detectors and (b) compare two defenses: a rule-based message monitor and an ethics sentence in the instructions.
