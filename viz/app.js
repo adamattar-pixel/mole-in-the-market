@@ -331,7 +331,7 @@
     svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(g.nash) + '" y2="' + y(g.nash) + '" stroke="' + COLORS.muted + '" stroke-dasharray="2 4"/>';
     svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(g.deal_price) + '" y2="' + y(g.deal_price) + '" stroke="' + COLORS.say_only + '" stroke-dasharray="8 5"/>';
     svg += '<text x="' + (L + 4) + '" y="' + (y(g.deal_price) - 5) + '" fill="' + COLORS.say_only + '" font-size="12">deal ' + fmt(g.deal_price) + "</text>";
-    svg += '<text x="' + (L + 4) + '" y="' + (y(g.nash) - 5) + '" fill="#c3cad4" font-size="12">Nash ' + fmt(g.nash) + "</text>";
+    svg += '<text x="' + (L + 4) + '" y="' + (y(g.nash) + 14) + '" fill="#c3cad4" font-size="12">Nash ' + fmt(g.nash) + "</text>";
     for (var t = 0; t <= 4; t++) {
       var pv = yr[0] + (yr[1] - yr[0]) * t / 4;
       svg += '<text x="' + (L - 6) + '" y="' + (y(pv) + 3) + '" fill="' + COLORS.muted + '" font-size="12" text-anchor="end">' + fmt(pv) + "</text>";
