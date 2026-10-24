@@ -10,6 +10,14 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
   fallback (configs/run_all.yaml), whose pilot runs as espion_pilot_fb; if a fallback fails too, or no
   fallback is set, the pipeline stops and prints plan B. The decision is recomputed from the logs on every
   run, so a resumed run takes the same path.
+- --continue-passing-families (off by default; the default is the frozen plan B stop): instead of plan B, the
+  later steps run with only the families that passed the gate. DECLARED DEVIATION (for example 2 families
+  -> 1, ops/QUESTIONS.md): a DEVIATION line is printed, res["deviations"] holds the record and
+  <root>/run_all_deviations.json is written. The dropped families' pilot games stay in runs/ and are excluded
+  from the preregistered tables (counted as superseded). No family left = plan B.
+- --workers N: the games of each step run N at a time (harness/runner.py run_batch). Default 1 = one after
+  the other, as before; the logs are identical either way. A cap can be passed by at most N calls in flight
+  (harness/concurrency.py). Games that raise are reported (exit 4) and not logged; rerun to retry them.
 - Global budget cap (configs/run_all.yaml budget_usd) over every step, starting from the spend already in
   the logs; each step config keeps its own cap (R17).
 - Resumable: games already logged are skipped (write-once logs, R12).
@@ -25,9 +33,11 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
 
 Usage:
   python -m tools.run_all --dry [--root dry_runs/run_all] [--exploratory] [--think] [--o1] [--dry-gate fail]
+                          [--workers N] [--continue-passing-families]
   python -m tools.run_all [--stop-after smoke|pilot|gate|core|monitor|ethics|scoring|exploratory|think]
-                          [--exploratory] [--think] [--o1] [--allow-settings-mismatch]
-Exit code: 0 done or stopped as asked, 1 refused, 2 plan B, 3 budget cap hit.
+                          [--exploratory] [--think] [--o1] [--allow-settings-mismatch] [--workers N]
+                          [--continue-passing-families]
+Exit code: 0 done or stopped as asked, 1 refused, 2 plan B, 3 budget cap hit, 4 some games failed.
 """
 import argparse
 import copy
@@ -37,14 +47,16 @@ from pathlib import Path
 
 import yaml
 
-from harness.clients import BudgetExceeded, BudgetTracker, MockClient, OpenRouterClient, load_prices
+from harness.clients import BudgetExceeded, MockClient, OpenRouterClient, load_prices
+from harness.concurrency import ConcurrentBudget, fork_client
 from harness.conditions import load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import addendum_is_frozen
 from harness.dryclient import make_dry_client
 from harness.envfile import load_env
 from harness.runlog import load_logs
-from harness.runner import RealRunRefused, family_provider, family_reasoning, run_batch, validate_config
+from harness.runner import (BatchFailed, RealRunRefused, check_workers, family_provider, family_reasoning, run_batch,
+                            validate_config)
 from harness.validation import e_validation
 from tools import monitor_view, price_paths, sensitivity, think_view
 from tools.reproduce import PREREG_CONFIGS, config_name, filter_logs, reproduce
@@ -65,6 +77,8 @@ DEFAULT_DRY_ROOT = "dry_runs/run_all"
 PLAN_B = ("E gate FAILED after the one allowed model change: stop here, no core run. "
           "Go to plan B (ops/PLAN.md): track 1.5, Pareto curve of restrictions, "
           "docs/context/contexte_projet_v7.md section 10.")
+DEVIATIONS_FILE = "run_all_deviations.json"
+CONTINUE_FLAG = "--continue-passing-families"
 
 
 class RunAllRefused(RealRunRefused):
@@ -72,10 +86,14 @@ class RunAllRefused(RealRunRefused):
 
 
 class _Budgeted:
-    """Client wrapper: every call's cost goes to the global tracker (raises BudgetExceeded over the cap)."""
+    """Client wrapper: every call's cost goes to the global tracker (raises BudgetExceeded over the cap).
+    No call is sent once the global cap was crossed (another worker may have crossed it)."""
 
     def __init__(self, inner, tracker):
         self.inner, self.tracker = inner, tracker
+
+    def fork(self):
+        return _Budgeted(fork_client(self.inner), self.tracker)
 
     @property
     def is_mock(self):
@@ -86,6 +104,8 @@ class _Budgeted:
         return getattr(self.inner, "last_call", None)
 
     def complete(self, messages, model, seed, **settings):
+        if hasattr(self.tracker, "check"):  # a plain BudgetTracker has none
+            self.tracker.check()
         text, cost = self.inner.complete(messages, model, seed, **settings)
         self.tracker.add(cost)
         return text, cost
@@ -303,7 +323,8 @@ def _logs(path, dry, names=None):
 
 def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, exploratory=False, o1=False,
                  stop_after=None, prereg_path=None, addendum_path=None, dry_gate="pass", n_draws=1000, seed=0,
-                 log=print, allow_settings_mismatch=False, think=False):
+                 log=print, allow_settings_mismatch=False, think=False, workers=1, continue_passing_families=False):
+    check_workers(workers)
     root = Path(root)
     if stop_after is not None and stop_after not in STOP_AFTER:
         raise ValueError(f"stop_after must be one of {STOP_AFTER}")
@@ -327,16 +348,19 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
 
     runs, mem_dir = root / "runs", root / "runs_exploratory" / "memory"
     think_dir = root / "runs_exploratory" / "think"
-    tracker = BudgetTracker(st["budget_usd"])
+    tracker = ConcurrentBudget(st["budget_usd"])
     tracker.total = sum(g["cost_usd"] for p in (runs, mem_dir, think_dir) for g in _logs(p, dry, MANAGED))
-    res = {"status": None, "steps": [], "gate": None, "spent_usd": tracker.total, "dry": dry, "outputs": []}
+    res = {"status": None, "steps": [], "gate": None, "spent_usd": tracker.total, "dry": dry, "outputs": [],
+           "deviations": []}
     mode = "DRY (mock client, not results)" if dry else "REAL"
     log(f"run_all {mode}: root {root}, budget cap {tracker.cap:.2f} USD, already spent {tracker.total:.4f} USD")
+    if workers > 1:
+        log(f"run_all: {workers} workers (games of a step run {workers} at a time)")
 
     def run_cfg(step, cfg):
         out = Path(cfg["out_dir"]) if dry else root / cfg["out_dir"]
         new = run_batch(cfg, _Budgeted(client_factory(cfg), tracker), out, prereg_path=prereg_path,
-                        addendum_path=addendum_path)
+                        addendum_path=addendum_path, workers=workers)
         n = sum(1 for g in _logs(out, dry, {cfg["name"]}))
         log(f"[{step}] {cfg['name']}: {len(new)} new games, {n} logged, spent so far {tracker.total:.4f} USD")
         return new
@@ -376,40 +400,80 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
                 "fallback_used": False, "fallback": {}}
         res["gate"] = gate
         failing = [f for f in labels if not gate["primary"][f]]
-        swap, superseded = {}, None
+        swap, superseded, dropped, failed_fb = {}, None, [], []
         log(f"[gate] E on the pilot: {gate['primary']} (effects {gate['effects']}, threshold {threshold})")
         if failing:
-            if not all(f in st["fallback"] for f in failing):
+            missing = [f for f in failing if f not in st["fallback"]]
+            if missing and not continue_passing_families:
                 res["steps"].append("gate")
                 res["status"] = "plan_b"
                 log(f"[gate] no fallback set for {failing}. {PLAN_B}")
                 return res
-            fb = [copy.deepcopy(st["fallback"][f]) for f in failing]
-            log(f"[gate] switching {failing} to fallback {[f['family'] for f in fb]} (once)")
-            run_cfg("gate", _derived(st, FALLBACK_PILOT, fb))
-            fb_labels = [f["family"] for f in fb]
-            r2 = e_validation([g for g in _logs(runs, dry, {FALLBACK_PILOT}) if g["family"] in fb_labels], threshold)
-            gate["fallback_used"] = True
-            gate["fallback"] = {f: bool(r2.get(f, {}).get("pass")) for f in fb_labels}
-            log(f"[gate] E on the fallback pilot: {gate['fallback']}")
-            if not all(gate["fallback"].values()):
-                res["steps"].append("gate")
-                res["status"] = "plan_b"
-                log(f"[gate] {PLAN_B}")
-                return res
-            swap = {f: st["fallback"][f] for f in failing}
-            superseded = {g["game_id"] for g in pilot if g["family"] in failing}
+            if missing:
+                log(f"[gate] no fallback set for {missing}: dropped ({CONTINUE_FLAG})")
+            retry = [f for f in failing if f in st["fallback"]]
+            dropped = list(missing)
+            if retry:
+                fb = [copy.deepcopy(st["fallback"][f]) for f in retry]
+                log(f"[gate] switching {retry} to fallback {[f['family'] for f in fb]} (once)")
+                run_cfg("gate", _derived(st, FALLBACK_PILOT, fb))
+                fb_labels = [f["family"] for f in fb]
+                r2 = e_validation([g for g in _logs(runs, dry, {FALLBACK_PILOT}) if g["family"] in fb_labels],
+                                  threshold)
+                gate["fallback_used"] = True
+                gate["fallback"] = {f: bool(r2.get(f, {}).get("pass")) for f in fb_labels}
+                log(f"[gate] E on the fallback pilot: {gate['fallback']}")
+                if not all(gate["fallback"].values()) and not continue_passing_families:
+                    res["steps"].append("gate")
+                    res["status"] = "plan_b"
+                    log(f"[gate] {PLAN_B}")
+                    return res
+                swap = {f: st["fallback"][f] for f in retry if gate["fallback"][st["fallback"][f]["family"]]}
+                dropped += [f for f in retry if f not in swap]
+                failed_fb = [st["fallback"][f]["family"] for f in retry if f not in swap]
+                superseded = {g["game_id"] for g in pilot if g["family"] in failing}
+            if dropped:
+                kept = [swap.get(f, {"family": f})["family"] for f in labels if f not in dropped]
+                if not kept:
+                    res["steps"].append("gate")
+                    res["status"] = "plan_b"
+                    log(f"[gate] no family passed E. {PLAN_B}")
+                    return res
+                excluded = sorted({g["game_id"] for g in pilot if g["family"] in dropped} |
+                                  {g["game_id"] for g in _logs(runs, dry, {FALLBACK_PILOT}) if g["family"] in failed_fb})
+                superseded = (superseded or set()) | set(excluded)
+                dev = {"flag": CONTINUE_FLAG, "step": "gate",
+                       "reason": "E gate failed after the one allowed model change (frozen plan: plan B)",
+                       "dropped_families": sorted(dropped), "failed_fallbacks": sorted(failed_fb),
+                       "kept_families": kept, "n_families_planned": len(labels), "n_families_kept": len(kept),
+                       "excluded_game_ids": excluded,
+                       "note": "DECLARED DEVIATION from the preregistered plan; owner decision in ops/QUESTIONS.md "
+                               "(continue-passing-families row). Report it as a deviation."}
+                res["deviations"].append(dev)
+                (root / DEVIATIONS_FILE).parent.mkdir(parents=True, exist_ok=True)
+                (root / DEVIATIONS_FILE).write_text(json.dumps(res["deviations"], sort_keys=True, indent=1) + "\n",
+                                                    encoding="utf-8")
+                bar = "!" * 78
+                log(bar)
+                log(f"DEVIATION: E gate failed for {sorted(dropped)} (fallbacks failed: {sorted(failed_fb)}). "
+                    f"Continuing with {kept} only, {len(labels)} -> {len(kept)} families ({CONTINUE_FLAG}).")
+                log(f"DEVIATION: {len(excluded)} pilot games excluded from the tables; record in "
+                    f"{root / DEVIATIONS_FILE}. This is a declared deviation (ops/QUESTIONS.md).")
+                log(bar)
         if done("gate"):
             return res
 
+        def step_families(families):
+            return [f for f in swap_families(families, swap) if f["family"] not in dropped]
+
         for step in ("core", "monitor", "ethics"):
             cfg = copy.deepcopy(steps[step])
-            cfg["families"] = swap_families(cfg["families"], swap)
+            cfg["families"] = step_families(cfg["families"])
             run_cfg(step, cfg)
             if done(step):
                 return res
 
-        prereg_cfgs = PREREG_CONFIGS + ((FALLBACK_PILOT,) if superseded is not None else ())
+        prereg_cfgs = PREREG_CONFIGS + ((FALLBACK_PILOT,) if gate["fallback_used"] else ())
         results = root / "results"
         reproduce(runs, results, n_draws=n_draws, seed=seed, viz_dir=root / "viz" / "data",
                   figures_dir=root / "figures", prereg_path=prereg_path, configs=prereg_cfgs, include_mock=dry,
@@ -422,7 +486,7 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
 
         if exploratory:
             cfg = copy.deepcopy(steps["exploratory"])
-            cfg["families"] = swap_families(cfg["families"], swap)
+            cfg["families"] = step_families(cfg["families"])
             run_cfg("exploratory", cfg)
             ex = root / "results_exploratory"
             reproduce(mem_dir, ex / "memory", n_draws=n_draws, seed=seed, prereg_path=prereg_path,
@@ -466,7 +530,7 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
                 return res
 
         if o1:
-            cfg = _derived(st, O1_NAME, swap_families(steps["core"]["families"], swap), seeds=st["o1_seeds"], budget_usd=st["o1_budget_usd"])
+            cfg = _derived(st, O1_NAME, step_families(steps["core"]["families"]), seeds=st["o1_seeds"], budget_usd=st["o1_budget_usd"])
             if dry:
                 cfg["out_dir"] = str(runs)
             run_cfg("o1", cfg)
@@ -478,15 +542,23 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
         res["status"] = "done"
     except BudgetExceeded as exc:
         res["status"] = "budget_stop"
-        log(f"BUDGET CAP HIT, stopped: {exc}. The game in progress was dropped (no log). Raise budget_usd in "
+        log(f"BUDGET CAP HIT, stopped: {exc}. The game(s) in progress were dropped (no log). Raise budget_usd in "
             "configs/run_all.yaml only with the owner's OK, then rerun to resume.")
+    except BatchFailed as exc:
+        res["status"] = "game_failures"
+        res["failed"] = sorted(exc.failed)
+        for gid, err in exc.failed.items():
+            log(f"FAILED (not logged): {gid}: {err}")
+        log(f"{len(exc.failed)} game(s) FAILED; the other games of the step are logged. Rerun the same command to "
+            "retry them (finished games are skipped).")
     finally:
         res["spent_usd"] = tracker.total
-    log(f"run_all: {res['status']}, steps {res['steps']}, spent {res['spent_usd']:.4f} USD")
+    dev = f", DEVIATIONS {len(res['deviations'])} (see {DEVIATIONS_FILE})" if res["deviations"] else ""
+    log(f"run_all: {res['status']}, steps {res['steps']}, spent {res['spent_usd']:.4f} USD{dev}")
     return res
 
 
-EXIT = {"done": 0, "stopped": 0, "plan_b": 2, "budget_stop": 3}
+EXIT = {"done": 0, "stopped": 0, "plan_b": 2, "budget_stop": 3, "game_failures": 4}
 
 
 def main(argv=None):
@@ -502,6 +574,11 @@ def main(argv=None):
     ap.add_argument("--dry-gate", choices=("pass", "fail"), default="pass")
     ap.add_argument("--allow-settings-mismatch", action="store_true",
                     help="run even if temperature or reasoning differ between pooled or matched steps")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="games of a step run at the same time (default 1; 4 to 6 for OpenRouter, RUNBOOK)")
+    ap.add_argument(CONTINUE_FLAG, action="store_true",
+                    help="DEVIATION: if a family fails the E gate after its fallback, go on with the passing "
+                         "families instead of plan B (owner decision, ops/QUESTIONS.md)")
     ap.add_argument("--n-draws", type=int, default=1000)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
@@ -509,7 +586,8 @@ def main(argv=None):
     try:
         res = run_pipeline(root, configs_dir=a.configs_dir, dry=a.dry, exploratory=a.exploratory, o1=a.o1,
                            stop_after=a.stop_after, dry_gate=a.dry_gate, n_draws=a.n_draws, seed=a.seed,
-                           allow_settings_mismatch=a.allow_settings_mismatch, think=a.think)
+                           allow_settings_mismatch=a.allow_settings_mismatch, think=a.think, workers=a.workers,
+                           continue_passing_families=a.continue_passing_families)
     except RealRunRefused as exc:
         print(f"run_all REFUSED: {exc}")
         return 1
