@@ -8,9 +8,9 @@
 5. `python -m pytest` and compare with the expected result written in ops/STATE.md.
 
 ## Branches
-- `main` only receives green gates. The owner (Artem, see ops/STATE.md) merges into main at green gates.
-- Work in progress goes to `wip/phase-<N>` (plain push, never force), after each green requirement and at least every 30 minutes, even with a locked test still red.
-- One active session per branch. The owner may work directly on `wip/phase-4`; other contributors use their own branch `wip/<phase>-<first name>`.
+- `main` only receives green gate PRs. The owner (Artem, see ops/STATE.md) merges them and tags gate-N.
+- Work goes to your own branch `wip/phase-<N>-<name>-<topic>` and a PR into the current `wip/phase-<N>` (plain push, never force), after each green requirement and at least every 30 minutes, even with a locked test still red.
+- One active session per branch, one active writer per file area. Claim your area in ops/CLAIMS.md before starting (rules and conflict handling are there).
 
 ## Identity
 - Commit under your own git identity: author = committer = the person who runs the session.
