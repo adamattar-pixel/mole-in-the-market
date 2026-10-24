@@ -180,7 +180,7 @@ def test_run_all_workers_global_cap_bounded(tmp_path):
     assert res["status"] == "budget_stop"
     spent = c.box[0] * COST
     assert 0.4895 < spent <= 0.4895 + 4 * COST + 1e-12
-    logged = sum(len(v) for v in counts(tmp_path / "root").values())
+    logged = sum(counts(tmp_path / "root").values())
     assert logged * 40 * COST <= 0.4895
 
 

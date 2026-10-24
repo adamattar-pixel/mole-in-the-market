@@ -114,7 +114,10 @@ def test_workers_value_is_checked(tmp_path):
 
 def test_workers_resume_skips_logged_games(tmp_path):
     c = big_cfg()
-    run_batch(cfg(seeds=SEEDS[:2], conditions=CONDS), Counting(), tmp_path, texts=TEXTS, git_commit="abc")
+    run_batch(c, Counting(), tmp_path, texts=TEXTS, git_commit="abc")
+    for p in tmp_path.glob("*.json"):
+        if not p.stem.endswith(("__s1", "__s2")):
+            p.unlink()  # test folder only: simulate the games lost to a crash (same config, so resume is allowed)
     before = files(tmp_path)
     assert len(before) == 6
     client = Counting()
@@ -198,11 +201,13 @@ def test_guarded_client_sends_nothing_once_stopped():
     inner = Counting(cost=0.75)
     g = GuardedClient(inner, [b])
     g.complete([{"role": "user", "content": "x"}], "m", 1)
+    b.add(0.75)  # 0.75 <= cap 1.0: the next call is still allowed
+    g.complete([{"role": "user", "content": "x"}], "m", 1)
     with pytest.raises(BudgetExceeded):
-        b.add(0.75)
+        b.add(0.75)  # 1.5 > 1.0: crossed
     with pytest.raises(BudgetExceeded):
         g.complete([{"role": "user", "content": "x"}], "m", 1)
-    assert len(inner.calls) == 1
+    assert len(inner.calls) == 2
 
 
 # ---------- provenance stays with its own game ----------
