@@ -24,3 +24,6 @@ Per phase: write ALL tests from SPEC/PREREGISTRATION first (skeletons raise NotI
 | Phase | Requirements | Commit |
 |---|---|---|
 | 2 | R01-R11 | 5c52047 |
+
+## Plan changes
+- 2026-10-24: Plan mis à jour : Phase 8 (page de replay) ajoutée, R22 à R27 (commit 9c49a66). R22, R23, R27 join Phase 3.
