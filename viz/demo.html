@@ -10,10 +10,11 @@
 <header class="top">
   <h1>Mole in the Market <span class="sub">replay of the games</span></h1>
   <p id="takeaway" class="takeaway"></p>
+  <div id="excluded" class="excluded" role="note" hidden></div>
 </header>
 <div id="banner" class="banner" hidden></div>
 <main id="app" class="layout">
-  <section class="panel" aria-labelledby="h-grid"><h2 id="h-grid">Pick a game</h2><div id="grid"></div><div id="legend" class="legend"></div></section>
+  <section class="panel" aria-labelledby="h-grid"><h2 id="h-grid">Pick a game</h2><div class="grid-wrap"><div id="grid"></div><div id="legend" class="legend"></div></div></section>
   <section class="panel" aria-labelledby="h-replay"><h2 id="h-replay">Replay</h2><div id="scene" class="scene"></div>
     <div class="controls"><button id="play" type="button">Play</button>
       <div class="slider-wrap"><div id="track-marks" class="track-marks"></div><input id="round" type="range" min="1" max="1" value="1" aria-label="Round"></div>
