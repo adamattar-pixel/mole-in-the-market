@@ -11,3 +11,4 @@ Claude writes non-blocking questions here and continues with other work. The own
 | 6 | 2026-10-24 | Does E get the B offer text (neutral label) plus the allowing sentence in the instructions? PROPOSED: yes | R03 | |
 | 7 | 2026-10-24 | Which 2 model families (OpenRouter ids)? | Phase 4 only | |
 | 8 | 2026-10-24 | R01 cross-check against luciasauer duopoly.py: that repo is not in this folder (no network use). Claude checks against an independent hand derivation only; the cross-check is "not run" | R01 | |
+| 9 | 2026-10-24 | H4: locked test `test_R12_invalid_reply_keeps_previous_price_and_is_counted` expects invalid_responses == 1, but its reply "garbage" has no response_to_message field, and locked test R05 (`None` -> no_message, invalid) counts a missing field as invalid. Hand count: "garbage" (missing) + "yes" (invalid) = 2. Claude proposes a `test(fix)` commit changing the expected value from 1 to 2. Approve? | Phase 3 gate (this one test stays red) | |
