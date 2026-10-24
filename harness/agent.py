@@ -56,10 +56,27 @@ def build_messages(firm, round_number, n_rounds, marginal_cost, history, message
     return [{"role": "system", "content": system}, {"role": "user", "content": "\n".join(lines)}]
 
 
+_THINK_BLOCK = re.compile(r"<(think|thinking)>.*?</\1>", flags=re.DOTALL | re.IGNORECASE)
+_THINK_CLOSE = re.compile(r"</(?:think|thinking)>", flags=re.IGNORECASE)
+_THINK_OPEN = re.compile(r"<(?:think|thinking)>", flags=re.IGNORECASE)
+
+
+def strip_think(text):
+    """Remove reasoning that leaked into the reply content: closed <think>/<thinking> blocks, everything before a
+    stray closing tag, and everything after an unclosed opening tag."""
+    text = _THINK_BLOCK.sub("", text or "")
+    closes = list(_THINK_CLOSE.finditer(text))
+    if closes:
+        text = text[closes[-1].end():]
+    m = _THINK_OPEN.search(text)
+    return text[:m.start()] if m else text
+
+
 def parse_reply(text):
-    """Return dict(price, response_to_message, invalid_price, invalid_response). price is None if invalid."""
+    """Return dict(price, response_to_message, invalid_price, invalid_response). price is None if invalid.
+    text is the reply content only (never the reasoning trace); leaked <think> blocks are stripped first."""
     obj = None
-    for m in re.finditer(r"\{.*?\}", text or "", flags=re.DOTALL):
+    for m in re.finditer(r"\{.*?\}", strip_think(text), flags=re.DOTALL):
         try:
             cand = json.loads(m.group(0))
         except ValueError:
