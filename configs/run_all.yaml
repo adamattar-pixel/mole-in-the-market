@@ -7,14 +7,15 @@ budget_usd: 30.0
 # E gate (PLAN.md Phase 4): a family whose E fails is replaced ONCE by its fallback here, keyed by the
 # primary family label; the fallback pilot runs as espion_pilot_fb. Fallback failing too = plan B (stop).
 # The fallback label must not equal another primary family label. `fallback: {}` = no fallback.
-# Placeholders until the owner gives them (a real run refuses "tbd" ids).
+# PROPOSED fallback (RUNBOOK_REAL_RUNS.md step 2, owner decides; ids checked on OpenRouter 2026-10-24).
+# Label openai-fb, not openai: gpt-4.1 logs must not share a family label with the gpt-5.4 logs.
 fallback:
-  family1-tbd:
-    family: family1fb-tbd
-    models: {"0": family1fb-tbd/model-tbd, "1": family1fb-tbd/model-tbd}
-  family2-tbd:
-    family: family2fb-tbd
-    models: {"0": family2fb-tbd/model-tbd, "1": family2fb-tbd/model-tbd}
+  openai:
+    family: openai-fb
+    models: {"0": openai/gpt-4.1, "1": openai/gpt-4.1}
+  meta-llama:
+    family: qwen
+    models: {"0": qwen/qwen3-235b-a22b-2507, "1": qwen/qwen3-235b-a22b-2507}
 # Option O1 (--o1 only, last step): espion_core with these seeds, written as espion_o1, its own cap.
 o1_seeds: [6, 7, 8, 9, 10]
 o1_budget_usd: 10.0

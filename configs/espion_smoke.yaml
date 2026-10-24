@@ -8,12 +8,13 @@ spy_start: 8
 demand: {type: logit, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, beta: 100.0, alpha: 1.0}
 seeds: [1]
 conditions: [A, E]
-# Placeholders until the owner gives the 2 model families (decision D10). A real run refuses "tbd" ids.
+# Model families (decision D10, PROPOSED in docs/team-artem/OWNER_APPROVAL.md; ids checked on OpenRouter 2026-10-24).
+# No reasoning key: gpt-5.4 reasons only if asked (default_enabled false), Llama 3.3 has no reasoning.
 families:
-  - family: family1-tbd
-    models: {"0": family1-tbd/model-tbd, "1": family1-tbd/model-tbd}
-  - family: family2-tbd
-    models: {"0": family2-tbd/model-tbd, "1": family2-tbd/model-tbd}
+  - family: openai
+    models: {"0": openai/gpt-5.4, "1": openai/gpt-5.4}
+  - family: meta-llama
+    models: {"0": meta-llama/llama-3.3-70b-instruct, "1": meta-llama/llama-3.3-70b-instruct}
 budget_usd: 1.0
-# PLACEHOLDER (owner decision, docs/team-artem/FIXES_CLIENT.md): null = no temperature sent, provider default
-temperature: null
+# Owner decision PROPOSED (docs/team-artem/FIXES_CLIENT.md decision 1): 1.0 for every family
+temperature: 1.0
