@@ -1,8 +1,15 @@
 # PROGRESS - Claude's memory and the owner's dashboard
 Claude updates this file at the end of every phase and whenever the state changes. After a context reset, read this file first.
 
+## Resume here (for anyone picking this up on another machine, human or AI)
+1. `git pull`, then `pip install -r requirements.txt` and `python -m pytest` (expected: see Current state).
+2. Read CLAUDE.md, then this file, PLAN.md, TRACEABILITY.md, QUESTIONS.md (open questions for the owner).
+3. Code map: harness/ (economics, config, spy, conditions, agent, metrics, runlog, clients, runner, validation, labels, vizexport), tools/ (reproduce, validate_e), tests/ (one file per requirement group, test names carry the Rxx id).
+4. Commands: `python -m tools.reproduce runs results --viz-dir viz/data --figures-dir figures` (tables from runs/, no key), `python -m tools.validate_e runs` (E PASS/FAIL).
+5. Locked tests are never edited to pass (see Workflow rule below). Real runs need a FROZEN preregistration and the owner's GO.
+
 ## Current state
-Phase: 3 | Last green commit: 4ec7dd5 | Tests: 99 passed
+Phase: 3 (implementation done, gate blocked by H4, QUESTIONS #9) | Last fully green commit: 4ec7dd5 (pushed, tag gate-2) | Tests at 63b16fd: 178 passed, 1 failed (the H4 test). Phase 3 commits from c5adce2 on are local, not pushed (rule: a locked red commit is not pushed before the phase is green)
 
 ## Log
 | Date | Phase | What was done | Evidence (command, result) | Deviations |
@@ -16,6 +23,7 @@ Phase: 3 | Last green commit: 4ec7dd5 | Tests: 99 passed
 - H2: API key and GO for the first real run (Phase 4)
 - Audit pass 1 (Phase 2): run /audit in a fresh chat
 - QUESTIONS.md #1 to #8
+- H4 (QUESTIONS #9): approve a `test(fix)` commit on one locked Phase 3 test (expected invalid_responses 1 -> 2), then Phase 3 gate can close and be pushed
 
 ## Workflow rule (owner, 2026-10-24)
 Per phase: write ALL tests from SPEC/PREREGISTRATION first (skeletons raise NotImplementedError), show them red, commit `test(Rxx-Ryy): add failing tests from spec (locked)` (not pushed until green), record its hash here, then implement without touching locked tests. End of phase: `git diff <locked> -- tests/` must be empty except listed new tests.
@@ -24,6 +32,7 @@ Per phase: write ALL tests from SPEC/PREREGISTRATION first (skeletons raise NotI
 | Phase | Requirements | Commit |
 |---|---|---|
 | 2 | R01-R11 | 5c52047 |
+| 3 | R12-R17, R22, R23, R27 | c5adce2 |
 
 ## Plan changes
 - 2026-10-24: Plan mis à jour : Phase 8 (page de replay) ajoutée, R22 à R27 (commit 9c49a66). R22, R23, R27 join Phase 3.
