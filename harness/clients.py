@@ -69,7 +69,8 @@ class OpenRouterClient:
     """Real client. The key is read from the OPENROUTER_API_KEY environment variable at call time.
 
     temperature and reasoning are sent only when not None (None = provider default, as before).
-    After each call, last_call holds the provenance: served model, provider, raw usage, reasoning tokens.
+    After each call, last_call holds the provenance: served model, provider, raw usage, reasoning tokens and
+    usage.cost_details.upstream_inference_cost (the provider's bill under BYOK; only when present, log only).
     With a price table (load_prices), each call is charged max(usage.cost, tokens x price): under BYOK usage.cost
     is only OpenRouter's fee. last_call then adds cost_reported, cost_computed, cost_charged and cost_source
     ("usage_cost" or "token_price"). A model with no price is refused before the request.
@@ -103,6 +104,9 @@ class OpenRouterClient:
         details = (usage or {}).get("completion_tokens_details") or {}
         self.last_call = {"served_model": data.get("model"), "provider": data.get("provider"),
                           "usage": usage, "reasoning_tokens": details.get("reasoning_tokens")}
+        upstream = ((usage or {}).get("cost_details") or {}).get("upstream_inference_cost")
+        if upstream is not None:
+            self.last_call["upstream_inference_cost"] = float(upstream)
         cost = (usage or {}).get("cost")
         if cost is None or not math.isfinite(float(cost)):
             # Never run with untracked spend (R17).

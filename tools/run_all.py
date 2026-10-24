@@ -254,13 +254,15 @@ def default_client_factory(dry, gate):
 
 
 def smoke_report(logs):
-    """Per family: games, mean cost per game, invalid reply rates, served models, providers, reasoning tokens."""
+    """Per family: games, mean cost per game, invalid reply rates, served models, providers, reasoning tokens,
+    summed upstream_inference_cost (None when no call reported it)."""
     out = {}
     for fam in sorted({g["family"] for g in logs}):
         gl = [g for g in logs if g["family"] == fam]
         replies = sum(2 * g["n_rounds"] for g in gl)
         prov = [f["provenance"] for g in gl for r in g["rounds"] for f in r["firms"].values() if f.get("provenance")]
         known = [g["reasoning_tokens"] for g in gl if g.get("reasoning_tokens") is not None]
+        upstream = [p["upstream_inference_cost"] for p in prov if p.get("upstream_inference_cost") is not None]
         out[fam] = {
             "games": len(gl), "mean_cost_usd": sum(g["cost_usd"] for g in gl) / len(gl),
             "invalid_price_rate": sum(g["invalid_prices"] for g in gl) / replies,
@@ -268,6 +270,7 @@ def smoke_report(logs):
             "served_models": sorted({p["served_model"] for p in prov if p.get("served_model")}),
             "providers": sorted({p["provider"] for p in prov if p.get("provider")}),
             "reasoning_tokens": sum(known) if known else None,
+            "upstream_inference_cost_usd": sum(upstream) if upstream else None,
         }
     return out
 
@@ -336,7 +339,8 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
             log(f"[smoke] {fam}: {r['games']} games, cost per game {r['mean_cost_usd']:.6f} USD, invalid prices "
                 f"{r['invalid_price_rate']:.3f}, invalid responses {r['invalid_response_rate']:.3f}, served "
                 f"{r['served_models'] or 'n/a'}, providers {r['providers'] or 'n/a'}, "
-                f"reasoning tokens {r['reasoning_tokens']}")
+                f"reasoning tokens {r['reasoning_tokens']}, upstream inference cost (BYOK) "
+                f"{r['upstream_inference_cost_usd']}")
         if done("smoke"):
             return res
         run_cfg("pilot", steps["pilot"])
