@@ -30,3 +30,12 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 | R25 | | TODO | |
 | R26 | MANUAL | TODO | |
 | R27 | tests/test_R22_R27_viz_export.py::test_R27_* (3: PDF without key/network, two runs same bytes, depends on games.csv) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
+| R28 | | TODO | |
+| R29 | | TODO | |
+| R30 | | TODO | |
+| R31 | | TODO | |
+| R32 | | TODO | |
+| R33 | | TODO | |
+| R34 | | TODO | |
+| R35 | | TODO | |
+| R36 | | TODO | |
