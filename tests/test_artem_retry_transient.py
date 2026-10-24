@@ -6,7 +6,8 @@ also retries, with the same bounded backoff: TimeoutError / socket.timeout, URLE
 a connection reset or a refused connection, ConnectionResetError, http.client.RemoteDisconnected and
 http.client.IncompleteRead. 4xx other than 429 is still never retried.
 - Cost is added only on a successful response: a call that times out twice and then succeeds is charged once.
-- The retry count of a call goes into its provenance (`retries`) only when it was retried: dry logs unchanged.
+- The retry count of a call (RetryingClient.last_retries) goes into its logged provenance (`retries`) only when
+  it was retried: dry logs unchanged, and last_call itself is not changed (locked test_artem_workers).
 - The client read timeout default is DEFAULT_TIMEOUT_S (raised from 60 s to 120 s), set per config by
   `timeout_s` (a positive number) for real runs. timeout_s is operational: it is left out of config_hash, so
   adding it to a config does not break the resume guard (review M2) and existing hashes do not change.
@@ -121,9 +122,9 @@ def test_retry_count_in_provenance_only_when_retried():
     inner = Raising([TimeoutError("t"), TimeoutError("t")])
     r = RetryingClient(inner, attempts=5, sleep=lambda s: None)
     r.complete([], "m", 1)
-    assert r.last_call == {"served_model": "m", "retries": 2}
+    assert r.last_retries == 2 and r.last_call == {"served_model": "m"}
     r.complete([], "m", 1)
-    assert r.last_call == {"served_model": "m"}
+    assert r.last_retries == 0
 
 
 def test_timeout_twice_then_success_charged_once_in_game(tmp_path):
@@ -175,7 +176,7 @@ def test_openrouter_timeout_twice_then_success(flaky_http):
     text, cost = r.complete([{"role": "user", "content": "x"}], "fam/m1", 1)
     assert text == REPLY and cost == pytest.approx(0.0125)
     assert flaky_http["calls"] == 3
-    assert r.last_call["retries"] == 2 and r.last_call["served_model"] == "fam/m1"
+    assert r.last_retries == 2 and r.last_call["served_model"] == "fam/m1"
 
 
 def test_default_timeout_raised():
