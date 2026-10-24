@@ -1,6 +1,6 @@
 """R19: submission checks on the report source (Markdown or LaTeX). Page count stays MANUAL.
 
-Rules (docs/apart/Guidelines.md): abstract <= 150 words; appendix titled exactly
+Rules (live sprint page, 2026-10-24, docs/apart/Guidelines.md): abstract 150 to 250 words; appendix titled exactly
 "Limitations and Dual-Use / Ethical Considerations"; authors listed; same title on each submission; links work.
 Word = a run of letters/digits, inner hyphens, apostrophes and dots kept ("dual-use" = 1, "0.25" = 1, "don't" = 1);
 punctuation alone ("|", "-", "--") is not a word.
@@ -29,9 +29,16 @@ def test_R19_abstract_exactly_150_words_passes():
     assert r["abstract_words"] == 150 and r["abstract_ok"] is True
 
 
-def test_R19_abstract_151_words_fails():
-    r = cs.check_text(md(" ".join(["word"] * 151)))
-    assert r["abstract_words"] == 151 and r["abstract_ok"] is False
+def test_R19_abstract_exactly_250_words_passes():
+    r = cs.check_text(md(" ".join(["word"] * 250)))
+    assert r["abstract_words"] == 250 and r["abstract_ok"] is True
+
+
+def test_R19_abstract_149_or_251_words_fails():
+    r = cs.check_text(md(" ".join(["word"] * 149)))
+    assert r["abstract_words"] == 149 and r["abstract_ok"] is False
+    r = cs.check_text(md(" ".join(["word"] * 251)))
+    assert r["abstract_words"] == 251 and r["abstract_ok"] is False
 
 
 def test_R19_abstract_stops_at_next_heading():
@@ -49,7 +56,7 @@ def test_R19_latex_abstract():
     tex = ("\\title{Mole}\n\\author{Ada \\and Alan}\n\\begin{abstract}\nOne two three four.\n\\end{abstract}\n"
            "\\section{Intro}\nx\n\\section*{" + APPENDIX + "}\ny\n")
     r = cs.check_text(tex)
-    assert r["abstract_words"] == 4 and r["abstract_ok"] is True
+    assert r["abstract_words"] == 4 and r["abstract_ok"] is False  # 4 < 150
     assert r["appendix_ok"] is True
     assert r["authors"] == ["Ada", "Alan"]
     assert r["title"] == "Mole"
@@ -134,9 +141,9 @@ def test_R19_relative_repo_links_must_exist(tmp_path):
 # ---------------- overall and CLI ----------------
 
 def test_R19_overall_pass_and_fail():
-    good = cs.check_text(md("a b"), expected_title="Mole in the Market", fetch=lambda u: 200)
+    good = cs.check_text(md(" ".join(["w"] * 200)), expected_title="Mole in the Market", fetch=lambda u: 200)
     assert cs.overall(good) is True
-    bad = cs.check_text(md(" ".join(["w"] * 151)), expected_title="Mole in the Market", fetch=lambda u: 200)
+    bad = cs.check_text(md(" ".join(["w"] * 251)), expected_title="Mole in the Market", fetch=lambda u: 200)
     assert cs.overall(bad) is False
     # a check that was not run (offline links, no expected title) is never a pass
     assert cs.overall(cs.check_text(md("a b"))) is False
@@ -144,8 +151,8 @@ def test_R19_overall_pass_and_fail():
 
 def test_R19_cli_exit_codes(tmp_path, capsys):
     p = tmp_path / "report.md"
-    p.write_text(md("a b"), encoding="utf-8")
+    p.write_text(md(" ".join(["w"] * 200)), encoding="utf-8")
     assert cs.main([str(p), "--title", "Mole in the Market", "--offline"]) == 1  # links not checked -> not a pass
     out = capsys.readouterr().out
-    assert "abstract: 2 words (<= 150) OK" in out and "links: NOT RUN" in out
+    assert "abstract: 200 words (150 to 250) OK" in out and "links: NOT RUN" in out
     assert "page count: MANUAL" in out

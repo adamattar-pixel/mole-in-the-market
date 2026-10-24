@@ -18,7 +18,7 @@ Sources: docs/apart/Guidelines.md (copied before the sprint) and the live sprint
 
 | Rule | Live value | Repo state | Action |
 |---|---|---|---|
-| Abstract length | 150 to 250 words | tools/check_submission.py MAX_ABSTRACT_WORDS = 150, SPEC R19 "<= 150", locked test a0cd120 | Not changed (locked). check_submission prints FAIL above 150: check 150-250 by hand. Owner decides on a new, separate check |
+| Abstract length | 150 to 250 words | tools/check_submission.py MIN/MAX_ABSTRACT_WORDS = 150/250, SPEC R19 "150 to 250" (owner-approved test(fix) of a0cd120, docs/team-artem/OWNER_APPROVAL.md) | check_submission enforces 150 to 250 |
 | Page limit | max 8 pages, excluding references and appendices | check_submission: "page count: MANUAL" | Count on the compiled PDF |
 | Appendix title | exactly "Limitations and Dual-Use / Ethical Considerations" | APPENDIX_TITLE matches; a prefix like "Appendix A." is accepted | Keep the exact string |
 | Resubmission | same title does NOT replace the PDF (form details only) | Guidelines.md still says files are replaced | New PDF needs a slightly different title, or email sprints@apartresearch.com before the deadline. Get the PDF right the first time |

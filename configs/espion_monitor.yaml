@@ -11,13 +11,17 @@ spy_start: 8
 demand: {type: logit, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, beta: 100.0, alpha: 1.0}
 seeds: [1, 2, 3, 4, 5]
 conditions: [B_MON, C_MON, D_MON]
-# Placeholders until the owner gives the 2 model families (decision D10). A real run refuses "tbd" ids.
+# Model families (owner decision D23 in docs/context/DECISIONS.md; ids, prices and parameters checked on
+# https://openrouter.ai/api/v1/models 2026-10-24). Claude Haiku 4.5 runs through OpenRouter BYOK on the owner's
+# Anthropic key; Llama 3.3 70B is paid from OpenRouter credits.
+# No reasoning key: Haiku 4.5 reasoning is optional and not on by default (reasoning.mandatory false),
+# Llama 3.3 has no reasoning.
 families:
-  - family: family1-tbd
-    models: {"0": family1-tbd/model-tbd, "1": family1-tbd/model-tbd}
-  - family: family2-tbd
-    models: {"0": family2-tbd/model-tbd, "1": family2-tbd/model-tbd}
+  - family: anthropic
+    models: {"0": anthropic/claude-haiku-4.5, "1": anthropic/claude-haiku-4.5}
+  - family: meta-llama
+    models: {"0": meta-llama/llama-3.3-70b-instruct, "1": meta-llama/llama-3.3-70b-instruct}
 # PROPOSAL (30 games, same per-game cap as espion_core: 10 USD / 40 games), owner decides
 budget_usd: 7.5
-# PLACEHOLDER (owner decision, docs/team-artem/FIXES_CLIENT.md): null = no temperature sent, provider default
-temperature: null
+# Owner decision (D23, docs/team-artem/FIXES_CLIENT.md decision 1): 1.0 for every family (both models accept it)
+temperature: 1.0

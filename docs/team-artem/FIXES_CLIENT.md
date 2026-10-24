@@ -35,6 +35,10 @@ Missing response fields are logged as null, never guessed.
 2. **Reasoning per family.** Default is not sent (current behaviour). Recommendation: `reasoning: {effort: none}` on any family whose model reasons by default and allows `none` (for example `openai/gpt-6-luna`, `anthropic/claude-haiku-5.5`, see MODEL_AND_COST.md R1/R2). Leave it unset for models with no reasoning (`meta-llama/llama-3.3-70b-instruct`) or reasoning off by default (`openai/gpt-5.4`). Models with mandatory reasoning cannot use `none`; their lowest effort must be chosen explicitly. Check `reasoning_used` in the smoke logs.
 3. **Seeds are replicates.** Many providers ignore `seed` (Anthropic models do not support it). The report should say "replicates". `provider` is now logged, so routing differences are visible, but no provider is pinned (pinning is a separate decision, MODEL_AND_COST.md section on Llama).
 
-## BYOK cost caveat (from MODEL_AND_COST.md, R3 Option A)
+## Under-reported cost (R17 guard)
 
-If the Anthropic key is used through OpenRouter BYOK, `usage.cost` may show only OpenRouter's BYOK fee, not the Anthropic charge. The R17 `BudgetTracker` would then undercount Anthropic spend. The raw `usage` object is now logged per call, so the smoke run shows what OpenRouter reports under BYOK. Until checked, the owner should set a spend limit in the Anthropic console as the real guard.
+`usage.cost` can be lower than the real charge (OpenRouter docs: under BYOK it is only OpenRouter's fee). Each
+real call is therefore charged max(usage.cost, prompt_tokens x input + completion_tokens x output price), with
+the per-model prices of `configs/prices.yaml`; both values, the charge and its source are logged in
+`provenance` (`cost_reported`, `cost_computed`, `cost_charged`, `cost_source`). A model without a price is
+refused. Tests: `tests/test_artem_byok_cost.py`. The project does not use BYOK (owner decision, 2026-10-24).

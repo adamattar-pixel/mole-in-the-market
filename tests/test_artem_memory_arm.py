@@ -16,6 +16,7 @@ from harness.clients import BudgetTracker, MockClient
 from harness.dryclient import make_dry_client
 from harness.runner import RealRunRefused, expand_games, run_game, validate_config
 from helpers3 import cfg, full_log, write_logs
+from helpers_placeholder import placeholder_copy
 from tools import reproduce as reproduce_tool
 from tools import run as run_tool
 
@@ -190,8 +191,9 @@ def test_memory_exploratory_real_config_refused_while_models_are_placeholders(tm
         raise AssertionError("network used")
     monkeypatch.setattr(socket, "socket", no_net)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    with pytest.raises(RealRunRefused):
-        run_tool.main([str(EXPL / "espion_mem.yaml"), "--out-dir", str(tmp_path / "out")])
+    copy = placeholder_copy(EXPL / "espion_mem.yaml", tmp_path / "cfg")
+    with pytest.raises(RealRunRefused, match="tbd"):
+        run_tool.main([str(copy), "--out-dir", str(tmp_path / "out")])
 
 
 def test_memory_exploratory_dry_config_runs_and_tags_logs(tmp_path, monkeypatch):

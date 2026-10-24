@@ -1,7 +1,7 @@
 """R19: submission checks on the report source (Markdown or LaTeX). Page count is MANUAL.
 
 Usage: python -m tools.check_submission report/report.md --title "Exact title" [--offline]
-Checks: abstract <= 150 words, appendix titled exactly "Limitations and Dual-Use / Ethical Considerations",
+Checks: abstract 150 to 250 words (live sprint page, 2026-10-24), appendix titled exactly "Limitations and Dual-Use / Ethical Considerations",
 authors listed, title equal to the expected one, web links resolve, relative repo links exist.
 A check that was not run (for example links with --offline) is never reported as a pass.
 """
@@ -11,7 +11,8 @@ import urllib.request
 from pathlib import Path
 
 APPENDIX_TITLE = "Limitations and Dual-Use / Ethical Considerations"
-MAX_ABSTRACT_WORDS = 150
+MIN_ABSTRACT_WORDS = 150
+MAX_ABSTRACT_WORDS = 250
 
 _WORD = re.compile(r"[A-Za-z0-9]+(?:[-'.\u2019][A-Za-z0-9]+)*")
 _URL = re.compile(r"https?://[^\s<>()\[\]\"']+")
@@ -104,7 +105,7 @@ def check_text(text, expected_title=None, fetch=None, repo_root=None):
     title = _title(text)
     r = {
         "abstract_words": n_words,
-        "abstract_ok": n_words is not None and n_words <= MAX_ABSTRACT_WORDS,
+        "abstract_ok": n_words is not None and MIN_ABSTRACT_WORDS <= n_words <= MAX_ABSTRACT_WORDS,
         "appendix_ok": any(h.strip().endswith(APPENDIX_TITLE) for h in _headings(text)),
         "authors": authors,
         "authors_ok": bool(authors),
@@ -154,7 +155,7 @@ def main(argv=None):
     text = Path(a.report).read_text(encoding="utf-8")
     r = check_text(text, expected_title=a.title, fetch=None if a.offline else _http_status, repo_root=a.repo_root)
     words = "missing" if r["abstract_words"] is None else f"{r['abstract_words']} words"
-    print(f"abstract: {words} (<= {MAX_ABSTRACT_WORDS}) {_mark(r['abstract_ok'])}")
+    print(f"abstract: {words} ({MIN_ABSTRACT_WORDS} to {MAX_ABSTRACT_WORDS}) {_mark(r['abstract_ok'])}")
     print(f"appendix '{APPENDIX_TITLE}': {_mark(r['appendix_ok'])}")
     print(f"authors: {', '.join(r['authors']) or 'none'} {_mark(r['authors_ok'])}")
     print(f"title: {r['title']!r} {_mark(r['title_ok'])}")

@@ -90,7 +90,8 @@ def validate_config(cfg):
         if set(models) != set(FIRMS):
             raise ValueError(f"family {fam['family']}: need one model per firm {FIRMS}")
         families = {model_family(m) for m in models.values()}
-        if families != {fam["family"]}:
+        # A fallback family may be labelled "<provider>-fb", so its logs never pool with the primary's.
+        if len(families) != 1 or fam["family"] not in {p + s for p in families for s in ("", "-fb")}:
             raise ValueError(f"family {fam['family']!r} mixes or mislabels model families: {sorted(families)}")
     _check_temperature(cfg.get("temperature"))
     _check_reasoning(cfg.get("reasoning"))

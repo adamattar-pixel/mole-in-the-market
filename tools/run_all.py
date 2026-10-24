@@ -10,7 +10,8 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
   the logs; each step config keeps its own cap (R17).
 - Resumable: games already logged are skipped (write-once logs, R12).
 - Real mode refuses unless PREREGISTRATION.md and PREREGISTRATION_ADDENDUM.md are FROZEN, no model id is
-  `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here).
+  `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here;
+  the repo-root .env is loaded at startup, harness/envfile.py, without overriding the shell).
 - Each step keeps its own family entries (a failing family is swapped for its fallback). One game design and
   matched seeds everywhere; temperature and reasoning must match between pooled or matched steps (pilot and
   core; core, monitor and ethics) unless --allow-settings-mismatch.
@@ -32,11 +33,12 @@ from pathlib import Path
 
 import yaml
 
-from harness.clients import BudgetExceeded, BudgetTracker, MockClient, OpenRouterClient
+from harness.clients import BudgetExceeded, BudgetTracker, MockClient, OpenRouterClient, load_prices
 from harness.conditions import load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import addendum_is_frozen
 from harness.dryclient import make_dry_client
+from harness.envfile import load_env
 from harness.runlog import load_logs
 from harness.runner import RealRunRefused, family_reasoning, run_batch, validate_config
 from harness.validation import e_validation
@@ -147,16 +149,26 @@ def swap_families(families, swap):
     return [copy.deepcopy(swap.get(f["family"], f)) for f in families]
 
 
-def check_settings(st, o1, allow_mismatch=False):
-    """Guards that need no file other than the configs: families, fallback, config validity, tbd ids, settings."""
-    primary = st["steps"]["pilot"]["families"]
+def _all_configs(st, o1):
+    """Every config the pipeline may run: the steps, the fallback pilot, O1."""
     cfgs = list(st["steps"].values())
     if st["fallback"]:
         cfgs.append(_derived(st, FALLBACK_PILOT, list(st["fallback"].values())))
     if o1:
         cfgs.append(_derived(st, O1_NAME, st["steps"]["core"]["families"], seeds=st["o1_seeds"],
                              budget_usd=st["o1_budget_usd"]))
-    ids = [m for c in cfgs for f in c["families"] for m in f["models"].values()]
+    return cfgs
+
+
+def _model_ids(cfgs):
+    return [m for c in cfgs for f in c["families"] for m in f["models"].values()]
+
+
+def check_settings(st, o1, allow_mismatch=False):
+    """Guards that need no file other than the configs: families, fallback, config validity, tbd ids, settings."""
+    primary = st["steps"]["pilot"]["families"]
+    cfgs = _all_configs(st, o1)
+    ids = _model_ids(cfgs)
     if any("tbd" in str(m).lower() for m in ids):
         raise RunAllRefused("model ids are placeholders (tbd) in a step config or in the run_all.yaml fallback: "
                             "the owner has not given the models")
@@ -218,24 +230,41 @@ def dry_client(cfg, e_instruction, gate="pass"):
     return MockClient(reply, cost_per_call=base.cost_per_call)
 
 
+class _RealFactory:
+    """One OpenRouter client for every step, charging max(usage.cost, tokens x configs/prices.yaml) (BYOK)."""
+
+    def __init__(self):
+        self.client = OpenRouterClient(prices=load_prices())
+
+    def __call__(self, cfg):
+        return self.client
+
+    def check_models(self, ids):
+        missing = sorted(set(ids) - set(self.client.prices))
+        if missing:
+            raise RunAllRefused(f"no price in configs/prices.yaml for {missing}: under BYOK the budget caps "
+                                "need a price for every model (R17)")
+
+
 def default_client_factory(dry, gate):
     if dry:
         e_text = load_prereg_texts()["e_instruction"]
         return lambda cfg: dry_client(cfg, e_text, gate)
     if not os.environ.get("OPENROUTER_API_KEY"):
-        raise RunAllRefused("OPENROUTER_API_KEY is not set in this shell (export it, never write it in a file)")
-    client = OpenRouterClient()
-    return lambda cfg: client
+        raise RunAllRefused("OPENROUTER_API_KEY is not set (put it in the repo-root .env, see .env.example, or export it)")
+    return _RealFactory()
 
 
 def smoke_report(logs):
-    """Per family: games, mean cost per game, invalid reply rates, served models, providers, reasoning tokens."""
+    """Per family: games, mean cost per game, invalid reply rates, served models, providers, reasoning tokens,
+    summed upstream_inference_cost (None when no call reported it)."""
     out = {}
     for fam in sorted({g["family"] for g in logs}):
         gl = [g for g in logs if g["family"] == fam]
         replies = sum(2 * g["n_rounds"] for g in gl)
         prov = [f["provenance"] for g in gl for r in g["rounds"] for f in r["firms"].values() if f.get("provenance")]
         known = [g["reasoning_tokens"] for g in gl if g.get("reasoning_tokens") is not None]
+        upstream = [p["upstream_inference_cost"] for p in prov if p.get("upstream_inference_cost") is not None]
         out[fam] = {
             "games": len(gl), "mean_cost_usd": sum(g["cost_usd"] for g in gl) / len(gl),
             "invalid_price_rate": sum(g["invalid_prices"] for g in gl) / replies,
@@ -243,6 +272,7 @@ def smoke_report(logs):
             "served_models": sorted({p["served_model"] for p in prov if p.get("served_model")}),
             "providers": sorted({p["provider"] for p in prov if p.get("provider")}),
             "reasoning_tokens": sum(known) if known else None,
+            "upstream_inference_cost_usd": sum(upstream) if upstream else None,
         }
     return out
 
@@ -276,6 +306,8 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
         check_settings(st, o1, allow_settings_mismatch)
     if client_factory is None:
         client_factory = default_client_factory(dry, dry_gate)
+    if not dry and hasattr(client_factory, "check_models"):
+        client_factory.check_models(_model_ids(_all_configs(st, o1)))
 
     runs, mem_dir = root / "runs", root / "runs_exploratory" / "memory"
     tracker = BudgetTracker(st["budget_usd"])
@@ -309,7 +341,8 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
             log(f"[smoke] {fam}: {r['games']} games, cost per game {r['mean_cost_usd']:.6f} USD, invalid prices "
                 f"{r['invalid_price_rate']:.3f}, invalid responses {r['invalid_response_rate']:.3f}, served "
                 f"{r['served_models'] or 'n/a'}, providers {r['providers'] or 'n/a'}, "
-                f"reasoning tokens {r['reasoning_tokens']}")
+                f"reasoning tokens {r['reasoning_tokens']}, upstream inference cost (BYOK) "
+                f"{r['upstream_inference_cost_usd']}")
         if done("smoke"):
             return res
         run_cfg("pilot", steps["pilot"])
@@ -427,6 +460,7 @@ EXIT = {"done": 0, "stopped": 0, "plan_b": 2, "budget_stop": 3}
 
 
 def main(argv=None):
+    load_env()  # repo-root .env, if any; never overrides the shell, never printed
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry", action="store_true", help="mock client into a scratch folder (never runs/)")
     ap.add_argument("--root", default=None, help=f"base folder (default: the repo root real, {DEFAULT_DRY_ROOT} dry)")

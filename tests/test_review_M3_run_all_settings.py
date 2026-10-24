@@ -54,7 +54,9 @@ def test_M3_override_keeps_each_step_own_family_settings(tmp_path):
     def core(cfg):
         fam_reasoning(cfg)
         cfg["temperature"] = 0.7
-    res, _ = run(tmp_path, FakeReal(), cfgdir=write_cfgdir(tmp_path, edit={"espion_core": core}),
+    def pilot(cfg):
+        cfg["temperature"] = None  # pinned in the copy: the repo pilot value is the owner's choice
+    res, _ = run(tmp_path, FakeReal(), cfgdir=write_cfgdir(tmp_path, edit={"espion_core": core, "espion_pilot": pilot}),
                  stop_after="core", allow_settings_mismatch=True)
     assert res["status"] == "stopped"
     bc = by_config(tmp_path / "root")

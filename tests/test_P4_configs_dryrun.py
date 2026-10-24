@@ -16,6 +16,7 @@ from harness.costs import cost_summary
 from harness.dryclient import make_dry_client
 from harness.runner import RealRunRefused, expand_games, run_batch, validate_config
 from helpers3 import full_log
+from helpers_placeholder import placeholder_copy
 from tools import run as run_tool
 from tools import validate_e
 
@@ -107,8 +108,9 @@ def test_R16_P4_config_rejects_mock_writing_to_runs_and_real_writing_elsewhere()
 def test_H2_P4_real_config_refused_while_models_are_placeholders(name, tmp_path, monkeypatch):
     block_network(monkeypatch)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    with pytest.raises(RealRunRefused):
-        run_tool.main([str(CONFIGS / f"{name}.yaml"), "--out-dir", str(tmp_path / "runs")])
+    copy = placeholder_copy(CONFIGS / f"{name}.yaml", tmp_path / "cfg")
+    with pytest.raises(RealRunRefused, match="tbd"):
+        run_tool.main([str(copy), "--out-dir", str(tmp_path / "runs")])
     assert not (tmp_path / "runs").exists() or list((tmp_path / "runs").iterdir()) == []
 
 

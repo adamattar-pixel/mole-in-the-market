@@ -274,9 +274,10 @@ def test_dry_config_logs_gain_no_new_key(tmp_path):
 
 
 @pytest.mark.parametrize("name", ["espion_smoke", "espion_pilot", "espion_core", "exploratory/espion_mem"])
-def test_real_configs_declare_temperature_placeholder(name):
-    text = (ROOT / "configs" / f"{name}.yaml").read_text(encoding="utf-8")
-    c = yaml.safe_load(text)
-    assert "temperature" in c and c["temperature"] is None  # placeholder: owner decision pending
-    assert "PLACEHOLDER" in text
+def test_real_configs_declare_temperature(name):
+    c = yaml.safe_load((ROOT / "configs" / f"{name}.yaml").read_text(encoding="utf-8"))
+    # declared explicitly: null (provider default, not sent) or the owner's value in [0, 2]
+    assert "temperature" in c
+    t = c["temperature"]
+    assert t is None or (isinstance(t, (int, float)) and not isinstance(t, bool) and 0 <= t <= 2)
     validate_config(c)

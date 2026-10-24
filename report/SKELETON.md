@@ -20,7 +20,7 @@ Rules for using this file
 ## Abstract (150 to 250 words, live rule 2026-10-24)
 
 - 4 parts: problem, method, result, implication (NOVELTY_AND_JUDGES.md §b.3).
-- CONFLICT: `tools/check_submission.py` (MAX_ABSTRACT_WORDS = 150) and SPEC R19 still enforce <= 150; locked test `tests/test_R19_check_submission.py` (a0cd120) pins 150. Not changed here. Any abstract over 150 words will show `abstract: ... FAIL` from check_submission: expected, check 150 to 250 by hand. Owner decision whether to add a new (non-locked) check.
+- `tools/check_submission.py` and SPEC R19 enforce 150 to 250 words (owner-approved test(fix) of a0cd120, docs/team-artem/OWNER_APPROVAL.md).
 - Numbers in the abstract: [RESULT: results/tables.md, family rows, columns Say and Do for Direct offer] and [RESULT: tools.validate_e stdout, PASS/FAIL per family].
 
 ---
