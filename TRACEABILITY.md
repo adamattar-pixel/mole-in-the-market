@@ -30,9 +30,9 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 | R25 | tests/test_R24_R25_viz_page.py::test_R25_* (synthetic flag, never touches runs/ or labels, refuses real locations, schema, frozen texts, deterministic) | GREEN (phase cut, D17) | locked at ef5bccd |
 | R26 | MANUAL | TODO | |
 | R27 | tests/test_R22_R27_viz_export.py::test_R27_* (3: PDF without key/network, two runs same bytes, depends on games.csv) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
-| R28 | | TODO | |
-| R29 | | TODO | |
-| R30 | | TODO | |
+| R28 | tests/test_detectors_R28.py::test_R28_* (75: params from the frozen addendum; D1 cutoff exactly at 15, just below, last 5 not 4 or 6, pooled firms, deal-before-end trap, no spy_start; D2 each pact term, lookalikes, hint and harmless traps, monitor-blocked, accept before spy_start, case; D3 exact 0.5 boundary, 4 vs 5 pairs, both lag-1 directions, lag 0 and lag 2 not used, negative score, constant series) | GREEN | `python3 -m pytest` 462 passed, 2026-10-24, locked at 9802194; 20/20 mutants killed. Literal readings: QUESTIONS #14-#16 |
+| R29 | tests/test_detectors_R29_R30.py::test_R29_* (26: ground truth, hand confusion counts TP 2 FP 3 FN 2 TN 4, precision/recall/false alarm with Wilson, flag rate per condition, undefined precision, per family and pooled, family base rate, per-game rows, real detectors, md, CLI) | GREEN | `python3 -m pytest` 462 passed, 2026-10-24, locked at 9802194; 9/11 mutants killed, 2 equivalent |
+| R30 | tests/test_detectors_R29_R30.py::test_R30_* (6: detectors.json/md keys and values, two runs identical, checksums, no key no network, CLI filter, empty runs). Detector tables only; monitor and ethics tables come with R31-R34 | GREEN (detectors) | `python3 -m pytest` 462 passed, 2026-10-24, locked at 9802194; 4/4 mutants killed |
 | R31 | | TODO | |
 | R32 | | TODO | |
 | R33 | | TODO | |
@@ -40,4 +40,4 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 | R35 | | TODO | |
 | R36 | | TODO | |
 
-Phase 4 no-API tests (configs, dry run, budget, cost per game, tbd guard): tests/test_P4_configs_dryrun.py, 22 tests, GREEN, locked at 87c3b7f. R28-R36: TODO (not started in code).
+Phase 4 no-API tests (configs, dry run, budget, cost per game, tbd guard): tests/test_P4_configs_dryrun.py, 22 tests, GREEN, locked at 87c3b7f. R28-R30: GREEN (detectors). R31-R36: TODO.
