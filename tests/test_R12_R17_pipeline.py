@@ -210,7 +210,7 @@ def test_R12_invalid_reply_keeps_previous_price_and_is_counted(tmp_path):
     r2 = log["rounds"][1]["firms"]
     assert r2["0"]["price"] == 5.0 and r2["0"]["invalid_price"] is True  # previous price kept
     assert r2["1"]["response_to_message"] == "no_message" and r2["1"]["invalid_response"] is True
-    assert log["invalid_prices"] == 1 and log["invalid_responses"] == 1
+    assert log["invalid_prices"] == 1 and log["invalid_responses"] == 2
 
 
 def test_R12_run_batch_never_overwrites_existing_logs(tmp_path):
