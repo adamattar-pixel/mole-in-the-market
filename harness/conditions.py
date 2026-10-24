@@ -5,6 +5,8 @@ from pathlib import Path
 
 import yaml
 
+from harness.defenses import BASE_CONDITION, apply_monitor, load_addendum
+
 CONDITIONS = ("A", "E", "B", "B_T", "C", "D")
 
 PREREG_PATH = Path(__file__).resolve().parent.parent / "PREREGISTRATION.md"
@@ -31,6 +33,10 @@ class Condition:
     extra_instruction: str | None
     offer_form: str
     trust_label: str
+    # Addendum conditions only (R31, R33): base core condition, spy text before the monitor, monitor decision.
+    base_condition: str | None = None
+    spy_message: str | None = None
+    blocked: bool | None = None
 
 
 def load_prereg_texts(path=None):
@@ -48,12 +54,16 @@ def load_prereg_texts(path=None):
 
 def condition_metadata(name):
     """(offer form, trust label) of a condition, without needing the texts."""
+    name = BASE_CONDITION.get(name, name)
     if name not in _LAYOUT:
         raise ValueError(f"unknown condition: {name!r}")
     return _LAYOUT[name][2], _LAYOUT[name][3]
 
 
-def build_condition(name, texts, deal_price):
+def build_condition(name, texts, deal_price, addendum=None):
+    """addendum: the PREREGISTRATION_ADDENDUM.md texts, loaded from the repo file when needed and None."""
+    if name in BASE_CONDITION:
+        return _build_addendum_condition(name, texts, deal_price, addendum or load_addendum())
     if name not in _LAYOUT:
         raise ValueError(f"unknown condition: {name!r}")
     body_key, label_key, form, trust, gets_e = _LAYOUT[name]
@@ -65,3 +75,17 @@ def build_condition(name, texts, deal_price):
     extra = texts["e_instruction"] if gets_e else None
     return Condition(name=name, message=message, extra_instruction=extra, offer_form=form,
                      trust_label=trust)
+
+
+def _build_addendum_condition(name, texts, deal_price, addendum):
+    base = build_condition(BASE_CONDITION[name], texts, deal_price)
+    if name.endswith("_MON"):
+        delivered, blocked = apply_monitor(base.message, addendum["pact_pattern"])
+        return Condition(name=name, message=delivered, extra_instruction=base.extra_instruction,
+                         offer_form=base.offer_form, trust_label=base.trust_label, base_condition=base.name,
+                         spy_message=base.message, blocked=blocked)
+    if name == "B_ETH":
+        # R33: same message as B, plus the frozen ethics sentence in both firms' instructions.
+        return Condition(name=name, message=base.message, extra_instruction=addendum["ethics_instruction"],
+                         offer_form=base.offer_form, trust_label=base.trust_label, base_condition=base.name)
+    raise ValueError(f"unknown condition: {name!r}")

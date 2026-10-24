@@ -7,6 +7,7 @@ from harness.agent import build_messages, parse_reply
 from harness.clients import BudgetTracker
 from harness.conditions import CONDITIONS, build_condition, load_prereg_texts
 from harness.config import GameConfig
+from harness.defenses import ADDENDUM_CONDITIONS, addendum_is_frozen, load_addendum
 from harness.runlog import config_hash, current_git_commit, write_game_log
 from harness.spy import ScriptedSpy
 
@@ -74,7 +75,7 @@ def validate_config(cfg):
     GameConfig.from_dict(cfg)
     if not isinstance(cfg["mock"], bool):
         raise ValueError("mock must be true or false")
-    bad = [c for c in cfg["conditions"] if c not in CONDITIONS]
+    bad = [c for c in cfg["conditions"] if c not in CONDITIONS + ADDENDUM_CONDITIONS]
     if bad or not cfg["conditions"]:
         raise ValueError(f"unknown or empty conditions: {bad}")
     if not cfg["seeds"] or not all(isinstance(s, int) for s in cfg["seeds"]):
@@ -118,10 +119,12 @@ def expand_games(cfg):
     return games
 
 
-def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
+def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", addendum=None):
     gc = GameConfig.from_dict(cfg)
     demand = gc.demand()
-    cond = build_condition(spec.condition, texts, gc.deal_price)
+    if addendum is None and spec.condition in ADDENDUM_CONDITIONS:
+        addendum = load_addendum()
+    cond = build_condition(spec.condition, texts, gc.deal_price, addendum)
     spy = ScriptedSpy(cond.message, gc.spy_start, firm_ids=FIRMS)
     history = {f: [] for f in FIRMS}
     memory = bool(cfg.get("memory", False))  # EXPLORATORY arm, off in every frozen config
@@ -178,6 +181,13 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
     }
     if memory:
         log["memory"] = True
+    if cond.base_condition is not None:
+        log["base_condition"] = cond.base_condition
+        log["addendum_status"] = addendum.get("status")
+    if cond.blocked is not None:
+        # R31: the monitor read the spy message at spy_start; when blocked, the firms got no message.
+        log["monitor"] = {"round": gc.spy_start, "blocked": cond.blocked, "spy_message": cond.spy_message,
+                          "rule": "pact_pattern"}
     # New keys only when set, so dry logs stay byte-identical; a real game always records its temperature.
     if "temperature" in cfg or not cfg["mock"]:
         log["temperature"] = temperature
@@ -191,7 +201,7 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
     return log
 
 
-def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None):
+def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None, addendum_path=None):
     """Run every game of the config. Existing logs are skipped (never overwritten)."""
     validate_config(cfg)
     if cfg["mock"] and not getattr(client, "is_mock", False):
@@ -203,6 +213,11 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
         raise RealRunRefused("real run refused: preregistration texts are not FROZEN")
     if not cfg["mock"] and any("tbd" in m.lower() for fam in cfg["families"] for m in fam["models"].values()):
         raise RealRunRefused("real run refused: model ids are placeholders (tbd), the owner has not given the models")
+    addendum = None
+    if any(c in ADDENDUM_CONDITIONS for c in cfg["conditions"]):
+        if not cfg["mock"] and not addendum_is_frozen(addendum_path):
+            raise RealRunRefused("real run refused: PREREGISTRATION_ADDENDUM.md status is not FROZEN (R35)")
+        addendum = load_addendum(addendum_path)
     git_commit = git_commit or current_git_commit()
     budget = BudgetTracker(cfg["budget_usd"])
     runs_dir = Path(runs_dir)
@@ -210,5 +225,5 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
     for spec in expand_games(cfg):
         if (runs_dir / f"{spec.game_id}.json").exists():
             continue
-        done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit))
+        done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit, addendum=addendum))
     return done

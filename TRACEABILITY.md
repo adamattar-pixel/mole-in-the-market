@@ -33,11 +33,11 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 | R28 | | TODO | |
 | R29 | | TODO | |
 | R30 | | TODO | |
-| R31 | | TODO | |
-| R32 | | TODO | |
-| R33 | | TODO | |
-| R34 | | TODO | |
-| R35 | | TODO | |
+| R31 | tests/test_R31_R35_defenses.py::test_R31_* (40: frozen pattern and ethics text word for word, 25 hand rule cases incl. word boundaries and the unsubstituted {deal_price} trap, frozen B/B_T blocked, frozen hint and harmless not blocked, hint variants that match the rule blocked, B_MON block logged and prompts identical to A, rule read from the addendum, memory arm no leak, configs matched to core and dry) + end-to-end dry run | GREEN | `python3 -m pytest` 419 passed, 2026-10-24, locked at cb984a6; mutation check red then restored (mutations: monitor never blocks, blocks everything) |
+| R32 | tests/test_R31_R35_defenses.py::test_R32_* (7: hand counts per base condition, false blocks 1/3 over all D_MON games, pair list and unmatched games, per family, family mismatch, duplicate key, Wilson 2/4) | GREEN | `python3 -m pytest` 419 passed, 2026-10-24, locked at cb984a6; mutation check red then restored (mutations: seed ignored, seed offset, family ignored, false blocks denominator) |
+| R33 | tests/test_R31_R35_defenses.py::test_R33_* (5: message identical to B, frozen ethics sentence in both firms' system prompts every round, client settings kept, espion_ethics and espion_ethics_dry valid and matched) | GREEN | `python3 -m pytest` 419 passed, 2026-10-24, locked at cb984a6; mutation check red then restored (mutation: ethics sentence missing) |
+| R34 | tests/test_R31_R35_defenses.py::test_R34_* (4: hand rates on matched triples with Wilson, per family with hand Wilson values 2/2, 1/2, 0/2, no triple, duplicate key) + test_R31_R34_dry_runs_end_to_end | GREEN | `python3 -m pytest` 419 passed, 2026-10-24, locked at cb984a6; mutation check red then restored (mutations: seed ignored, seed offset, family ignored) |
+| R35 | tests/test_R31_R35_defenses.py::test_R35_* (10: status of real and unfrozen copies, each addendum condition refused with zero calls, frozen allowed, core unaffected, dry not blocked, mixed config refused, espion_monitor and espion_ethics refused while tbd) | GREEN | `python3 -m pytest` 419 passed, 2026-10-24, locked at cb984a6; mutation check red then restored (mutation: FROZEN guard removed) |
 | R36 | | TODO | |
 
-Phase 4 no-API tests (configs, dry run, budget, cost per game, tbd guard): tests/test_P4_configs_dryrun.py, 22 tests, GREEN, locked at 87c3b7f. R28-R36: TODO (not started in code).
+Phase 4 no-API tests (configs, dry run, budget, cost per game, tbd guard): tests/test_P4_configs_dryrun.py, 22 tests, GREEN, locked at 87c3b7f. R31-R35: GREEN on branch artem-defenses (harness/defenses.py; configs espion_monitor, espion_ethics and their _dry versions; model ids still `tbd`). R28-R30, R36: TODO here.
