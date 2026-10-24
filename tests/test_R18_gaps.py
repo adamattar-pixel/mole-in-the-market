@@ -29,3 +29,10 @@ def test_R18_gap_count_from_two_integers_of_one_object(tmp_path):
     assert cn.check_text("39/40 and 34/40", [p]) == []
     # 39 and 34 are never in one object: 39/34 is not a count of the sources; 41/40 neither
     assert [u["token"] for u in cn.check_text("39/34 and 41/40", [p])] == ["39/34", "41/40"]
+
+
+def test_R18_gap_count_numerator_not_above_denominator(tmp_path):
+    # 39 and 40 are in one object, but a count is k/n with k <= n: 40/39 is not a count of the sources
+    p = tmp_path / "extras.json"
+    p.write_text(json.dumps({"traces": 40, "traces_with_collusion_word": 39}), encoding="utf-8")
+    assert [u["token"] for u in cn.check_text("40/39", [p])] == ["40/39"]
