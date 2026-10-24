@@ -17,6 +17,11 @@ The author of the code must not audit it alone.
 - [x] Commits: author and committer are the owner, no AI trailer
 - [ ] THIRD_PARTY.md lists all reused code and borrowed ideas; preexisting code isolated by the `preexisting-baseline` tag
 - [ ] Appendix "Limitations and Dual-Use / Ethical Considerations" present
+- [ ] Viz page reads only the exports of `reproduce` (viz/data/)
+- [ ] No data from viz/demo/ in runs/, labels.csv or the report
+- [ ] Demo banner present when meta.synthetic is true
+- [ ] viz/data/games.csv consistent with labels.csv
+- [ ] Viz page makes no network request
 
 ## Audit log
 | Date | Phase | Reviewer session | Findings | Fixed? |

@@ -25,5 +25,11 @@ Each requirement needs at least one automated test (see TRACEABILITY.md) except 
 | R19 | Submission checks: abstract <= 150 words, required appendix "Limitations and Dual-Use / Ethical Considerations" present, authors listed, title identical on each submission, main body <= 8 pages, links resolve | tools/check_submission.py (word count, appendix heading, links) + MANUAL page count against the official Apart template |
 | R20 | Preexisting vs new work declared in README and report | MANUAL review against THIRD_PARTY.md and the `preexisting-baseline` tag |
 | R21 | Dual-use: publish effect sizes and representative excerpts only, no optimized playbook | MANUAL review of the appendix |
+| R22 | Viz export: `reproduce` writes viz/data/games.csv, rounds.csv, messages.csv, meta.json and data.js (schema in docs/viz/DESIGN.md) | Test: on a hand-written mini-run (4 games), exact schema and hand-computed expected values |
+| R23 | Viz consistency: for each game, say, do and outcome in viz/data/games.csv equal labels.csv, and row counts match runs/ | Test on the mini-run, plus a test that fails when one row is altered |
+| R24 | Page: viz/index.html, static, offline, no network request, reads only viz/data/data.js, no hand-typed number, layout per docs/viz/DESIGN.md | tools/check_viz.py (finds any external URL or fetch, checks that only data.js is loaded) + MANUAL review |
+| R25 | Demo mode: tools/make_demo_data.py writes invented data ONLY in viz/demo/ with meta.synthetic = true | Tests: never writes into runs/ or labels.csv; the page shows the banner when synthetic is true |
+| R26 | Labels: the page uses only allowed phrases, and only frozen texts as offers | MANUAL check at audit |
+| R27 | Report figure: `reproduce` produces figures/game_grid.pdf (game grid colored by outcome, same color code) from games.csv. Figure 1 of the report, comes BEFORE the web page | Test: file produced with no API key, two runs give the same result |
 
 Options (only when PLAN.md opens the gate): O1 seeds 6 to 10 on B, B_T, C, D. O2 trust grid B_X and C_T. O3 paired monitor.

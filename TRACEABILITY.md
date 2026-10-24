@@ -24,3 +24,9 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 | R19 | tools/check_submission.py | TODO | |
 | R20 | MANUAL | TODO | |
 | R21 | MANUAL | TODO | |
+| R22 | | TODO | |
+| R23 | | TODO | |
+| R24 | tools/check_viz.py + MANUAL | TODO | |
+| R25 | | TODO | |
+| R26 | MANUAL | TODO | |
+| R27 | | TODO | |
