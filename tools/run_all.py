@@ -1,7 +1,11 @@
 """R36: one command for the whole pipeline (SPEC.md R36, ops/DECISIONS.md D20, RUNBOOK_REAL_RUNS.md).
 
 Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline scoring
-       [-> --exploratory: memory arm, sensitivity, monitor_view, price_paths] [-> --o1: seeds 6-10, last].
+       [-> --exploratory: memory arm, sensitivity, monitor_view, price_paths] [-> --think: THINK arm]
+       [-> --o1: seeds 6-10, last].
+- --think (EXPLORATORY, off by default, docs/team-artem/THINK_ARM.md): configs/exploratory/espion_think.yaml, a
+  third family with logged reasoning traces, into runs_exploratory/think; tables in results_exploratory/think/
+  tables and tools/think_view outputs in results_exploratory/think. Never pooled with the frozen games.
 - E gate (ops/PLAN.md Phase 4): per family, on the pilot games only. A failing family is replaced ONCE by its
   fallback (configs/run_all.yaml), whose pilot runs as espion_pilot_fb; if a fallback fails too, or no
   fallback is set, the pipeline stops and prints plan B. The decision is recomputed from the logs on every
@@ -20,9 +24,9 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
   --dry-gate fail drops that to exercise the fallback and plan B path. Dry numbers are never results.
 
 Usage:
-  python -m tools.run_all --dry [--root dry_runs/run_all] [--exploratory] [--o1] [--dry-gate fail]
-  python -m tools.run_all [--stop-after smoke|pilot|gate|core|monitor|ethics|scoring|exploratory]
-                          [--exploratory] [--o1] [--allow-settings-mismatch]
+  python -m tools.run_all --dry [--root dry_runs/run_all] [--exploratory] [--think] [--o1] [--dry-gate fail]
+  python -m tools.run_all [--stop-after smoke|pilot|gate|core|monitor|ethics|scoring|exploratory|think]
+                          [--exploratory] [--think] [--o1] [--allow-settings-mismatch]
 Exit code: 0 done or stopped as asked, 1 refused, 2 plan B, 3 budget cap hit.
 """
 import argparse
@@ -42,19 +46,20 @@ from harness.envfile import load_env
 from harness.runlog import load_logs
 from harness.runner import RealRunRefused, family_provider, family_reasoning, run_batch, validate_config
 from harness.validation import e_validation
-from tools import monitor_view, price_paths, sensitivity
+from tools import monitor_view, price_paths, sensitivity, think_view
 from tools.reproduce import PREREG_CONFIGS, config_name, filter_logs, reproduce
 
 ROOT = Path(__file__).resolve().parent.parent
 CONFIGS = ROOT / "configs"
 STEP_FILES = {"smoke": "espion_smoke", "pilot": "espion_pilot", "core": "espion_core",
               "monitor": "espion_monitor", "ethics": "espion_ethics", "exploratory": "exploratory/espion_mem"}
-STOP_AFTER = ("smoke", "pilot", "gate", "core", "monitor", "ethics", "scoring", "exploratory")
+STOP_AFTER = ("smoke", "pilot", "gate", "core", "monitor", "ethics", "scoring", "exploratory", "think")
 FALLBACK_PILOT = "espion_pilot_fb"
 O1_NAME = "espion_o1"
 MEMORY_CONFIG = "espion_mem"
+THINK_FILE, THINK_CONFIG = "exploratory/espion_think", "espion_think"
 MANAGED = {"espion_smoke", "espion_pilot", FALLBACK_PILOT, "espion_core", "espion_monitor", "espion_ethics",
-           MEMORY_CONFIG, O1_NAME}
+           MEMORY_CONFIG, THINK_CONFIG, O1_NAME}
 DRY_COST_PER_CALL = 0.0001
 DEFAULT_DRY_ROOT = "dry_runs/run_all"
 PLAN_B = ("E gate FAILED after the one allowed model change: stop here, no core run. "
@@ -94,11 +99,13 @@ def _canon(families):
     return json.dumps([{"family": f["family"], "models": f["models"]} for f in families], sort_keys=True)
 
 
-def load_settings(configs_dir, exploratory):
+def load_settings(configs_dir, exploratory, think=False):
     d = Path(configs_dir)
     steps = {k: _read(d / f"{v}.yaml") for k, v in STEP_FILES.items() if k != "exploratory" or exploratory}
     ra = _read(d / "run_all.yaml")
-    return {"steps": steps, "budget_usd": float(ra["budget_usd"]), "fallback": dict(ra.get("fallback") or {}),
+    # The THINK arm is its own family: kept out of "steps", whose families must match (matched episodes).
+    extra = {"think": _read(d / f"{THINK_FILE}.yaml")} if think else {}
+    return {**extra, "steps": steps, "budget_usd": float(ra["budget_usd"]), "fallback": dict(ra.get("fallback") or {}),
             "o1_seeds": list(ra.get("o1_seeds", [6, 7, 8, 9, 10])),
             "o1_budget_usd": float(ra.get("o1_budget_usd", 10.0))}
 
@@ -157,6 +164,8 @@ def _all_configs(st, o1):
     if o1:
         cfgs.append(_derived(st, O1_NAME, st["steps"]["core"]["families"], seeds=st["o1_seeds"],
                              budget_usd=st["o1_budget_usd"]))
+    if "think" in st:
+        cfgs.append(st["think"])
     return cfgs
 
 
@@ -210,6 +219,13 @@ def dryify(st, root):
             c.pop(k, None)
         c["out_dir"] = str(Path(root) / ("runs_exploratory/memory" if c.get("memory") else "runs"))
     out["fallback"] = {fam[k]: mock_family(v) for k, v in st["fallback"].items()}
+    if "think" in out:
+        c = out["think"]
+        c["mock"], c["mock_cost_per_call"] = True, DRY_COST_PER_CALL
+        c["families"] = [mock_family(f) for f in c["families"]]
+        for k in ("temperature", "reasoning"):
+            c.pop(k, None)
+        c["out_dir"] = str(Path(root) / "runs_exploratory" / "think")
     return out
 
 
@@ -287,11 +303,11 @@ def _logs(path, dry, names=None):
 
 def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, exploratory=False, o1=False,
                  stop_after=None, prereg_path=None, addendum_path=None, dry_gate="pass", n_draws=1000, seed=0,
-                 log=print, allow_settings_mismatch=False):
+                 log=print, allow_settings_mismatch=False, think=False):
     root = Path(root)
     if stop_after is not None and stop_after not in STOP_AFTER:
         raise ValueError(f"stop_after must be one of {STOP_AFTER}")
-    st = load_settings(configs_dir or CONFIGS, exploratory)
+    st = load_settings(configs_dir or CONFIGS, exploratory, think)
     texts = load_prereg_texts(prereg_path)
     if dry:
         if root.resolve() == ROOT or (root / "runs").resolve() == (ROOT / "runs").resolve():
@@ -310,8 +326,9 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
         client_factory.check_models(_model_ids(_all_configs(st, o1)))
 
     runs, mem_dir = root / "runs", root / "runs_exploratory" / "memory"
+    think_dir = root / "runs_exploratory" / "think"
     tracker = BudgetTracker(st["budget_usd"])
-    tracker.total = sum(g["cost_usd"] for p in (runs, mem_dir) for g in _logs(p, dry, MANAGED))
+    tracker.total = sum(g["cost_usd"] for p in (runs, mem_dir, think_dir) for g in _logs(p, dry, MANAGED))
     res = {"status": None, "steps": [], "gate": None, "spent_usd": tracker.total, "dry": dry, "outputs": []}
     mode = "DRY (mock client, not results)" if dry else "REAL"
     log(f"run_all {mode}: root {root}, budget cap {tracker.cap:.2f} USD, already spent {tracker.total:.4f} USD")
@@ -435,6 +452,19 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
             if done("exploratory"):
                 return res
 
+        if think:
+            run_cfg("think", copy.deepcopy(st["think"]))
+            ex = root / "results_exploratory" / "think"
+            reproduce(think_dir, ex / "tables", n_draws=n_draws, seed=seed, prereg_path=prereg_path,
+                      configs=(THINK_CONFIG,), include_mock=dry)
+            think_logs, _ = filter_logs(load_logs(think_dir), (THINK_CONFIG,), include_mock=dry)
+            think_view.write_outputs(think_logs, ex)
+            think_view.export_traces(think_logs, ex)
+            res["outputs"].append(str(ex))
+            log(f"[think] THINK arm (EXPLORATORY) -> {think_dir}; tables and trace codes -> {ex}")
+            if done("think"):
+                return res
+
         if o1:
             cfg = _derived(st, O1_NAME, swap_families(steps["core"]["families"], swap), seeds=st["o1_seeds"], budget_usd=st["o1_budget_usd"])
             if dry:
@@ -466,6 +496,7 @@ def main(argv=None):
     ap.add_argument("--root", default=None, help=f"base folder (default: the repo root real, {DEFAULT_DRY_ROOT} dry)")
     ap.add_argument("--configs-dir", default=str(CONFIGS))
     ap.add_argument("--exploratory", action="store_true", help="memory arm + sensitivity, monitor_view, price_paths")
+    ap.add_argument("--think", action="store_true", help="EXPLORATORY THINK arm (reasoning traces), off by default")
     ap.add_argument("--o1", action="store_true", help="option O1 (seeds 6-10 on B, B_T, C, D), last")
     ap.add_argument("--stop-after", choices=STOP_AFTER, default=None)
     ap.add_argument("--dry-gate", choices=("pass", "fail"), default="pass")
@@ -478,7 +509,7 @@ def main(argv=None):
     try:
         res = run_pipeline(root, configs_dir=a.configs_dir, dry=a.dry, exploratory=a.exploratory, o1=a.o1,
                            stop_after=a.stop_after, dry_gate=a.dry_gate, n_draws=a.n_draws, seed=a.seed,
-                           allow_settings_mismatch=a.allow_settings_mismatch)
+                           allow_settings_mismatch=a.allow_settings_mismatch, think=a.think)
     except RealRunRefused as exc:
         print(f"run_all REFUSED: {exc}")
         return 1
