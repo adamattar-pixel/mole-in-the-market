@@ -1,7 +1,7 @@
 """R15: recompute every table from runs/ with no API key and no network, with checksums.
 
 Usage:
-  python -m tools.reproduce runs results --viz-dir viz/data --figures-dir figures
+  python -m tools.reproduce runs results --viz-dir viz/data --figures-dir figures [--deviations run_all_deviations.json]
 
 Outputs in the out dir: labels.csv (R14), summary.json, tables.md, detectors.json and detectors.md (R30,
 exploratory detector scores of R29 on the same kept games), defenses.json and defenses.md (R30, monitor and
@@ -25,7 +25,8 @@ from harness.metrics import (behavioral_acceptance_game, false_positive_rate, ga
                              verbal_acceptance_game, wilson)
 from harness.runlog import load_logs
 from harness.validation import e_validation
-from harness.vizexport import CONDITION_NAMES, check_consistency, export_viz, make_game_grid
+from harness.vizexport import (CONDITION_NAMES, check_consistency, excluded_family_summary, export_viz,
+                               make_game_grid)
 from tools.score_detectors import score_detectors, write_outputs as write_detector_outputs
 
 
@@ -177,7 +178,9 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
 
     if viz_dir is not None:
         source = hashlib.sha256("\n".join(input_lines).encode("utf-8")).hexdigest()
-        export_viz(logs, rows, viz_dir, texts, prereg_path, source, _generated_at())
+        dropped = [g for g in all_logs if exclude_ids and g["game_id"] in exclude_ids and g.get("mock") is False]
+        fams = excluded_family_summary(dropped, texts["e_threshold_gap_fraction"]) if dropped else None
+        export_viz(logs, rows, viz_dir, texts, prereg_path, source, _generated_at(), excluded_families=fams)
         problems = check_consistency(out_dir / "labels.csv", Path(viz_dir) / "games.csv", runs_dir,
                                      n_excluded(excluded))
         if problems:
@@ -203,10 +206,17 @@ def main(argv=None):
                     help="comma-separated config names to keep (default: the preregistered configs)")
     ap.add_argument("--all-configs", action="store_true", help="diagnostics: keep every config (smoke too)")
     ap.add_argument("--include-mock", action="store_true", help="diagnostics: keep mock (dry run) games")
+    ap.add_argument("--deviations", default=None,
+                    help="run_all_deviations.json: exclude the game ids of its declared deviations (E gate)")
     a = ap.parse_args(argv)
+    exclude_ids = None
+    if a.deviations:
+        exclude_ids = {i for d in json.loads(Path(a.deviations).read_text(encoding="utf-8"))
+                       for i in d.get("excluded_game_ids", [])}
     configs = None if a.all_configs else tuple(c.strip() for c in a.configs.split(",") if c.strip())
     s = reproduce(a.runs_dir, a.out_dir, n_draws=a.n_draws, seed=a.seed, viz_dir=a.viz_dir,
-                  figures_dir=a.figures_dir, configs=configs, include_mock=a.include_mock)
+                  figures_dir=a.figures_dir, configs=configs, include_mock=a.include_mock,
+                  exclude_ids=exclude_ids)
     ex = s["excluded"]
     print(f"reproduce: {s['n_games']} games -> {a.out_dir} (excluded: mock {ex['mock']}, "
           f"non-core config {sum(ex['non_core_config'].values())})")

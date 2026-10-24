@@ -44,7 +44,21 @@ def _read_csv(path):
         return list(csv.DictReader(fh))
 
 
-def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, generated_at, synthetic=False):
+def excluded_family_summary(excluded_logs, threshold_gap_fraction):
+    """Per family dropped at the E gate: game count, model ids and the gate result (positive control), so the
+    page can show why the family is missing instead of hiding it."""
+    from harness.validation import e_validation
+    gate = e_validation(excluded_logs, threshold_gap_fraction)
+    out = {}
+    for fam, res in gate.items():
+        gs = [g for g in excluded_logs if g["family"] == fam]
+        models = sorted({m for g in gs for m in (g.get("models") or {}).values()})
+        out[fam] = {"n_games": len(gs), "models": models, "e_validation": res}
+    return out
+
+
+def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, generated_at, synthetic=False,
+               excluded_families=None):
     viz_dir = Path(viz_dir)
     viz_dir.mkdir(parents=True, exist_ok=True)
     by_id = {g["game_id"]: g for g in logs}
@@ -76,6 +90,8 @@ def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, g
     meta = {"synthetic": bool(synthetic), "source_checksum": source_checksum,
             "prereg_hash": hashlib.sha256(Path(prereg_path).read_bytes()).hexdigest(),
             "generated_at": generated_at}
+    if excluded_families:
+        meta["excluded_families"] = excluded_families
     _write_csv(viz_dir / "games.csv", GAMES_COLUMNS, games)
     _write_csv(viz_dir / "rounds.csv", ROUNDS_COLUMNS, rounds)
     _write_csv(viz_dir / "messages.csv", ("condition", "text"), messages)

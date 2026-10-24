@@ -18,15 +18,15 @@ Replay page items (#12-#16, #18, #19, #21, #22): Phase 8 is CUT (D17), so they a
 | 9 | Standalone CLIs `sensitivity`, `monitor_view`, `score_detectors` do not filter by config or mock, so they pool smoke and O1 games with the pilot | - | open | docs/team-artem/REVIEW_ARTEM_DIFF.md m3 |
 | 10 | `python tools/X.py` crashes with `ModuleNotFoundError: No module named 'harness'`; only `python -m tools.X` works. Fix the entry points or document `-m` everywhere | - | open | tools/ |
 | 11 | `python -m tools.price_paths --help`: options (`--out-dir`, `--memory-runs`, `--game-id`, `--layout`, ...) have no help text | - | open | tools/price_paths.py |
-| 12 | Replay page: at the offer round the speech bubble covers the mole and the price labels | - | open | viz/app.js, docs/viz/DESIGN.md |
-| 13 | Replay page: sparse scene with tiny price bars | - | open | viz/app.js |
-| 14 | Replay page: the meaning of the scene sits in small grey text | - | open | viz/app.js, viz/style.css |
-| 15 | Replay page: labels "No spy" vs "Deal allowed (control)" confuse readers. The names are asserted by a locked test (tests/test_R22_R27_viz_export.py:77), so a change needs an owner-approved test(fix) | - | open | harness/vizexport.py:12 |
-| 16 | Replay page: the price chart is 112px high on mobile | - | open | viz/style.css |
+| 12 | Replay page: at the offer round the speech bubble covers the mole and the price labels | Artem | done | viz/app.js, docs/viz/DESIGN.md |
+| 13 | Replay page: sparse scene with tiny price bars | Artem | done | viz/app.js |
+| 14 | Replay page: the meaning of the scene sits in small grey text | Artem | done | viz/app.js, viz/style.css |
+| 15 | Replay page: labels "No spy" vs "Deal allowed (control)" confuse readers. The names are asserted by a locked test (tests/test_R22_R27_viz_export.py:77), so a change needs an owner-approved test(fix); done in the page only (viz/app.js display names), export names unchanged | Artem | done | harness/vizexport.py:12 |
+| 16 | Replay page: the price chart is 112px high on mobile | Artem | done | viz/style.css |
 | 17 | docs/context/contexte_projet_v7.md is a French internal planning note in the public repo, incl. speculation about the judges' scoring. Keep public before judging, or move out (never edited, so moving it is the owner's call) | Artem | open | pre-main review, notes |
-| 18 | viz/app.js:251 defines Do with the "Nash-to-deal gap"; the preregistration and the code use the Nash-to-monopoly gap. Fix the wording | - | open | pre-main review m1 |
+| 18 | viz/app.js:251 defines Do with the "Nash-to-deal gap"; the preregistration and the code use the Nash-to-monopoly gap. Fix the wording | Artem | done | pre-main review m1 |
 | 19 | viz/demo/meta.json:3 (and viz/demo/data.js) records the prereg hash of a CRLF copy, so it does not match the frozen file. Add `.gitattributes` with `* text=auto eol=lf` (or normalize before hashing), then regenerate viz/demo | - | open | pre-main review m2, harness/vizexport.py:77, tools/reproduce.py:63 |
 | 20 | ops/HANDOFF.md is stale (254 passed, "R28-R36 no code") | - | done | dated historical note added on `artem-ops-reorg`; current state in ops/STATE.md |
 | 21 | tools/make_demo_data.py:33-36 guards output folders with a denylist (`--out viz`, `figures/`, `report/` pass); switch to an allowlist (viz/demo or a temp dir) | - | open | pre-main review m5 |
-| 22 | viz/app.js:103, 265: `g.outcome` and the condition go into markup without `esc()` (local data, low risk) | - | open | pre-main review m6 |
+| 22 | viz/app.js:103, 265: `g.outcome` and the condition go into markup without `esc()` (local data, low risk) | Artem | done | pre-main review m6 |
 | 23 | Optional 3 to 5 minute video demo | - | open | docs/apart/Guidelines.md:40, report/SUBMISSION_CHECKLIST.md:15 |
