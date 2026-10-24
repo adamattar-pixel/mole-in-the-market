@@ -10,7 +10,27 @@ Models (decision D23): `anthropic/claude-haiku-4.5` (OpenRouter BYOK, Artem's An
 MODEL_AND_COST.md basis (15,000 input + 2,400 output tokens per game, conservative, prices fetched 2026-10-24)
 for this pair, raw / with the 3x safety margin (table: MODEL_AND_COST.md "Final choice"). Times are an
 ESTIMATE (MODEL_AND_COST.md gives none): calls are sequential, 40 calls per game, assumed 1 to 3 s per call,
-so about 1 to 2 min per game. Measure the real time on the smoke step and rescale.
+so about 1 to 2 min per game. Measure the real time on the smoke step and rescale. The times below are for
+`--workers 1`; with `--workers N` (section "Parallel games") divide the step times by about N.
+
+## Parallel games: `--workers N` (recommended `--workers 4`)
+
+`python3 -m tools.run_all ... --workers 4` (also `python3 -m tools.run CONFIG --workers 4`) runs 4 games of a
+step at the same time. Games are independent: the logs, tables and checksums are identical to `--workers 1`
+(checked on the dry run: `diff -r` of two roots gives no difference). Default is 1 (one after the other).
+- Recommended for OpenRouter: **4** (5 or 6 if no HTTP 429 shows up in the smoke). About 270 games x 1 to 2 min
+  = 4.5 to 9 h sequential, about 1.2 to 2.3 h with 4 workers. Haiku is billed on Artem's Anthropic key (BYOK),
+  so the Anthropic rate limit of that key applies: 4 workers send about 80 to 240 requests per minute. A low
+  Anthropic tier (for example 50 requests per minute) gives 429s: use `--workers 2`, or check the tier first.
+- HTTP 429 and 5xx are retried up to 5 times per call, waiting 2, 4, 8, 16 s (or the server's Retry-After,
+  at most 60 s). Other errors are not retried. A failed request costs nothing in the trackers.
+- Budget caps stay safe: no call is sent once a cap is crossed, so a cap can be passed by at most N calls in
+  flight (sequential: 1 call). With Haiku at about 0.0007 USD per call that is under 0.01 USD at N = 6.
+  When a cap is hit, the up-to-N games in progress are dropped (no log); their partial spend is real.
+- A game that raises (for example a provider error after the retries) is printed as `FAILED (not logged)`
+  with its game id; the other games of the step finish and are logged; run_all stops with exit 4 before the
+  next step. Rerun the same command: finished games are skipped, the failed ones run again.
+- Smoke first with `--workers 4` too, and watch the `[smoke]` lines and the OpenRouter activity page.
 
 ## 0. Install and check (no key, no cost)
 
@@ -94,9 +114,17 @@ which pools smoke and pilot (ops/QUESTIONS.md #23).
   `espion_pilot_fb` (10 games: Sonnet 4.5 about 0.81 raw / 2.4 with margin, Qwen3 about 0.03 / 0.08).
   The replaced family's pilot games stay in runs/ (write-once) and are listed as "superseded" in the tables.
 - Fallback also FAILS, or no fallback set: exit code 2 and the plan B message. Do NOT try a third model
-  (the one change is used). Stop real runs, write the result in ops/PROGRESS.md and ops/QUESTIONS.md, tell Adam,
+  (the one change is used). The only alternative to plan B is `--continue-passing-families` (below). Stop real runs, write the result in ops/PROGRESS.md and ops/QUESTIONS.md, tell Adam,
   and switch to plan B (ops/PLAN.md: track 1.5, Pareto curve of restrictions, docs/context/contexte_projet_v7.md
   section 10). The failed E is itself a reportable result.
+- `--continue-passing-families` (off by default; owner decision, ops/QUESTIONS.md #24): instead of plan B, go
+  on with only the families that passed E (primary or fallback), for example 2 families -> 1. This is a
+  DECLARED DEVIATION from the preregistered plan: run_all prints `DEVIATION` lines on every run, records it
+  in the returned summary and in `run_all_deviations.json` (repo root), and keeps the dropped family's pilot
+  games out of the tables (they stay in runs/, counted as superseded). Report it in the paper as a deviation.
+  Use the same flag on every later command, or the next run stops at the gate with plan B again:
+  `time python3 -m tools.run_all --continue-passing-families --workers 4; echo "exit $?"`
+  If no family passes, it is plan B anyway (exit 2).
 
 ## 5. Core, monitor, ethics, then scoring (80 games, then offline)
 
@@ -128,8 +156,10 @@ time is left (cut order in ops/PLAN.md): `python3 -m tools.run_all --exploratory
 
 ## 7. If something stops
 
-- Exit 3, "BUDGET CAP HIT": the game in progress was dropped (no log, its partial spend is real). Raise a
-  cap only with the owner's OK, then rerun the same command: it resumes.
+- Exit 3, "BUDGET CAP HIT": the game(s) in progress were dropped (no log, their partial spend is real; up to N
+  games with `--workers N`). Raise a cap only with the owner's OK, then rerun the same command: it resumes.
+- Exit 4, "FAILED (not logged)": some games raised (listed by game id); the others are logged. Rerun the same
+  command to retry them. If the same games keep failing, read the error before going on.
 - Crash, network error, closed laptop: rerun the same command. Logs are write-once; finished games are skipped.
 - Exit 1, "REFUSED": read the reason (key missing from .env and the shell, `tbd` id, families differ between configs, freeze
   status). Never edit the frozen files to get past it.

@@ -10,6 +10,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | `wip/phase-4-artem` (origin) = local `artem-owner-approval` | a6b6022 | Owner decisions (test(fix) #21, abstract 150-250, validate_e --config, cost guard). PR #1 into `wip/phase-4`, open |
 | `artem-ops-reorg` (local) | this branch | ops/ reorg, coordination board, CHANGELOG, tools/check_ops.py. Stacked on `artem-owner-approval`; PR into `wip/phase-4` after PR #1 |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3). No new work |
+| `wip/phase-4-artem-workers` (local) | see git log | `--workers N` for tools.run and tools.run_all, `--continue-passing-families` (owner decision QUESTIONS #24, test(fix) approval #25). From local `artem`; PR into `wip/phase-4` after review. 727 tests pass |
 
 Merge note: `artem-owner-approval` does not contain 846d3d8 (2 doc lines in AUDIT.md and PROGRESS.md). Git
 follows the renames to ops/, but the PROGRESS.md "Resume here" line edited by 846d3d8 is removed here: keep
