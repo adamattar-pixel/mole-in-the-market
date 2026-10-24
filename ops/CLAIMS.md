@@ -35,3 +35,4 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 ## Active claims
 | Who | Branch | Files / areas | Started | Expected end |
 |---|---|---|---|---|
+| Adam (Claude) | wip/phase-4-adam-numbers | tools/check_numbers.py, tests/test_R18_check_numbers.py, docs/adam/ | 2026-10-25 03:00 +08:00 | 2026-10-25 12:00 +08:00 |
