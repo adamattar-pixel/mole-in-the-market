@@ -6,7 +6,8 @@ Nothing here needs PREREGISTRATION.md or PREREGISTRATION_ADDENDUM.md to change: 
 `run_all` refuses to start otherwise.
 
 Costs below use the MODEL_AND_COST.md basis (15,000 input + 2,400 output tokens per game, conservative,
-prices fetched 2026-10-24) for the recommended pair, raw / with the 3x safety margin. Times are an
+prices fetched 2026-10-24) for the earlier recommended pair (gpt-5.4 + Llama 3.3), raw / with the 3x
+safety margin. Recompute them for Adam's pair (D10). Times are an
 ESTIMATE (MODEL_AND_COST.md gives none): calls are sequential, 40 calls per game, assumed 1 to 3 s per call,
 so about 1 to 2 min per game. Measure the real time on the smoke step and rescale.
 
@@ -15,7 +16,7 @@ so about 1 to 2 min per game. Measure the real time on the smoke step and rescal
 ```
 cd <repo> && git checkout artem && git status        # clean tree
 python3 -m pip install -r requirements.txt
-python3 -m pytest                                     # expect 581 passed
+python3 -m pytest                                     # expect 653 passed
 python3 -m tools.run_all --dry --exploratory --o1     # whole chain on the mock client, writes dry_runs/run_all/
 ```
 The dry run must end with `run_all: done` and exit code 0 (`echo $?`). Its numbers are mock, never results.
@@ -26,51 +27,32 @@ The dry run must end with `run_all: done` and exit code 0 (`echo $?`). Its numbe
 read -s OPENROUTER_API_KEY && export OPENROUTER_API_KEY   # paste the key, press Enter (not echoed, not in history)
 ```
 Never put the key in `.env`, a config, a commit or a chat. Open a new terminal = export it again.
-Also set a spend limit on the OpenRouter account (and on the Anthropic console if BYOK is used).
+Also set a spend limit on the OpenRouter account.
 
-## 2. Model ids, temperature, reasoning (owner decisions D10, FIXES_CLIENT.md)
+## 2. Model ids, temperature, reasoning (decision D10)
 
-PROPOSED on branch `artem-owner-approval` (docs/team-artem/OWNER_APPROVAL.md): the substitutions below, the
-test(fix) for QUESTIONS #21 and a fallback label `openai-fb` are already committed there. After
-`git merge --no-ff artem-owner-approval`, skip the sed and the commit below; the suite is fully green.
-Read the gpt-5.4 temperature caveat in OWNER_APPROVAL.md first.
+**Waiting on Adam: model ids (D10).** The step configs and the configs/run_all.yaml fallbacks hold `tbd`
+placeholders, and a real run refuses them. Candidates, prices, reasoning and temperature support:
+docs/team-artem/MODEL_AND_COST.md. `temperature: 1.0` is already set in every real config.
 
-Recommended pair (MODEL_AND_COST.md, "R4. Revised recommendation"): `openai/gpt-5.4` (reasoning off by
-default) + `meta-llama/llama-3.3-70b-instruct` (open weights, no reasoning).
-Temperature: `1.0` in every real config (FIXES_CLIENT.md decision 1). Reasoning: leave unset for both
-(FIXES_CLIENT.md decision 2: gpt-5.4 reasons only if asked, Llama has no reasoning); the smoke check below
-confirms it.
-E-gate fallback (used at most once, only for a family whose E fails), PROPOSAL, owner decides:
-`openai` -> `openai/gpt-4.1` (MODEL_AND_COST.md first recommendation), `meta-llama` ->
-`qwen/qwen3-235b-a22b-2507` (open weights, non-thinking). Use `fallback: {}` in configs/run_all.yaml for no
-fallback (a failing E then goes straight to plan B).
-
-This replaces every `tbd` placeholder in the six step configs and in configs/run_all.yaml (macOS `sed`):
+When Adam gives the ids:
+1. Replace `family1-tbd`, `family2-tbd` (labels and ids) in the six step configs (`espion_smoke`, `espion_pilot`,
+   `espion_core`, `espion_monitor`, `espion_ethics`, `exploratory/espion_mem`; the `families` blocks must be
+   identical) and the two fallbacks in configs/run_all.yaml. The family label is the id prefix
+   (`provider/model`); a fallback from the same provider is labelled `<provider>-fb`.
+2. Add a `reasoning` key only for a model that reasons by default (FIXES_CLIENT.md decision 2).
+3. Add or re-check every id in `configs/prices.yaml` (input / output USD per 1M from
+   `https://openrouter.ai/api/v1/models`, with the fetch date). A model with no price is refused: each call
+   is charged max(usage.cost, tokens x price), so a provider that under-reports cost still hits the caps.
+4. Run the suite (all green, no test change needed) and commit BEFORE any real call, so every log's
+   `git_commit` points at the real ids:
 ```
-for f in configs/espion_smoke.yaml configs/espion_pilot.yaml configs/espion_core.yaml \
-         configs/espion_monitor.yaml configs/espion_ethics.yaml configs/exploratory/espion_mem.yaml \
-         configs/run_all.yaml; do
-  sed -i '' -e 's#family1fb-tbd/model-tbd#openai/gpt-4.1#g' -e 's#family2fb-tbd/model-tbd#qwen/qwen3-235b-a22b-2507#g' \
-    -e 's#family1fb-tbd#openai#g' -e 's#family2fb-tbd#qwen#g' \
-    -e 's#family1-tbd/model-tbd#openai/gpt-5.4#g' -e 's#family2-tbd/model-tbd#meta-llama/llama-3.3-70b-instruct#g' \
-    -e 's#family1-tbd#openai#g' -e 's#family2-tbd#meta-llama#g' -e 's#^temperature: null#temperature: 1.0#' "$f"
-done
-git diff configs/                                   # read it: families, fallback, temperature 1.0
+python3 -m pytest && python3 -m tools.run_all --dry
+git diff configs/                                   # read it: families, fallback, prices
+git add configs/ && git commit -m "Set model ids for real runs (D10)"
 ```
-Also decide `budget_usd` in configs/run_all.yaml (global cap over every step, PROPOSAL 30.0 USD; it counts
-the spend already in the logs) and the per-config caps (QUESTIONS.md #11, #17).
-
-Expected test change: 11 tests assert the placeholder state and go red once the ids are real
-(`*refused_while_models_are_placeholders*`, `*refused_while_models_are_tbd*`, `test_R36_refuses_tbd_in_repo_configs`,
-`test_real_configs_declare_temperature_placeholder`). They are locked (rule D1): fixing them is an
-owner-approved `test(fix)` commit (QUESTIONS.md #21). Every other test must stay green:
-```
-python3 -m pytest 2>&1 | grep -E "FAILED|passed|failed"      # expect exactly those 11 FAILED
-```
-Commit the configs BEFORE any real call, so every log's `git_commit` points at the real ids:
-```
-git add configs/ && git commit -m "Set model ids, temperature and fallback for real runs (D10)"
-```
+Also decide `budget_usd` in configs/run_all.yaml (global cap, PROPOSAL 30.0 USD) and the per-config caps
+(QUESTIONS.md #11, #17).
 
 ## 3. Smoke (4 games: A, E x seed 1 x 2 families)
 
@@ -79,17 +61,20 @@ Cost: about 0.15 raw / 0.45 USD with margin (cap 1.0). Time: about 5 to 10 min.
 time python3 -m tools.run_all --stop-after smoke
 ```
 Check in the `[smoke]` lines, per family:
-- cost per game: about 0.07 USD for gpt-5.4 and 0.002 USD for Llama (raw estimate). Much higher means hidden
-  reasoning or a price change: stop and look.
+- cost per game: compare with MODEL_AND_COST.md for the chosen pair. Much higher means hidden reasoning or a
+  price change: stop and look.
 - invalid prices and invalid responses: near 0. Above about 0.05 makes "do" unreliable (QUESTIONS.md #10).
 - served model and provider: the model you asked for (a dated version is fine), a provider listed.
-- reasoning tokens: 0 (or None if the provider does not report them). If gpt-5.4 shows tokens > 0, add
-  `reasoning: {effort: none}` to the openai family entry in the six configs, commit, and only then go on.
+- reasoning tokens: 0 (or None if the provider does not report them). If a family shows tokens > 0, add
+  `reasoning: {effort: none}` to that family entry in the six configs, commit, and only then go on.
+- cost per call (`provenance`): `cost_reported` (usage.cost), `cost_computed` (tokens x configs/prices.yaml),
+  `cost_charged` (the larger) and `cost_source`. `token_price` on many calls means usage.cost is below the
+  list price: check the OpenRouter activity page, the caps already use the larger value.
 Spot-check one log by hand and the OpenRouter activity page (spend should match the printed total):
 ```
 python3 -c "import json,glob; g=json.load(open(sorted(glob.glob('runs/espion_smoke__*__E__s1.json'))[0])); \
 f=g['rounds'][7]['firms']['0']; print(g['models'], g['temperature'], g['cost_usd'], f['provenance']['served_model'], \
-f['provenance']['provider'], f['reply'][:200])"
+f['provenance']['provider'], f['provenance'].get('cost_source'), f['reply'][:200])"
 ```
 
 ## 4. Pilot and E gate (20 games: A, E x 5 seeds x 2 families)
@@ -103,7 +88,7 @@ at least 0.25 of the Nash to monopoly gap (PREREGISTRATION.md). Use this output,
 which pools smoke and pilot (QUESTIONS.md #23).
 - Both PASS: go to step 5.
 - A family FAILS: run_all switches that family ONCE to its fallback and runs its pilot as
-  `espion_pilot_fb` (10 games; gpt-4.1 about 0.5 raw / 1.5 USD with margin, Qwen about 0.03 / 0.08).
+  `espion_pilot_fb` (10 games; cost depends on the fallback model, see MODEL_AND_COST.md).
   The replaced family's pilot games stay in runs/ (write-once) and are listed as "superseded" in the tables.
 - Fallback also FAILS, or no fallback set: exit code 2 and the plan B message. Do NOT try a third model
   (the one change is used). Stop real runs, write the result in PROGRESS.md and QUESTIONS.md, tell Adam,

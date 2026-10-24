@@ -2,11 +2,15 @@
 
 Prepared 2026-10-24 for Artem (project owner). Base: local `artem` at 00c8f08 (617 tests green).
 Nothing here was pushed, no real API call was made, no frozen file (PREREGISTRATION.md,
-PREREGISTRATION_ADDENDUM.md) was touched. Every commit starts with `PROPOSED (needs owner approval):`.
-Two commits edit locked tests (rule D1). Merging the branch is the owner's approval of those `test(fix)` commits.
+PREREGISTRATION_ADDENDUM.md) was touched. Commits 1 to 6 start with `PROPOSED (needs owner approval):`,
+commits 7 to 13 with `Owner decision:`. Three commits edit locked tests (rule D1, `test(fix)`).
 
-State at the branch tip: `python3 -m pytest` **624 passed** (617 + 1 R19 boundary test + 6 new validate_e
-tests), `python3 -m tools.run_all --dry` exit 0 (all steps, mock client, writes dry_runs/ only).
+**Waiting on Adam: model ids (D10).** The owner decided that the model choice stays with Adam and that no
+Anthropic key / BYOK is used. Every real config and the run_all fallbacks are back to `tbd` placeholders, so a
+real run is refused until the ids are filled (candidates and prices: MODEL_AND_COST.md).
+
+State at the branch tip: `python3 -m pytest` **653 passed**, `python3 -m tools.run_all --dry --exploratory --o1`
+exit 0 (mock client, writes dry_runs/ only; logs identical to before apart from `git_commit`).
 
 ## Merge (one command, from `artem`)
 
@@ -18,18 +22,46 @@ To reject a single commit instead, cherry-pick the others (`git log artem..artem
 
 ## Commits, in order
 
-The task order was configs first, then the test(fix). They are swapped here so every commit on the
-branch is green (the test(fix) passes on both the old `tbd` configs and the new ids). The one red commit is
-the locked validate_e test commit, by rule D1 (its implementation is the next commit).
-
 | # | Commit | What it changes | Why |
 |---|---|---|---|
-| 1 | `test(fix): test tbd guards on placeholder copies (#21)` | 5 test files + new `tests/helpers_placeholder.py` | QUESTIONS #21. The locked tests asserted that the repo configs ARE `tbd`, so they go red the moment real ids are filled. |
-| 2 | `Set model ids, temperature and fallback (D10)` | 6 step configs + `configs/run_all.yaml` | Decision D10, FIXES_CLIENT decisions 1 and 2, QUESTIONS #22. |
-| 3 | `test(fix)+fix(R19): abstract 150 to 250 words` | `tools/check_submission.py`, its locked test, SPEC R19, docs/apart note, stale notes in report/ | The live sprint page changed the rule. |
+| 1 | `test(fix): test tbd guards on placeholder copies (#21)` | 5 test files + new `tests/helpers_placeholder.py` | QUESTIONS #21. The locked tests asserted that the repo configs ARE `tbd`. Kept: they pass with `tbd` and with real ids. |
+| 2 | `Set model ids, temperature and fallback (D10)` | 6 step configs + `configs/run_all.yaml` | Superseded: ids reverted to `tbd` by 12. |
+| 3 | `test(fix)+fix(R19): abstract 150 to 250 words` | `tools/check_submission.py`, its locked test, SPEC R19, notes | The live sprint page changed the rule. |
 | 4 | `test(Q23): add failing tests for validate_e --config (locked)` | new `tests/test_artem_validate_e_filter.py` | QUESTIONS #23, tests first (rule D1). |
 | 5 | `feat(R13): add --config filter to validate_e (#23)` | `tools/validate_e.py` | QUESTIONS #23. |
-| 6 | `docs: owner approval note` | this file, RUNBOOK step 2 note, QUESTIONS #21-23 marked PROPOSED | Self-explanatory branch. |
+| 6 | `docs: owner approval note` | this file, RUNBOOK step 2 note, QUESTIONS #21-23 | Self-explanatory branch. |
+| 7 | `Owner decision: use claude-haiku-4.5 as family 1 (D10)` | configs | Reverted by 10 (owner changed course). |
+| 8 | `Owner decision: add failing tests for BYOK-safe cost (locked)` | new `tests/test_artem_byok_cost.py` | Tests first for the cost guard (rule D1). |
+| 9 | `Owner decision: charge max(usage.cost, tokens x price) per call (R17)` | `harness/clients.py`, `harness/runner.py`, `tools/run.py`, `tools/run_all.py`, new `configs/prices.yaml` | Cost guard, and the `<provider>-fb` label fix. |
+| 10 | `Owner decision: test(fix): cost guard tests independent of the model ids` | `tests/test_artem_byok_cost.py` | Two tests of 8 named the Anthropic fallback. |
+| 11 | `Owner decision: revert the claude-haiku-4.5 switch` | configs | Revert of 7 (new commit, history kept). |
+| 12 | `Owner decision: model ids back to tbd placeholders (D10 waits on Adam)` | configs | Model choice stays with Adam. |
+| 13 | `Owner decision: docs for the cost guard and the tbd ids` | this file, RUNBOOK, FIXES_CLIENT.md | |
+
+Note on 11: its message was set by an accidental `--amend` right after `git revert` and then corrected by a
+second amend, on the local, never pushed commit. No other commit was rewritten.
+
+### 8 to 10. Cost guard (R17)
+
+A provider can under-report OpenRouter's `usage.cost` (OpenRouter docs: under BYOK `cost` is only
+OpenRouter's fee, and the provider charge is in `cost_details.upstream_inference_cost`). The per-config and
+global caps would then never trigger. Now:
+- `configs/prices.yaml`: input and output USD per 1M tokens per model id, from
+  `https://openrouter.ai/api/v1/models`, fetched 2026-10-24 11:36 UTC (candidates of MODEL_AND_COST.md).
+- Each real call is charged `max(usage.cost, prompt_tokens x input + completion_tokens x output)`; that charge
+  goes to `cost_usd`, the per-config cap and the global cap. Per call, `provenance` logs `cost_reported`,
+  `cost_computed`, `cost_charged` and `cost_source` (`usage_cost` or `token_price`).
+- A real run refuses a model with no price: `run_all` before any call (every step, fallback and O1 id), the
+  client before any request. Missing token counts or missing `usage.cost` are refused as before (R17).
+- `tools/run.py` and `run_all` build the real client with the table. Dry runs are unchanged (mock client).
+- Bug found and fixed: `validate_config` required the family label to equal the id prefix, so the earlier
+  `openai-fb` fallback made `run_all` refuse a real run. A label `<provider>-fb` is now accepted.
+- Tests: `tests/test_artem_byok_cost.py` (29, hand-computed). Mutation check: 11 mutations of the new code
+  (charge only usage.cost, only tokens, no price refusal, wrong source, wrong output price, zero price
+  accepted, no run_all check, no table in run_all or run.py, `-fb` rule too loose or removed), all killed.
+
+When Adam gives the ids: fill the six step configs and the run_all fallbacks, add or re-check each id in
+`configs/prices.yaml`, run the suite, commit, then the RUNBOOK smoke step.
 
 ### 1. test(fix) for the placeholder-asserting locked tests (QUESTIONS #21)
 
@@ -47,47 +79,11 @@ Checked: with commit 2 alone, exactly these 12 fail and nothing else.
   key must be present and be null or a number in [0, 2]; `validate_config` still runs.
 - M3: the test's pilot copy pins `temperature: None`, so its assertions are unchanged byte for byte.
 
-### 2. Model ids, temperature, reasoning, fallback
+### 2. Model ids (superseded)
 
-Ids re-checked on `https://openrouter.ai/api/v1/models` (public, no key) on **2026-10-24 09:09 UTC**
-(469 models), prices per 1M tokens in/out:
-
-| Role | Id | Price | Reasoning | `temperature` supported |
-|---|---|---|---|---|
-| family 1 `openai` | `openai/gpt-5.4` | 2.50 / 15.00 | not mandatory, `default_enabled: false` | **no** (see caveat) |
-| family 2 `meta-llama` | `meta-llama/llama-3.3-70b-instruct` | 0.10 / 0.32 | none | yes |
-| fallback for `openai`, label `openai-fb` | `openai/gpt-4.1` | 2.00 / 8.00 | none | yes |
-| fallback for `meta-llama`, label `qwen` | `qwen/qwen3-235b-a22b-2507` | 0.09 / 0.55 | none | yes |
-
-- `temperature: 1.0` in every real config (FIXES_CLIENT decision 1). No `reasoning` key anywhere: gpt-5.4
-  reasons only if asked, Llama has no reasoning (FIXES_CLIENT decision 2). Check `reasoning_used` in the smoke logs.
-- One change from the RUNBOOK sed: the gpt-4.1 fallback gets the label `openai-fb`, not `openai`. With the sed,
-  gpt-5.4 smoke/pilot logs and gpt-4.1 fallback/core logs would share the family label `openai` and be pooled
-  in tables. run_all accepts both labels.
-- Budget caps unchanged (QUESTIONS #11, #17, #22 still yours: 1 / 5 / 10 / 7.5 / 2.5, global 30 USD).
-
-**Caveat: gpt-5.4 does not accept `temperature`.** Its model entry and all 7 of its provider endpoints
-(OpenAI, OpenAI flex/fast, Azure x3, Bedrock) leave `temperature` out of `supported_parameters`. The same holds
-for every GPT-5.x model listed. OpenRouter's documentation says an unsupported parameter is ignored, not rejected
-(not checked with a real call). So with this config:
-- Llama runs at 1.0; gpt-5.4 runs at its fixed provider sampling, but its game logs still say `temperature: 1.0`
-  (the value requested, not the value applied). The report must say so.
-- If the smoke run errors on gpt-5.4 instead, that is the reason.
-
-**Alternative (recommended if matched temperature matters):** primary `openai/gpt-4.1` (temperature yes, no
-reasoning, cheaper: MODEL_AND_COST.md first recommendation) with fallback `openai/gpt-4o` (temperature yes,
-2.50 / 10.00), on top of this branch (checked on a scratch worktree: suite and `run_all --dry` green):
-```
-for f in configs/espion_smoke.yaml configs/espion_pilot.yaml configs/espion_core.yaml \
-         configs/espion_monitor.yaml configs/espion_ethics.yaml configs/exploratory/espion_mem.yaml; do
-  sed -i '' -e 's#openai/gpt-5.4#openai/gpt-4.1#g' -e 's#gpt-5.4 reasons only if asked (default_enabled false)#gpt-4.1 has no reasoning#' "$f"
-done
-sed -i '' -e 's#{"0": openai/gpt-4.1, "1": openai/gpt-4.1}#{"0": openai/gpt-4o, "1": openai/gpt-4o}#' \
-  -e 's#gpt-4.1 logs must not share a family label with the gpt-5.4 logs#gpt-4o logs must not share a family label with the gpt-4.1 logs#' configs/run_all.yaml
-python3 -m pytest && python3 -m tools.run_all --dry && git commit -am "Use openai/gpt-4.1 as family 1 (temperature supported)"
-```
-A third option: keep gpt-5.4 and set `temperature: null` everywhere (provider default for both families,
-honest logs, but Llama's default then depends on the provider).
+The ids of commit 2 (gpt-5.4 + Llama 3.3) are reverted to `tbd` (commits 11, 12). `temperature: 1.0` stays in
+every real config (FIXES_CLIENT decision 1; the `tbd` guards and tests accept it). Candidates, reasoning and
+temperature support per model: MODEL_AND_COST.md (gpt-5.x models do not accept `temperature`).
 
 ### 3. Abstract rule (R19)
 
@@ -111,5 +107,5 @@ for reading it by hand.
 
 ## Not done here
 
-- No real run, no key, no push. GO for the smoke run stays with you (H2).
-- QUESTIONS #10, #11, #17 (and the caps in #22) still need your answer.
+- No real run, no key, no push. GO for the smoke run stays with the owner (H2).
+- Waiting on Adam: model ids (D10). QUESTIONS #10, #11, #17 (and the caps in #22) still open.
