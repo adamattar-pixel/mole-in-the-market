@@ -15,11 +15,9 @@ budget_usd: 30.0
 # meta-llama -> qwen3-235b-a22b-2507 (open weights, non-thinking, OpenRouter credits).
 # Provider pins as in the step configs (FIXES_CLIENT.md): Sonnet on Anthropic; Qwen on Parasail fp8 (temperature
 # and seed supported, 100% uptime over the last day on 2026-10-24; no bf16 endpoint is listed for this model).
+# anthropic fallback (anthropic/claude-sonnet-4.5) REMOVED 2026-10-24 23:05 HKT: BYOK refused Sonnet and
+# OpenRouter billed it to credits (0.25 USD/game) against the owner's 5 USD credit cap. ops/QUESTIONS.md #27.
 fallback:
-  anthropic:
-    family: anthropic-fb
-    models: {"0": anthropic/claude-sonnet-4.5, "1": anthropic/claude-sonnet-4.5}
-    provider: {order: [anthropic], allow_fallbacks: false}
   meta-llama:
     family: qwen
     models: {"0": qwen/qwen3-235b-a22b-2507, "1": qwen/qwen3-235b-a22b-2507}
