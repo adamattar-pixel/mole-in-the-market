@@ -101,7 +101,7 @@ class OpenRouterClient:
     ("usage_cost" or "token_price"). A model with no price is refused before the request.
     max_tokens is sent when not None (run_game always gives one: MAX_TOKENS_REASONING when reasoning is set,
     else MAX_TOKENS_DEFAULT, unless the family sets max_tokens); last_call then records it. The response's
-    finish_reason is recorded when present ("length" = truncated reply, counted invalid by the parser).
+    finish_reason is recorded when present ("length" = truncated reply; it is counted invalid only when the truncated text fails to parse, and no call in runs/ was truncated).
     """
     is_mock = False
 
