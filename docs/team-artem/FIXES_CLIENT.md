@@ -10,7 +10,7 @@ Tests: `tests/test_artem_client_settings.py` (fake HTTP layer, sockets blocked, 
 | `temperature` | top level; null or a number in [0, 2] | `temperature`, only when not null | game log `temperature` (always in real games, null = not sent) |
 | `reasoning` | top level, or per family (family wins) | `reasoning` object, only when set | game log `reasoning` (only when set) |
 
-`reasoning` accepts OpenRouter's documented keys: `effort` (none, minimal, low, medium, high, xhigh), `max_tokens` (int >= 0), `exclude` (bool), `enabled` (bool). Both keys are part of the config, so they are already covered by `config_hash`.
+`reasoning` accepts OpenRouter's documented keys: `effort` (none, minimal, low, medium, high, xhigh, max) or `max_tokens` (int >= 0), not both, `exclude` (bool), `enabled` (bool). Both keys are part of the config, so they are already covered by `config_hash`.
 
 Provenance, per call, in `rounds[i].firms[f].provenance` (real client only):
 - `served_model`: the response `model` field (the exact model version that answered).

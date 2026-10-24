@@ -429,7 +429,7 @@ EXIT = {"done": 0, "stopped": 0, "plan_b": 2, "budget_stop": 3}
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry", action="store_true", help="mock client into a scratch folder (never runs/)")
-    ap.add_argument("--root", default=None, help=f"base folder (default: . real, {DEFAULT_DRY_ROOT} dry)")
+    ap.add_argument("--root", default=None, help=f"base folder (default: the repo root real, {DEFAULT_DRY_ROOT} dry)")
     ap.add_argument("--configs-dir", default=str(CONFIGS))
     ap.add_argument("--exploratory", action="store_true", help="memory arm + sensitivity, monitor_view, price_paths")
     ap.add_argument("--o1", action="store_true", help="option O1 (seeds 6-10 on B, B_T, C, D), last")
@@ -440,7 +440,7 @@ def main(argv=None):
     ap.add_argument("--n-draws", type=int, default=1000)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
-    root = a.root or (DEFAULT_DRY_ROOT if a.dry else ".")
+    root = a.root or (DEFAULT_DRY_ROOT if a.dry else ROOT)
     try:
         res = run_pipeline(root, configs_dir=a.configs_dir, dry=a.dry, exploratory=a.exploratory, o1=a.o1,
                            stop_after=a.stop_after, dry_gate=a.dry_gate, n_draws=a.n_draws, seed=a.seed,

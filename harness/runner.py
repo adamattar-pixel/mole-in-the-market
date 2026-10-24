@@ -14,7 +14,7 @@ from harness.spy import ScriptedSpy
 
 FIRMS = ("0", "1")
 # OpenRouter `reasoning` request object (docs/team-artem/FIXES_CLIENT.md).
-REASONING_EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh")
+REASONING_EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh", "max")
 
 
 class RealRunRefused(RuntimeError):
@@ -50,6 +50,8 @@ def _check_reasoning(r):
         return
     if not isinstance(r, dict) or not r or set(r) - {"effort", "max_tokens", "exclude", "enabled"}:
         raise ValueError(f"reasoning must be null or an object with effort, max_tokens, exclude, enabled: {r!r}")
+    if "effort" in r and "max_tokens" in r:
+        raise ValueError("reasoning sets effort or max_tokens, not both (OpenRouter docs)")
     if "effort" in r and r["effort"] not in REASONING_EFFORTS:
         raise ValueError(f"reasoning effort must be one of {REASONING_EFFORTS}: {r['effort']!r}")
     for k in ("exclude", "enabled"):
