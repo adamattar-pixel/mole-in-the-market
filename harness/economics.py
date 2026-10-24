@@ -23,6 +23,10 @@ class LinearDemand:
         q1, q2 = self.quantities(p1, p2)
         return ((p1 - self.c) * q1, (p2 - self.c) * q2)
 
+    @property
+    def unit_cost(self):
+        return self.c
+
     def price_bounds(self):
         # Search range: from cost up to the price where own demand vanishes against a rival at that price.
         return (self.c, self.c + self.a / (self.b - self.d) + 1.0)
@@ -54,6 +58,10 @@ class LogitDemand:
         q1, q2 = self.quantities(p1, p2)
         unit = self.alpha * self.c
         return ((p1 - unit) * q1, (p2 - unit) * q2)
+
+    @property
+    def unit_cost(self):
+        return self.alpha * self.c
 
     def price_bounds(self):
         unit = self.alpha * self.c

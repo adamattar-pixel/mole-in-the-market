@@ -46,6 +46,13 @@ def load_prereg_texts(path=None):
     return data
 
 
+def condition_metadata(name):
+    """(offer form, trust label) of a condition, without needing the texts."""
+    if name not in _LAYOUT:
+        raise ValueError(f"unknown condition: {name!r}")
+    return _LAYOUT[name][2], _LAYOUT[name][3]
+
+
 def build_condition(name, texts, deal_price):
     if name not in _LAYOUT:
         raise ValueError(f"unknown condition: {name!r}")
