@@ -3,7 +3,7 @@ Claude updates this file at the end of every phase and whenever the state change
 
 ## Resume here (read this first)
 - READ HANDOFF.md FIRST. Project owner: **Artem** (full handoff 2026-10-24). Adam Attar (adamattar-pixel) stays co-author and is reachable for decisions.
-- Branch `artem` (R28-R36 merged; R36 built on `artem-run-all`). `python3 -m pytest` -> 581 passed, 0 red.
+- Branch `artem` = origin/wip/phase-4 + R28-R36 + independent audit/review fixes (M1-M4). `python3 -m pytest` -> 617 passed, 0 red. Owner decisions (models: anthropic/claude-haiku-4.5 via BYOK + meta-llama/llama-3.3-70b-instruct, temperature 1.0, test(fix) #21, abstract 150-250, validate_e --config) are on branch `artem-owner-approval`, to merge before the smoke run.
 - main = gate-3 + preregistration freeze (tag `prereg-frozen`). Addendum frozen (tag `addendum-frozen`).
 - Install and test: `python3 -m pip install -r requirements.txt` then `python3 -m pytest`. Whole pipeline dry: `python3 -m tools.run_all --dry --exploratory --o1`.
 - Next action: owner decisions (model ids, temperature, fallback, budget caps: RUNBOOK_REAL_RUNS.md step 2, QUESTIONS #11, #17, #21-#23), then the real smoke run `python3 -m tools.run_all --stop-after smoke` (H2: key exported in the shell, GO). Then follow RUNBOOK_REAL_RUNS.md. Runs freeze Sunday Oct 25 noon; submit early Sunday before 23:59 AoE.
