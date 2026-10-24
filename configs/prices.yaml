@@ -3,7 +3,7 @@
 # fetched 2026-10-24 11:36 UTC. Not a step config. Each real call is charged
 # max(usage.cost, prompt_tokens x input + completion_tokens x output) / 1e6, so a provider or account mode that
 # under-reports usage.cost (for example BYOK, where it is only OpenRouter's fee) cannot get past the caps.
-# The 4 models of D22 (2 primary, 2 fallback) re-checked 2026-10-24 12:06 UTC: unchanged. Other entries are
+# The 4 models of D23 (2 primary, 2 fallback) re-checked 2026-10-24 12:06 UTC: unchanged. Other entries are
 # older candidates (docs/team-artem/MODEL_AND_COST.md). Regional endpoints can cost up to 10% more.
 # Every model in a real config or fallback needs an entry: a real run refuses a model without a price.
 fetched: "2026-10-24"

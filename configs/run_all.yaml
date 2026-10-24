@@ -8,7 +8,7 @@ budget_usd: 30.0
 # E gate (PLAN.md Phase 4): a family whose E fails is replaced ONCE by its fallback here, keyed by the
 # primary family label; the fallback pilot runs as espion_pilot_fb. Fallback failing too = plan B (stop).
 # The fallback label must not equal another primary family label. `fallback: {}` = no fallback.
-# Owner decision D22 (docs/context/DECISIONS.md; ids, prices and parameters checked on OpenRouter 2026-10-24).
+# Owner decision D23 (docs/context/DECISIONS.md; ids, prices and parameters checked on OpenRouter 2026-10-24).
 # anthropic -> claude-sonnet-4.5 (3.00 / 15.00 per 1M, same BYOK key): accepts temperature, reasoning not on by
 # default, so no reasoning key, same settings as Haiku 4.5. Cheaper Anthropic models fail one test: haiku-5.5 has
 # no temperature. Label anthropic-fb, not anthropic: Sonnet logs must not share a family label with the Haiku logs.
