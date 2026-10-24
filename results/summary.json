@@ -20,7 +20,6 @@
  "excluded": {
   "mock": 0,
   "non_core_config": {
-   "espion_pilot_fb": 2,
    "espion_smoke": 4
   },
   "superseded": 10
