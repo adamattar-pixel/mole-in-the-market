@@ -3,7 +3,8 @@
 Usage:
   python -m tools.reproduce runs results --viz-dir viz/data --figures-dir figures
 
-Outputs in the out dir: labels.csv (R14), summary.json, tables.md, checksums.txt.
+Outputs in the out dir: labels.csv (R14), summary.json, tables.md, detectors.json and detectors.md (R30,
+exploratory detector scores of R29 on the same kept games), checksums.txt.
 With --viz-dir: the viz export (R22, checked by R23). With --figures-dir: figures/game_grid.pdf (R27).
 
 The CLI keeps only real games (log field mock false) from the preregistered configs (PREREG_CONFIGS, read
@@ -24,6 +25,7 @@ from harness.metrics import (behavioral_acceptance_game, false_positive_rate, ga
 from harness.runlog import load_logs
 from harness.validation import e_validation
 from harness.vizexport import CONDITION_NAMES, check_consistency, export_viz, make_game_grid
+from tools.score_detectors import score_detectors, write_outputs as write_detector_outputs
 
 
 PREREG_CONFIGS = ("espion_pilot", "espion_core")  # A and E from the pilot, B, B_T, C, D from the core
@@ -149,9 +151,11 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     write_labels_csv(rows, out_dir / "labels.csv")
     (out_dir / "summary.json").write_text(json.dumps(summary, sort_keys=True, indent=1) + "\n", encoding="utf-8")
     (out_dir / "tables.md").write_text(tables_md(summary), encoding="utf-8")
+    write_detector_outputs(score_detectors(logs, n_draws=n_draws, seed=seed), out_dir)
 
     input_lines = sorted(f"{_sha(p)}  runs/{p.name}" for p in runs_dir.glob("*.json"))
-    output_lines = [f"{_sha(out_dir / n)}  out/{n}" for n in ("labels.csv", "summary.json", "tables.md")]
+    output_lines = [f"{_sha(out_dir / n)}  out/{n}" for n in ("labels.csv", "summary.json", "tables.md",
+                                                               "detectors.json", "detectors.md")]
     (out_dir / "checksums.txt").write_text("\n".join(input_lines + output_lines) + "\n", encoding="utf-8")
 
     if viz_dir is not None:
