@@ -14,19 +14,19 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 | R09 | tests/test_R06_R09_definitions.py::test_R09_* (4 tests) | GREEN | `python -m pytest` 99 passed, 2026-10-24, locked at 5c52047 |
 | R10 | tests/test_R10_R11_stats.py::test_R10_* (9 tests incl. known rate 7/17) | GREEN | `python -m pytest` 99 passed, 2026-10-24, locked at 5c52047 |
 | R11 | tests/test_R10_R11_stats.py::test_R11_* (6 tests, hand-computed values) | GREEN | `python -m pytest` 99 passed, 2026-10-24, locked at 5c52047 |
-| R12 | | TODO | |
-| R13 | | TODO | |
-| R14 | | TODO | |
-| R15 | | TODO | |
-| R16 | | TODO | |
-| R17 | | TODO | |
+| R12 | tests/test_R12_R17_pipeline.py::test_R12_* (26 incl. parametrized missing fields, write-once, run_game log, real-run guards) + test_R02_R12_*, test_R03_R12_* | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
+| R13 | tests/test_R13_R15_analysis.py::test_R13_* (8: pass, boundary 0.25, just below, pre-offer trap, per family, CLI) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
+| R14 | tests/test_R13_R15_analysis.py::test_R14_* (2: schema and hand values incl. base rate 0.5) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
+| R15 | tests/test_R13_R15_analysis.py::test_R15_* (8: twice identical, checksums, deleted log, no key no network, runs untouched, summary values, CLI, empty) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
+| R16 | tests/test_R12_R17_pipeline.py::test_R16_* (6: family from id, mixed rejected, mislabel rejected, unknown condition, 60 games, seed passed) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
+| R17 | tests/test_R12_R17_pipeline.py::test_R17_* (3: tracker cap inclusive, global stop after 21 calls, cost per game) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
 | R18 | audit grep | TODO | |
 | R19 | tools/check_submission.py | TODO | |
 | R20 | MANUAL | TODO | |
 | R21 | MANUAL | TODO | |
-| R22 | | TODO | |
-| R23 | | TODO | |
+| R22 | tests/test_R22_R27_viz_export.py::test_R22_* (9: five files, schemas, hand values on 4-game mini-run, frozen texts, meta, data.js, deterministic) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
+| R23 | tests/test_R22_R27_viz_export.py::test_R23_* (4: consistent, altered row, outcome mismatch, row count vs runs) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
 | R24 | tools/check_viz.py + MANUAL | TODO | |
 | R25 | | TODO | |
 | R26 | MANUAL | TODO | |
-| R27 | | TODO | |
+| R27 | tests/test_R22_R27_viz_export.py::test_R27_* (3: PDF without key/network, two runs same bytes, depends on games.csv) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |

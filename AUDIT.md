@@ -10,7 +10,7 @@ The author of the code must not audit it alone.
 - [x] No test was weakened, skipped or deleted since the last gate (check git diff of tests/)
 - [ ] Mocks appear only in tests and dry runs; real configs use `mock: false`
 - [ ] Every log in runs/ has model, family, seed, config hash, git commit, cost
-- [ ] `reproduce` works with no API key and no network, twice with identical output
+- [x] `reproduce` works with no API key and no network, twice with identical output
 - [ ] Frozen items unchanged since `prereg-frozen` (git diff against the tag)
 - [ ] Every number in the report appears in the `reproduce` output
 - [x] No secrets in the repo or history
@@ -27,3 +27,4 @@ The author of the code must not audit it alone.
 | Date | Phase | Reviewer session | Findings | Fixed? |
 |---|---|---|---|---|
 | 2026-10-24 | 2 (self-gate) | author session, NOT an independent audit | Ticked with evidence: B/B_T (test_R04_real_prereg_B_BT_differ_only_by_label green); tests not weakened (`git diff 5c52047 -- tests/` empty); no secrets (`git log -p --all` grep for key patterns = 0, .env not tracked); commits author = committer = Adam Attar, 0 AI trailers. Audit pass 1 in a fresh session: NOT RUN, pending owner (/audit in a new chat) | - |
+| 2026-10-24 | 3 (self-gate) | author session, NOT an independent audit | Ticked with evidence: reproduce without key/network and twice identical (test_R15_no_key_no_network, test_R15_run_twice_identical green). Rechecked: `git diff c5adce2 HEAD -- tests/` = 1 line (approved test(fix) cef08e3, D3); phase 2 test files unchanged since 5c52047; no secrets; author = committer = owner, 0 trailers. Not ticked: real configs/runs do not exist yet. Audit pass 2 in a fresh session: NOT RUN, pending owner | - |

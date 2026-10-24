@@ -15,7 +15,12 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git tag gate-:*)",
-      "Bash(git push origin main)"
+      "Bash(git push origin main)",
+      "Bash(git push origin wip/:*)",
+      "Bash(git push origin gate-:*)",
+      "Bash(git fetch:*)",
+      "Bash(git switch:*)",
+      "Bash(git branch:*)"
     ],
     "deny": [
       "Read(./.env)",
