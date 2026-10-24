@@ -22,8 +22,8 @@ CONFIGS = ROOT / "configs"
 DEEPSEEK = "deepseek/deepseek-v4-pro-0813"
 QWEN = "qwen/qwen3.8-2.4t-a95b"
 PINS = {
-    "deepseek": {"order": ["novita"], "allow_fallbacks": False, "quantizations": ["fp8"], "require_parameters": True},
-    "qwen": {"order": ["alibaba"], "allow_fallbacks": False, "require_parameters": True},
+    "deepseek": {"order": ["deepinfra"], "allow_fallbacks": False, "quantizations": ["fp8"], "require_parameters": True},
+    "qwen": {"order": ["novita"], "allow_fallbacks": False, "require_parameters": True},
 }
 
 
