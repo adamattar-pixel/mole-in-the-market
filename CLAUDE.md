@@ -8,7 +8,7 @@ ops/DECISIONS.md (owner decisions) wins over docs/context/contexte_projet_v7.md 
 ## Coordination (several agents and people work in parallel)
 - Cold start, in this order: ops/STATE.md, ops/CLAIMS.md, this file, ops/DECISIONS.md, ops/OPEN_ISSUES.md, then SPEC.md, PREREGISTRATION.md, PREREGISTRATION_ADDENDUM.md. The map of every process doc is ops/README.md.
 - Before starting work, check ops/CLAIMS.md on every remote branch and add your own row (one active writer per file area). Remove it in the PR that merges the work.
-- Branches `wip/phase-<N>-<name>-<topic>`, PR into the current `wip/phase-<N>`; only green gate PRs go into `main` (ops/CLAIMS.md).
+- Branches `wip/phase-<N>-<name>-<topic>`, PR into the current `wip/phase-<N>`; `main` takes reviewed, CI-green PRs; gates are `gate-N` tags (D24, ops/CLAIMS.md).
 - Keep ops/STATE.md current in the same commit as any change of state. Run `python3 -m tools.check_ops` after editing ops/.
 
 ## Who you work with
@@ -46,7 +46,7 @@ Self-gate at the end of each phase (the /gate checks, done by yourself):
 Memory across long sessions: ops/STATE.md is the current state, ops/PROGRESS.md the history log. After any context reset or compaction, read ops/STATE.md, ops/CLAIMS.md, ops/DECISIONS.md and ops/PLAN.md first, then resume where you stopped. Append an ops/PROGRESS.md row at the end of every phase (what is done, evidence, deviations, open questions).
 
 ## Git rules
-- `main` only receives green gate PRs (then tag gate-N). Work in progress goes to your own `wip/phase-<N>-<name>-<topic>` branch, PR into `wip/phase-<N>` (the owner Artem may work on it directly), with a plain push after each green requirement and at least every 30 minutes. Never force push a shared branch.
+- `main` receives reviewed, CI-green PRs only (D24); phase gates are marked by `gate-N` tags. Work in progress goes to your own `wip/phase-<N>-<name>-<topic>` branch, PR into `wip/phase-<N>` (the owner Artem may work on it directly), with a plain push after each green requirement and at least every 30 minutes. Never force push a shared branch.
 - Before ANY push: no secrets (.env, API keys, nothing secret in runs/), `python -m pytest` run, `git log -1 --format=fuller` shows the contributor's own name and email (each contributor commits under their own identity) and no Co-Authored-By or other AI trailer, ops/STATE.md updated (branches, last commit, red tests and why, next action, pending owner decisions).
 - Tests first (ops/DECISIONS.md D1): locked test commit `test(Rxx-Ryy): add failing tests from spec (locked)` before implementation; locked tests are never edited, except an owner-approved `test(fix)` commit.
 - Every contributor commits under their own identity (see CONTRIBUTING.md). Never change git config.

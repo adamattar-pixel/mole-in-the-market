@@ -23,7 +23,7 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 
 ## Branches and PRs
 - Names: `wip/phase-<N>-<name>-<topic>`, for example `wip/phase-4-artem-detectors`, `wip/phase-7-adam-report`. Lower case, `-` between words. Branches made before this rule (`artem`, `artem-*`, `wip/phase-4-artem`) keep their names until merged.
-- Flow: feature branch -> PR into the current `wip/phase-<N>` (ops/STATE.md names it) -> when the phase gate is green, a gate PR from `wip/phase-<N>` into `main`; the owner merges it and tags `gate-<N>`. `main` only receives green gates.
+- Flow: feature branch -> PR into the current `wip/phase-<N>` (ops/STATE.md names it) -> reviewed, CI-green PRs from `wip/phase-<N>` into `main` (D24); when a phase gate is green the owner tags `gate-<N>` on that commit.
 - A PR is mergeable when `python3 -m pytest` and `python3 -m tools.check_ops` are green, identity is checked (no AI trailer), and ops/STATE.md is updated.
 - Plain pushes only. Never force push or rebase a pushed branch.
 
