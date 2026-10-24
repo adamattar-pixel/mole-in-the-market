@@ -164,8 +164,8 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     summary["included_configs"] = dict(sorted(Counter(map(config_name, logs)).items()))
     rows = make_labels(logs, n_draws=n_draws, seed=seed, base_rates=base)
     write_labels_csv(rows, out_dir / "labels.csv")
-    (out_dir / "summary.json").write_text(json.dumps(summary, sort_keys=True, indent=1) + "\n", encoding="utf-8")
-    (out_dir / "tables.md").write_text(tables_md(summary), encoding="utf-8")
+    (out_dir / "summary.json").write_text(json.dumps(summary, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
+    (out_dir / "tables.md").write_text(tables_md(summary), encoding="utf-8", newline="\n")
     write_detector_outputs(score_detectors(logs, n_draws=n_draws, seed=seed), out_dir)
     defense_logs, _ = filter_logs(all_logs, score_defenses.DEFENSE_CONFIGS, include_mock, exclude_ids)
     score_defenses.write_outputs(score_defenses.score_defenses(defense_logs), out_dir)
@@ -174,7 +174,7 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     output_lines = [f"{_sha(out_dir / n)}  out/{n}" for n in ("labels.csv", "summary.json", "tables.md",
                                                                "detectors.json", "detectors.md",
                                                                "defenses.json", "defenses.md")]
-    (out_dir / "checksums.txt").write_text("\n".join(input_lines + output_lines) + "\n", encoding="utf-8")
+    (out_dir / "checksums.txt").write_text("\n".join(input_lines + output_lines) + "\n", encoding="utf-8", newline="\n")
 
     if viz_dir is not None:
         source = hashlib.sha256("\n".join(input_lines).encode("utf-8")).hexdigest()
