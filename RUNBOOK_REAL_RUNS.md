@@ -47,10 +47,25 @@ is optional and off by default; Llama 3.3 has none). configs/run_all.yaml fallba
 `anthropic/claude-sonnet-4.5` (label `anthropic-fb`), meta-llama -> `qwen/qwen3-235b-a22b-2507` (label `qwen`).
 All four models are priced in `configs/prices.yaml` (fetched 2026-10-24). Each call is charged
 max(usage.cost, tokens x price): under BYOK usage.cost is about 0, so the token price is what hits the caps.
+Provider pins (docs/team-artem/FIXES_CLIENT.md, provider routing): Haiku and Sonnet on Anthropic, Llama on Novita
+bf16, Qwen on Parasail fp8, all with `allow_fallbacks: false`. Each log records `provider_routing`.
 Still to decide: `budget_usd` in configs/run_all.yaml (global cap, PROPOSAL 30.0 USD) and the per-config caps
 (ops/QUESTIONS.md #11, #17).
 
 ## 3. Smoke (4 games: A, E x seed 1 x 2 families, 160 calls)
+
+**Smoke v1 already ran (2026-10-24, unpinned).** The pins changed every real config hash, so the resume guard
+refuses `espion_smoke` while the old logs sit in runs/ (exit 1, "resume refused ... provider_routing"). The config
+keeps its name `espion_smoke` (locked tests and run_all use it). Least surprising fix: move the old smoke logs to
+an archive the runner never reads (tested: `tests/test_artem_provider_pin.py`), then rerun the smoke pinned:
+```
+mkdir -p runs_archive/smoke_v1/_budgets
+mv runs/espion_smoke__*.json runs_archive/smoke_v1/
+mv runs/_budgets/espion_smoke.json runs_archive/smoke_v1/_budgets/
+```
+Do not delete them: they are valid as smoke v1 (provider mix evidence). The global cap no longer counts their
+spend (about 0.054 USD), so keep that in mind against the 30 USD. Also check in the new `[smoke]` lines that
+`meta-llama` shows one provider (Novita) and `anthropic` shows Anthropic.
 
 Cost: about 0.059 raw (0.054 Haiku on the Anthropic key, 0.005 Llama on credits) / 0.18 USD with margin
 (cap 1.0). Time: about 5 to 10 min.
@@ -122,6 +137,15 @@ Writes `runs_exploratory/memory/` (never runs/), `results_exploratory/memory/`, 
 `results_exploratory/monitor/`, `figures/exploratory/price_paths.pdf` and `price_shift.pdf`. Report all of it as
 EXPLORATORY, not preregistered (docs/team-artem/MEMORY_ARM.md).
 
+THINK arm (EXPLORATORY, off by default, docs/team-artem/THINK_ARM.md): first the one-game check
+`python3 -m tools.run configs/exploratory/espion_think_smoke.yaml`, then confirm `reasoning_text` is not null and
+`reasoning_detail_types` contains `reasoning.text` in `runs_exploratory/think_smoke/`. Then
+`time python3 -m tools.run_all --exploratory --think` (30 games, gpt-oss-120b, about 0.08 to 0.23 USD billed,
+0.30 to 0.83 at the guard's prices, cap 1.5). Outputs in `runs_exploratory/think/` and `results_exploratory/think/`.
+Showcase (4 games, owner approved): `python3 -m tools.run configs/exploratory/espion_think_showcase.yaml` then
+`python3 -m tools.think_view runs_exploratory/think_showcase results_exploratory/think_showcase` (about 0.85 to
+2.3 USD, cap 3.0).
+
 O1 (seeds 6-10 on B, B_T, C, D, 40 games, about 0.59 / 1.76 USD, cap 10) only if everything above is done and
 time is left (cut order in ops/PLAN.md): `python3 -m tools.run_all --exploratory --o1`. Its tables go to
 `results_o1/` (diagnostic); the preregistered `results/` never include O1.
@@ -139,7 +163,7 @@ time is left (cut order in ops/PLAN.md): `python3 -m tools.run_all --exploratory
 No new real run after noon. Then:
 ```
 python3 -m tools.run_all                       # final offline scoring (no new games, no cost)
-git add runs/ runs_exploratory/ results/ results_exploratory/ viz/data/ figures/
+git add runs/ runs_archive/ runs_exploratory/ results/ results_exploratory/ viz/data/ figures/
 git status                                     # .env not listed (ignored), no key anywhere
 git commit -m "Freeze real runs"
 git tag runs-frozen
@@ -157,6 +181,8 @@ Push is the owner's call. Write the report numbers only from `results/` (and lab
 | Ethics | 10 | 400 | 0.15 | 0.44 | 2.5 |
 | Main chain | 104 | 4,160 | 1.52 | 4.57 | global 30 (proposal) |
 | + memory arm | 30 | 1,200 | ~0.44 | ~1.3 | 5.0 |
+| + THINK arm (gpt-oss-120b) | 30 | 1,200 | 0.08 to 0.23 | guard 0.30 to 0.83 | 1.5 |
+| + THINK showcase | 4 | 160 | 0.85 to 2.29 | - | 3.0 |
 | + O1 | 40 | 1,600 | 0.59 | 1.76 | 10.0 |
 | + fallback pilot, if used | 10 | 400 | 0.03 (Qwen) to 0.81 (Sonnet) | 0.08 to 2.43 | pilot cap |
 

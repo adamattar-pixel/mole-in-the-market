@@ -15,6 +15,8 @@ On `wip/phase-4`, PR #1 (`artem-owner-approval`) and `artem-ops-reorg`. No real 
 - Report skeleton with headings and `[RESULT: ...]` placeholders, no prose (D21).
 - Team docs in docs/team-artem/: independent audit passes 1 and 2, pre-run review, related work, novelty, model choice and cost, competitor scan.
 - `validate_e --config` filter (QUESTIONS #23).
+- Provider routing: optional per-family `provider` block (OpenRouter routing object), logged as `provider_routing`, checked on resume and across pooled steps; real configs pin Llama 3.3 to Novita bf16 and Anthropic models to Anthropic (docs/team-artem/FIXES_CLIENT.md).
+- EXPLORATORY THINK arm: gpt-oss-120b with logged raw reasoning traces, `<think>`-safe reply parsing from content only, `tools/think_view.py` heuristic keyword coder and trace export, `run_all --think`, 4-game showcase config (docs/team-artem/THINK_ARM.md).
 - Cost guard: each real call is charged max(reported cost, tokens x price from `configs/prices.yaml`); a model with no price is refused.
 - ops/ folder: STATE.md (single resume point), CLAIMS.md (coordination board, branch and PR rules), OPEN_ISSUES.md (backlog), README.md (map), and `tools/check_ops.py`. This changelog.
 

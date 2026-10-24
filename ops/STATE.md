@@ -10,6 +10,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | `wip/phase-4-artem` (origin) = local `artem-owner-approval` | a6b6022 | Owner decisions (test(fix) #21, abstract 150-250, validate_e --config, cost guard). PR #1 into `wip/phase-4`, open |
 | `artem-ops-reorg` (local) | this branch | ops/ reorg, coordination board, CHANGELOG, tools/check_ops.py. Stacked on `artem-owner-approval`; PR into `wip/phase-4` after PR #1 |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3). No new work |
+| `wip/phase-4-artem-think` (local) | see git log | Provider pins (Llama on Novita bf16, Anthropic on Anthropic) and the EXPLORATORY THINK arm (gpt-oss-120b, showcase configs, tools/think_view, run_all --think). Not pushed. Real smoke v1 logs must be archived before the pinned smoke (RUNBOOK_REAL_RUNS.md step 3) |
 
 Merge note: `artem-owner-approval` does not contain 846d3d8 (2 doc lines in AUDIT.md and PROGRESS.md). Git
 follows the renames to ops/, but the PROGRESS.md "Resume here" line edited by 846d3d8 is removed here: keep

@@ -42,3 +42,32 @@ real call is therefore charged max(usage.cost, prompt_tokens x input + completio
 the per-model prices of `configs/prices.yaml`; both values, the charge and its source are logged in
 `provenance` (`cost_reported`, `cost_computed`, `cost_charged`, `cost_source`). A model without a price is
 refused. Tests: `tests/test_artem_byok_cost.py`. The project does not use BYOK (owner decision, 2026-10-24).
+
+## Provider routing (pins, 2026-10-24, after the real smoke)
+
+The smoke run showed Llama 3.3 70B served by 6 providers inside single games (AkashML, Cloudflare, DeepInfra,
+Novita, Parasail, SambaNova), with different quantizations. A family entry may now carry `provider`, sent
+unchanged as OpenRouter's `provider` routing object (https://openrouter.ai/docs/features/provider-routing).
+Allowed keys: `order` (non-empty list of provider slugs), `allow_fallbacks` (bool; false needs an order),
+`quantizations` (non-empty list of OpenRouter's values), `require_parameters` (bool). It is logged per game as
+`provider_routing` (only when set), checked on resume (review M2) and must match between pooled or matched
+steps in run_all (review M3). Dry configs and dry run_all drop it, so dry logs are unchanged.
+
+Pins (OpenRouter `/api/v1/models/<id>/endpoints`, fetched 2026-10-24 12:48 UTC):
+| Family | Pin | Why |
+|---|---|---|
+| anthropic (Haiku 4.5), anthropic-fb (Sonnet 4.5) | `order: [anthropic]`, `allow_fallbacks: false` | stays on Anthropic (BYOK key); no `require_parameters`, because Anthropic does not support `seed` and would then be excluded |
+| meta-llama (Llama 3.3 70B) | `order: [novita]`, `quantizations: [bf16]`, `allow_fallbacks: false`, `require_parameters: true` | bf16 (no quantization loss), temperature and seed supported, 99.8% uptime over the last day, served about a third of the smoke calls already. 0.135 / 0.40 USD per 1M (the price entry stays 0.10 / 0.32, a locked test; Llama is paid from credits, so usage.cost is the full charge and wins the max) |
+| qwen (fallback Qwen3 235B) | `order: [parasail]`, `quantizations: [fp8]`, `allow_fallbacks: false`, `require_parameters: true` | no bf16 endpoint listed; fp8 with temperature and seed, 100% uptime over the last day |
+| openai (THINK arm, gpt-oss-120b) | `order: [deepinfra]`, `quantizations: [bf16]`, `allow_fallbacks: false`, `require_parameters: true` | docs/team-artem/THINK_ARM.md |
+
+Alternatives seen for Llama: AkashML fp8 (99.9%), CoreWeave fp16 (99.7%, 0.71 / 0.71). With
+`allow_fallbacks: false`, an outage of the pinned provider makes calls fail: rerun the same command later (logs
+are write-once, the game in progress is dropped), or change the pin under a new config name.
+
+Reasoning trace: `last_call` also holds `reasoning_text` (message.reasoning, or the joined `reasoning.text`
+entries of reasoning_details) and `reasoning_detail_types`, only when the response has them. The returned reply
+is always `content`; `parse_reply` strips leaked `<think>` blocks first.
+
+Config hashes: all real configs change (the pin is part of the config). Only the smoke has run; see
+RUNBOOK_REAL_RUNS.md step 3 for what to do with the old smoke logs.

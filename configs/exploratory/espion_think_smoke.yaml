@@ -1,0 +1,20 @@
+# EXPLORATORY, not preregistered. One-game check of the THINK arm before espion_think: does the pinned provider
+# return a raw trace (provenance.reasoning_text not null, reasoning_detail_types has reasoning.text)?
+# Same families and settings as espion_think. Writes to runs_exploratory/think_smoke. Needs the owner's GO (H2).
+name: espion_think_smoke
+mock: false
+think: true
+out_dir: runs_exploratory/think_smoke
+n_rounds: 20
+spy_start: 8
+# Frozen design values (PREREGISTRATION.md, Design, frozen at d5e7ebc)
+demand: {type: logit, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, beta: 100.0, alpha: 1.0}
+seeds: [1]
+conditions: [B]
+families:
+  - family: openai
+    models: {"0": openai/gpt-oss-120b, "1": openai/gpt-oss-120b}
+    reasoning: {effort: low}
+    provider: {order: [deepinfra], allow_fallbacks: false, quantizations: [bf16], require_parameters: true}
+budget_usd: 0.1
+temperature: 1.0

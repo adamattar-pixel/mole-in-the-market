@@ -15,6 +15,9 @@ from harness.spy import ScriptedSpy
 FIRMS = ("0", "1")
 # OpenRouter `reasoning` request object (docs/team-artem/FIXES_CLIENT.md).
 REASONING_EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh", "max")
+# OpenRouter `provider` routing object, the subset used here (docs/team-artem/FIXES_CLIENT.md, provider routing).
+PROVIDER_KEYS = ("order", "allow_fallbacks", "quantizations", "require_parameters")
+QUANTIZATIONS = ("int4", "int8", "fp4", "mxfp4", "nvfp4", "fp6", "fp8", "mxfp8", "fp16", "bf16", "fp32", "unknown")
 
 
 class RealRunRefused(RuntimeError):
@@ -63,6 +66,34 @@ def _check_reasoning(r):
             raise ValueError("reasoning max_tokens must be an integer >= 0")
 
 
+def _check_provider(p):
+    if p is None:
+        return
+    if not isinstance(p, dict) or not p or set(p) - set(PROVIDER_KEYS):
+        raise ValueError(f"provider must be null or an object with {PROVIDER_KEYS}: {p!r}")
+    if "order" in p:
+        o = p["order"]
+        if not isinstance(o, list) or not o or not all(isinstance(s, str) and s for s in o):
+            raise ValueError(f"provider order must be a non-empty list of provider slugs: {o!r}")
+    if "quantizations" in p:
+        q = p["quantizations"]
+        if not isinstance(q, list) or not q or any(x not in QUANTIZATIONS for x in q):
+            raise ValueError(f"provider quantizations must be a non-empty list from {QUANTIZATIONS}: {q!r}")
+    for k in ("allow_fallbacks", "require_parameters"):
+        if k in p and not isinstance(p[k], bool):
+            raise ValueError(f"provider {k} must be true or false")
+    if p.get("allow_fallbacks") is False and "order" not in p:
+        raise ValueError("provider allow_fallbacks false needs an order (the providers allowed)")
+
+
+def family_provider(cfg, family):
+    """The family's OpenRouter provider routing object. None = not sent (OpenRouter load-balances)."""
+    for fam in cfg["families"]:
+        if fam["family"] == family:
+            return fam.get("provider")
+    return None
+
+
 def family_reasoning(cfg, family):
     """Per-family reasoning wins over the top-level one. None = not sent."""
     for fam in cfg["families"]:
@@ -97,19 +128,26 @@ def validate_config(cfg):
     _check_reasoning(cfg.get("reasoning"))
     for fam in cfg["families"]:
         _check_reasoning(fam.get("reasoning"))
+        _check_provider(fam.get("provider"))
     if float(cfg["budget_usd"]) <= 0:
         raise ValueError("budget_usd must be > 0")
     if not isinstance(cfg.get("memory", False), bool):
         raise ValueError("memory must be true or false")
+    if not isinstance(cfg.get("think", False), bool):
+        raise ValueError("think must be true or false")
+    if cfg.get("memory", False) and cfg.get("think", False):
+        raise ValueError("one exploratory arm per config: memory and think are not both set")
+    arm = cfg.get("memory", False) or cfg.get("think", False)
     if "out_dir" in cfg:
         out = str(cfg["out_dir"]).replace("\\", "/").strip("/")
         in_runs = out == "runs" or out.startswith("runs/")
         in_exploratory = out.startswith("runs_exploratory/")
         if cfg["mock"] and (in_runs or in_exploratory):
             raise ValueError("a mock (dry) config must never write to runs/")
-        if not cfg["mock"] and cfg.get("memory", False) and not in_exploratory:
-            raise ValueError("an exploratory memory config writes to runs_exploratory/<arm>, never to runs/")
-        if not cfg["mock"] and not cfg.get("memory", False) and out != "runs":
+        if not cfg["mock"] and arm and not in_exploratory:
+            raise ValueError("an exploratory memory or think config writes to runs_exploratory/<arm>, never "
+                             "to runs/")
+        if not cfg["mock"] and not arm and out != "runs":
             raise ValueError("a real config writes to runs/")
 
 
@@ -136,7 +174,9 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
     prev_price = {f: None for f in FIRMS}
     temperature = cfg.get("temperature")
     reasoning = family_reasoning(cfg, spec.family)
-    settings = {k: v for k, v in (("temperature", temperature), ("reasoning", reasoning)) if v is not None}
+    provider = family_provider(cfg, spec.family)
+    settings = {k: v for k, v in (("temperature", temperature), ("reasoning", reasoning), ("provider", provider))
+                if v is not None}
     reasoning_counts = []
     rounds, cost = [], 0.0
     invalid_prices = invalid_responses = 0
@@ -185,6 +225,8 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
     }
     if memory:
         log["memory"] = True
+    if cfg.get("think", False):
+        log["think"] = True  # EXPLORATORY THINK arm (docs/team-artem/THINK_ARM.md)
     if cond.base_condition is not None:
         log["base_condition"] = cond.base_condition
         log["addendum_status"] = addendum.get("status")
@@ -197,6 +239,8 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
         log["temperature"] = temperature
     if reasoning is not None:
         log["reasoning"] = reasoning
+    if provider is not None:
+        log["provider_routing"] = provider
     if reasoning_counts:
         known = [n for n in reasoning_counts if n is not None]
         log["reasoning_tokens"] = sum(known) if known else None
@@ -244,7 +288,8 @@ def check_resume(cfg, existing, runs_dir):
         if fam is None:
             raise ResumeMismatch(f"{where} family {g['family']!r}, which the current config no longer has")
         current = {"models": dict(fam["models"]), "temperature": cfg.get("temperature"),
-                   "reasoning": family_reasoning(cfg, g["family"])}
+                   "reasoning": family_reasoning(cfg, g["family"]),
+                   "provider_routing": family_provider(cfg, g["family"])}
         for field, now in current.items():
             if g.get(field) != now:
                 raise ResumeMismatch(f"{where} {field} {g.get(field)!r}, the current config has {now!r}. "
