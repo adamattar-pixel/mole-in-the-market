@@ -30,6 +30,11 @@ Also set a spend limit on the OpenRouter account (and on the Anthropic console i
 
 ## 2. Model ids, temperature, reasoning (owner decisions D10, FIXES_CLIENT.md)
 
+PROPOSED on branch `artem-owner-approval` (docs/team-artem/OWNER_APPROVAL.md): the substitutions below, the
+test(fix) for QUESTIONS #21 and a fallback label `openai-fb` are already committed there. After
+`git merge --no-ff artem-owner-approval`, skip the sed and the commit below; the suite is fully green.
+Read the gpt-5.4 temperature caveat in OWNER_APPROVAL.md first.
+
 Recommended pair (MODEL_AND_COST.md, "R4. Revised recommendation"): `openai/gpt-5.4` (reasoning off by
 default) + `meta-llama/llama-3.3-70b-instruct` (open weights, no reasoning).
 Temperature: `1.0` in every real config (FIXES_CLIENT.md decision 1). Reasoning: leave unset for both
