@@ -73,7 +73,7 @@ summary or encrypted content), and have an endpoint with temperature and seed:
 | Family | Model | Why | Pinned endpoint |
 |---|---|---|---|
 | deepseek | `deepseek/deepseek-v4-pro-0813` | GA DeepSeek V4 Pro (1.6T MoE, 49B active), newest DeepSeek flagship | Novita fp8, temperature + seed + reasoning, 100% uptime last day |
-| qwen | `qwen/qwen3.8-2.4t-a95b` | open-weight variant of Qwen3.8 Max (2.4T, 95B active) | Alibaba (first party), temperature + seed + reasoning, 100%; quantization not published |
+| qwen | `qwen/qwen3.8-2.4t-a95b` | open-weight variant of Qwen3.8 Max (2.4T, 95B active) | Novita (re-pinned 2026-10-24 22:10 after a live probe; Alibaba endpoint status unknown), temperature + seed + reasoning; quantization not published |
 
 Other candidates seen: `moonshotai/kimi-k3` (2.8T open weights; most endpoints fp4), `z-ai/glm-5.3`.
 "Strongest" is a judgement from size and release, not from a benchmark we ran.
@@ -102,7 +102,7 @@ Showcase, effort medium, assumed 1,000 to 3,000 reasoning tokens per call (1,050
 | Family | Price in / out per 1M (guard = pinned) | Per game | 2 games |
 |---|---|---|---|
 | deepseek (Novita fp8) | 0.99 / 2.97 | 0.14 to 0.38 USD | 0.28 to 0.76 USD |
-| qwen (Alibaba) | 2.00 / 6.00 | 0.29 to 0.77 USD | 0.57 to 1.53 USD |
+| qwen (Novita) | 2.00 / 6.00 | 0.29 to 0.77 USD | 0.57 to 1.53 USD |
 | Total, 4 games | | | 0.85 to 2.29 USD |
 Cap `budget_usd: 3.0`. Measure the real numbers in the logs (`cost_usd`, `reasoning_tokens`).
 
@@ -127,3 +127,6 @@ owner decides otherwise. No new persuasive text: the offers are the frozen texts
 - `configs/exploratory/espion_think.yaml`, `espion_think_smoke.yaml`, `espion_think_dry.yaml`,
   `espion_think_showcase.yaml`, `espion_think_coder.yaml`; prices in `configs/prices.yaml`.
 - Tests: `tests/test_artem_think_arm.py`, `tests/test_artem_think_showcase.py` (locked).
+
+## Publication note (2026-10-24 23:40 HKT)
+The raw Qwen traces (traces/*.json, think_traces.md, think_excerpts.md) were committed by mistake in 8db26d3 and pushed to `wip/phase-4`; they were untracked and git-ignored in the next commit. They remain in that branch's history. Rewriting history needs a force push, which the repo forbids without the owner (ops/QUESTIONS.md #28). The public outputs are the coded table think_view.md / think_view.csv only.

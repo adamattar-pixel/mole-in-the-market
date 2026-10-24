@@ -36,7 +36,7 @@ PREREGISTRATION_ADDENDUM.md. Wilson 95% intervals. Unit = the game unless stated
 ## Data actually scored
 
 - Preregistered tables (C1): 30 games, all Llama 3.3 70B (CoreWeave fp16): pilot A, E and core B, B_T, C, D, 5 seeds
-  each. Excluded 16: 10 Haiku pilot games (gate deviation), 4 smoke games, 2 Sonnet games in runs/ (non-core
+  each. Excluded 14: 10 Haiku pilot games (gate deviation), 4 smoke games, 2 Sonnet games in runs/ (non-core
   config). Source: results/tables.md header.
 - Not run, so empty: monitor (B_MON, C_MON, D_MON), ethics (B_ETH), memory arm, THINK arm (gpt-oss), O1. The
   "0/0 (n/a)" and "Collusion removed 0" cells in results/defenses.md mean **not run**, not zero.
