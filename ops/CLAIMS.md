@@ -35,5 +35,4 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 ## Active claims
 | Who | Branch | Files / areas | Started | Expected end |
 |---|---|---|---|---|
-| Adam (Claude) | wip/phase-4-adam-numbers | tools/check_numbers.py, tests/test_R18_check_numbers.py, tests/test_R18_gaps.py, docs/adam/, .gitattributes, tests/test_lf_portability.py, viz/demo/ (OPEN_ISSUES #19), LF writes only (newline="
-") in tools/reproduce.py, tools/score_detectors.py, tools/score_defenses.py, harness/vizexport.py, tests/test_lf_outputs.py | 2026-10-25 03:00 +08:00 | 2026-10-25 12:00 +08:00 |
+| Adam (Claude) | wip/phase-4-adam-numbers | tools/check_numbers.py, tests/test_R18_check_numbers.py, tests/test_R18_gaps.py, docs/adam/, .gitattributes, tests/test_lf_portability.py, viz/demo/ (OPEN_ISSUES #19), LF-only writes in tools/reproduce.py, tools/score_detectors.py, tools/score_defenses.py, harness/vizexport.py, tests/test_lf_outputs.py | 2026-10-25 03:00 +08:00 | 2026-10-25 12:00 +08:00 |
