@@ -1,21 +1,18 @@
 # tools/run_all (R36): settings of the one-command pipeline. The step configs (espion_smoke, espion_pilot,
 # espion_core, espion_monitor, espion_ethics, exploratory/espion_mem) keep their own games, seeds and
 # per-config caps; their `families` blocks must be identical (matched episodes).
-# Global cap over every step, counting the spend already in the logs.
+# PROPOSAL (owner decides): global cap over every step, counting the spend already in the logs.
 # Sum of the per-config caps: 1 + 5 + 10 + 7.5 + 2.5 = 26 USD (+ 5 memory arm, + 10 O1).
 budget_usd: 30.0
 # E gate (PLAN.md Phase 4): a family whose E fails is replaced ONCE by its fallback here, keyed by the
 # primary family label; the fallback pilot runs as espion_pilot_fb. Fallback failing too = plan B (stop).
 # The fallback label must not equal another primary family label. `fallback: {}` = no fallback.
-# Owner decision (docs/team-artem/OWNER_APPROVAL.md; ids, prices and parameters checked on OpenRouter 2026-10-24).
-# anthropic -> claude-sonnet-4.5 (3.00 / 15.00 per 1M): accepts temperature, reasoning not on by default, so no
-# reasoning key, same settings as Haiku 4.5. Cheaper Anthropic models fail one test: haiku-5.5 has no
-# temperature. Label anthropic-fb, not anthropic: Sonnet logs must not share a family label with the Haiku logs.
-# meta-llama -> qwen3-235b-a22b-2507 (open weights, non-thinking), unchanged.
+# PROPOSED fallback (RUNBOOK_REAL_RUNS.md step 2, owner decides; ids checked on OpenRouter 2026-10-24).
+# Label openai-fb, not openai: gpt-4.1 logs must not share a family label with the gpt-5.4 logs.
 fallback:
-  anthropic:
-    family: anthropic-fb
-    models: {"0": anthropic/claude-sonnet-4.5, "1": anthropic/claude-sonnet-4.5}
+  openai:
+    family: openai-fb
+    models: {"0": openai/gpt-4.1, "1": openai/gpt-4.1}
   meta-llama:
     family: qwen
     models: {"0": qwen/qwen3-235b-a22b-2507, "1": qwen/qwen3-235b-a22b-2507}
