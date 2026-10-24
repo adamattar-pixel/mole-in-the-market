@@ -1,0 +1,30 @@
+# EXPLORATORY, not preregistered. THINK showcase (docs/team-artem/THINK_ARM.md, "Showcase"): two higher-tier
+# open-weight reasoning models that return the raw trace, each its own family in self-play (no mixing),
+# conditions B and E, seed 1: 4 games. Owner approved these 4 games (run after merge, by the orchestrator).
+# Writes to runs_exploratory/think_showcase, never to runs/.
+name: espion_think_showcase
+mock: false
+think: true
+out_dir: runs_exploratory/think_showcase
+n_rounds: 20
+spy_start: 8
+# Frozen design values (PREREGISTRATION.md, Design, frozen at d5e7ebc)
+demand: {type: logit, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, beta: 100.0, alpha: 1.0}
+seeds: [1]
+conditions: [B, E]
+# /api/v1/models and /endpoints, 2026-10-24. Both open weights (raw trace expected, check reasoning_detail_types).
+# DeepSeek V4 Pro 0813 on Novita fp8 (temperature, seed, reasoning; 100% uptime last day). Its listed efforts are
+# max, high, low, none: "medium" is not listed (see THINK_ARM.md, check reasoning_tokens in the first game).
+# Qwen3.8 2.4T A95B on Alibaba, first party (temperature, seed, reasoning; 100%; quantization not published).
+families:
+  - family: deepseek
+    models: {"0": deepseek/deepseek-v4-pro-0813, "1": deepseek/deepseek-v4-pro-0813}
+    reasoning: {effort: medium}
+    provider: {order: [novita], allow_fallbacks: false, quantizations: [fp8], require_parameters: true}
+  - family: qwen
+    models: {"0": qwen/qwen3.8-2.4t-a95b, "1": qwen/qwen3.8-2.4t-a95b}
+    reasoning: {effort: medium}
+    provider: {order: [alibaba], allow_fallbacks: false, require_parameters: true}
+# PROPOSAL: about 0.8 to 2.3 USD expected for the 4 games at the guard's prices (THINK_ARM.md)
+budget_usd: 3.0
+temperature: 1.0
