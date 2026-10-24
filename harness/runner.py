@@ -208,6 +208,49 @@ def existing_logs(cfg, runs_dir):
     return [json.loads(p.read_text(encoding="utf-8")) for p in paths]
 
 
+def _budgets_path(cfg, runs_dir):
+    return Path(runs_dir) / "_budgets" / f"{cfg['name']}.json"
+
+
+def read_budgets(cfg, runs_dir):
+    """Every budget_usd this config ran with (not a game log: kept out of load_logs and the checksums)."""
+    p = _budgets_path(cfg, runs_dir)
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+
+
+def record_budget(cfg, runs_dir):
+    seen = read_budgets(cfg, runs_dir)
+    if cfg["budget_usd"] not in seen:
+        p = _budgets_path(cfg, runs_dir)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps(seen + [cfg["budget_usd"]]) + "\n", encoding="utf-8")
+
+
+class ResumeMismatch(RealRunRefused):
+    pass
+
+
+def check_resume(cfg, existing, runs_dir):
+    """Refuse to add games to a config whose logged games were run with other settings (review M2)."""
+    fams = {f["family"]: f for f in cfg["families"]}
+    # budget_usd is in config_hash, but raising it is how a run goes on after a cap stop (R17).
+    hashes = {config_hash(cfg)} | {config_hash(dict(cfg, budget_usd=b)) for b in read_budgets(cfg, runs_dir)}
+    for g in existing:
+        where = f"resume refused: {g['game_id']} was logged with"
+        fam = fams.get(g["family"])
+        if fam is None:
+            raise ResumeMismatch(f"{where} family {g['family']!r}, which the current config no longer has")
+        current = {"models": dict(fam["models"]), "temperature": cfg.get("temperature"),
+                   "reasoning": family_reasoning(cfg, g["family"])}
+        for field, now in current.items():
+            if g.get(field) != now:
+                raise ResumeMismatch(f"{where} {field} {g.get(field)!r}, the current config has {now!r}. "
+                                     "Restore the setting or run it under a new config name.")
+        if g["config_hash"] not in hashes:
+            raise ResumeMismatch(f"{where} another config_hash: the config changed since (only budget_usd may "
+                                 "change on a resume). Restore it or run it under a new config name.")
+
+
 def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None, addendum_path=None):
     """Run every game of the config. Existing logs are skipped (never overwritten)."""
     validate_config(cfg)
@@ -228,6 +271,7 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
     git_commit = git_commit or current_git_commit()
     runs_dir = Path(runs_dir)
     existing = existing_logs(cfg, runs_dir)
+    check_resume(cfg, existing, runs_dir)
     # The cap bounds the config's total spend across reruns: start from the spend already logged.
     budget = BudgetTracker(cfg["budget_usd"])
     budget.total = sum(float(g["cost_usd"]) for g in existing)
@@ -235,6 +279,8 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
     if todo and budget.total >= budget.cap:
         raise BudgetExceeded(f"{cfg['name']}: {budget.total:.4f} USD already logged >= cap {budget.cap:.4f} USD, "
                              f"{len(todo)} games left")
+    if todo:
+        record_budget(cfg, runs_dir)
     done = []
     for spec in todo:
         done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit, addendum=addendum))
