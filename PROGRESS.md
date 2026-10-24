@@ -2,15 +2,15 @@
 Claude updates this file at the end of every phase and whenever the state changes. After a context reset, read this file first.
 
 ## Resume here (read this first)
-- READ HANDOFF.md FIRST: exact state, file ownership (Claude on `wip/phase-4`, Artem on `artem`), frozen items, commands, next actions.
-- Checkpoint: tag `handoff-artem-1` on `wip/phase-4`. `python -m pytest` -> 254 passed, 0 red. No red locked-test commit kept local.
-- main = gate-3 + preregistration freeze (tag `prereg-frozen`). Addendum frozen: tag `addendum-frozen` (8b7b5a1, hash in 378f1dd).
+- READ HANDOFF.md FIRST. Project owner: **Artem** (full handoff 2026-10-24). Adam Attar (adamattar-pixel) stays co-author and is reachable for decisions.
+- Branch `wip/phase-4`, commit "docs: handoff ownership to Artem" (tag `handoff-artem-1` kept on the previous checkpoint). `python -m pytest` -> 254 passed, 0 red.
+- main = gate-3 + preregistration freeze (tag `prereg-frozen`). Addendum frozen (tag `addendum-frozen`).
 - Install and test: `pip install -r requirements.txt` then `python -m pytest`.
-- Next action (Claude): R31-R32 monitor, tests first (HANDOFF.md section 6). Artem: detectors R28-R29 on branch `artem`.
-- Owner decisions pending: H2 (API key, GO, 2 model families replacing `tbd` in configs); fresh-session audits (/audit) NOT RUN; QUESTIONS.md open rows (#10-#13).
+- Next actions, in order (details in HANDOFF.md section 6b): 1) pick the 2 model families and set OPENROUTER_API_KEY, 2) GO for real smoke then pilot (A, E) and the E gate, 3) core runs and `reproduce`, 4) detectors R28-R30, 5) R31-R36, tools/run_all, RUNBOOK_REAL_RUNS.md, 6) report and check_submission. Runs freeze Sunday noon; submit early Sunday before 23:59 AoE.
+- Frozen, never edited: PREREGISTRATION.md, PREREGISTRATION_ADDENDUM.md, locked tests (D1). Any change = QUESTIONS.md + reported deviation.
 
 ## Current state
-Phase: 4 no-API part done (gate open, H2); R19, R24-R25 done; R28-R36 not started in code | Checkpoint: handoff-artem-1 | Tests: 254 passed
+Phase: 4 no-API part done (gate open, H2); R19, R24-R25 done; R28-R36 not started in code | Checkpoint: handoff to Artem | Tests: 254 passed
 
 ## Log
 | Date | Phase | What was done | Evidence (command, result) | Deviations |
@@ -22,8 +22,9 @@ Phase: 4 no-API part done (gate open, H2); R19, R24-R25 done; R28-R36 not starte
 | 2026-10-24 | 1 | Preregistration FROZEN on the owner's order (D15). Only status words changed | freeze commit d5e7ebc ("prereg: freeze"), hash commit e95853a, tag prereg-frozen; `python -m pytest` 179 passed | - |
 | 2026-10-24 | 4 (no API) | Gap tests for phases 0-3 (b2ffcd5 + test commit), TEST_ORDER_REPORT.md. Configs dry/smoke/pilot/core, dry mock client, tools/run.py, cost_summary, guards (mock never writes to runs/, real run refused on tbd models). Tests locked at 87c3b7f (22 red: 17 missing configs, 5 NotImplementedError) | `python -m pytest` -> 209 passed; mutations: tbd guard off 3 red, runs/ guard off 1 red, cost mean off 2 red, dry client non-deterministic 2 red; restored | A first mutation pass restored uncommitted files with git checkout and lost the implementation; it was rewritten, committed (0a048dd), and the mutation pass redone. Gate 4 OPEN: real smoke/pilot need H2 |
 | 2026-10-24 | 4/7/8 + handoff | R19 check_submission (locked a0cd120, 20 red NotImplementedError, then green; mutations: 150->151 3 red, <= -> < 1 red, appendix heading check 1 red, overall not-run-as-pass 2 red). R24-R25 page + demo data (locked ef5bccd, 25 red; mutations: script list 1 red, external URL 2 red, runs/ refusal 2 red, synthetic flag 1 red; page rendered in headless Chrome and inspected). Plan v2: SPEC R28-R36, DECISIONS D16-D21, Phase 8 cut, addendum frozen (8b7b5a1/378f1dd, tag addendum-frozen). HANDOFF.md for Artem | `python -m pytest` -> 254 passed; git status clean | R28-R36 draft tests written but not committed (moved out of the repo) on the owner's handoff order. Self-audit: written, fresh-session audit NOT RUN |
+| 2026-10-24 | handoff | Full ownership handoff to Artem: HANDOFF.md, CLAUDE.md (owner, identity rule), CONTRIBUTING.md, README.md authors and run commands, report/AUTHORS.md | `python -m pytest` -> 254 passed; git status clean | No requirement started. Adam stays co-author |
 
-## Waiting on the owner (hard stops)
+## Waiting on the owner (hard stops, owner = Artem since 2026-10-24)
 - H2: API key and GO for the first real run (Phase 4)
 - Audit pass 1 (Phase 2): run /audit in a fresh chat
 - QUESTIONS.md open rows (1-9 answered 2026-10-24, see DECISIONS.md)
