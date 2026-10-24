@@ -9,6 +9,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | `wip/phase-4` (origin) | 846d3d8 | Current shared phase branch: Phase 4 no-API work, R19, R24-R25, R28-R36, review fixes M1-M4, audit records. Same tip as local `artem` |
 | `wip/phase-4-artem` (origin) = local `artem-owner-approval` | a6b6022 | Owner decisions (test(fix) #21, abstract 150-250, validate_e --config, cost guard). PR #1 into `wip/phase-4`, open |
 | `artem-ops-reorg` (local) | this branch | ops/ reorg, coordination board, CHANGELOG, tools/check_ops.py. Stacked on `artem-owner-approval`; PR into `wip/phase-4` after PR #1 |
+| `wip/phase-4-artem-figure` (local) | see git log | Key figure tools/before_after.py and zero-cost checks tools/insight_checks.py (docs/team-artem/KEY_FIGURE.md). Not pushed |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3). No new work |
 | `wip/phase-4-artem-think` (local) | see git log | Provider pins (Llama on Novita bf16, Anthropic on Anthropic) and the EXPLORATORY THINK arm (gpt-oss-120b, showcase configs, tools/think_view, run_all --think). Not pushed. Real smoke v1 logs must be archived before the pinned smoke (RUNBOOK_REAL_RUNS.md step 3) |
 
