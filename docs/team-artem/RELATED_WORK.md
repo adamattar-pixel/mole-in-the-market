@@ -189,7 +189,7 @@ Format per entry: citation, URL, **Found:** one line, **We differ:** one line.
 
 - **Apart Research (2026).** AI Collusion Research Sprint, Overview and Resources tabs. https://apartresearch.com/sprints/ai-collusion-research-sprint-2026-10-23-to-2026-10-25 [V]. Q3.2 says the undercover-offer design "hasn't been tested" and suggests direct offer / hint / benign request with verbal and behavioral acceptance. Say this openly: our design follows Apart's suggestion.
 - **luciasauer/algorithmic_pricing_llms** (Fish-style starter). https://github.com/luciasauer/algorithmic_pricing_llms [V]
-- **ArnolFokam/ai-collusion-research-sprint** (our base harness, declare as preexisting). https://github.com/ArnolFokam/ai-collusion-research-sprint [V]
+- **ArnolFokam/ai-collusion-research-sprint** (not used: harness rewritten from scratch during the sprint, idea only; see THIRD_PARTY.md and D4). https://github.com/ArnolFokam/ai-collusion-research-sprint [V]
 - **DanielElliottUIUC/ApartAICollusion** (parallel sprint project). https://github.com/DanielElliottUIUC/ApartAICollusion [V]. Double auction (Agrawal harness), mixed families, undercover seller offering a price-fixing deal to every seller, report tool, warnings and precedents. Status "planning / scaffolding" as of README read 24 Oct. Largest overlap with us; no hint condition, no harmless control, no single-sentence trust label minimal pair.
 
 ## 9. Unverified (cited by Apart or v7; do not cite without checking)
