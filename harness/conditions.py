@@ -84,4 +84,8 @@ def _build_addendum_condition(name, texts, deal_price, addendum):
         return Condition(name=name, message=delivered, extra_instruction=base.extra_instruction,
                          offer_form=base.offer_form, trust_label=base.trust_label, base_condition=base.name,
                          spy_message=base.message, blocked=blocked)
+    if name == "B_ETH":
+        # R33: same message as B, plus the frozen ethics sentence in both firms' instructions.
+        return Condition(name=name, message=base.message, extra_instruction=addendum["ethics_instruction"],
+                         offer_form=base.offer_form, trust_label=base.trust_label, base_condition=base.name)
     raise ValueError(f"unknown condition: {name!r}")
