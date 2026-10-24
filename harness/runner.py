@@ -1,10 +1,11 @@
 """Game loop and batch runner. R12 logs, R16 design validation, R17 budget stop."""
+import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
 
 from harness.agent import build_messages, parse_reply
-from harness.clients import BudgetTracker
+from harness.clients import BudgetExceeded, BudgetTracker
 from harness.conditions import CONDITIONS, build_condition, load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import ADDENDUM_CONDITIONS, addendum_is_frozen, load_addendum
@@ -13,7 +14,7 @@ from harness.spy import ScriptedSpy
 
 FIRMS = ("0", "1")
 # OpenRouter `reasoning` request object (docs/team-artem/FIXES_CLIENT.md).
-REASONING_EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh")
+REASONING_EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh", "max")
 
 
 class RealRunRefused(RuntimeError):
@@ -49,6 +50,8 @@ def _check_reasoning(r):
         return
     if not isinstance(r, dict) or not r or set(r) - {"effort", "max_tokens", "exclude", "enabled"}:
         raise ValueError(f"reasoning must be null or an object with effort, max_tokens, exclude, enabled: {r!r}")
+    if "effort" in r and "max_tokens" in r:
+        raise ValueError("reasoning sets effort or max_tokens, not both (OpenRouter docs)")
     if "effort" in r and r["effort"] not in REASONING_EFFORTS:
         raise ValueError(f"reasoning effort must be one of {REASONING_EFFORTS}: {r['effort']!r}")
     for k in ("exclude", "enabled"):
@@ -201,6 +204,55 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
     return log
 
 
+def existing_logs(cfg, runs_dir):
+    """Logs already written for this config (game ids "<config name>__...")."""
+    paths = sorted(Path(runs_dir).glob(f"{cfg['name']}__*.json"))
+    return [json.loads(p.read_text(encoding="utf-8")) for p in paths]
+
+
+def _budgets_path(cfg, runs_dir):
+    return Path(runs_dir) / "_budgets" / f"{cfg['name']}.json"
+
+
+def read_budgets(cfg, runs_dir):
+    """Every budget_usd this config ran with (not a game log: kept out of load_logs and the checksums)."""
+    p = _budgets_path(cfg, runs_dir)
+    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else []
+
+
+def record_budget(cfg, runs_dir):
+    seen = read_budgets(cfg, runs_dir)
+    if cfg["budget_usd"] not in seen:
+        p = _budgets_path(cfg, runs_dir)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(json.dumps(seen + [cfg["budget_usd"]]) + "\n", encoding="utf-8")
+
+
+class ResumeMismatch(RealRunRefused):
+    pass
+
+
+def check_resume(cfg, existing, runs_dir):
+    """Refuse to add games to a config whose logged games were run with other settings (review M2)."""
+    fams = {f["family"]: f for f in cfg["families"]}
+    # budget_usd is in config_hash, but raising it is how a run goes on after a cap stop (R17).
+    hashes = {config_hash(cfg)} | {config_hash(dict(cfg, budget_usd=b)) for b in read_budgets(cfg, runs_dir)}
+    for g in existing:
+        where = f"resume refused: {g['game_id']} was logged with"
+        fam = fams.get(g["family"])
+        if fam is None:
+            raise ResumeMismatch(f"{where} family {g['family']!r}, which the current config no longer has")
+        current = {"models": dict(fam["models"]), "temperature": cfg.get("temperature"),
+                   "reasoning": family_reasoning(cfg, g["family"])}
+        for field, now in current.items():
+            if g.get(field) != now:
+                raise ResumeMismatch(f"{where} {field} {g.get(field)!r}, the current config has {now!r}. "
+                                     "Restore the setting or run it under a new config name.")
+        if g["config_hash"] not in hashes:
+            raise ResumeMismatch(f"{where} another config_hash: the config changed since (only budget_usd may "
+                                 "change on a resume). Restore it or run it under a new config name.")
+
+
 def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None, addendum_path=None):
     """Run every game of the config. Existing logs are skipped (never overwritten)."""
     validate_config(cfg)
@@ -219,11 +271,19 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
             raise RealRunRefused("real run refused: PREREGISTRATION_ADDENDUM.md status is not FROZEN (R35)")
         addendum = load_addendum(addendum_path)
     git_commit = git_commit or current_git_commit()
-    budget = BudgetTracker(cfg["budget_usd"])
     runs_dir = Path(runs_dir)
+    existing = existing_logs(cfg, runs_dir)
+    check_resume(cfg, existing, runs_dir)
+    # The cap bounds the config's total spend across reruns: start from the spend already logged.
+    budget = BudgetTracker(cfg["budget_usd"])
+    budget.total = sum(float(g["cost_usd"]) for g in existing)
+    todo = [s for s in expand_games(cfg) if not (runs_dir / f"{s.game_id}.json").exists()]
+    if todo and budget.total >= budget.cap:
+        raise BudgetExceeded(f"{cfg['name']}: {budget.total:.4f} USD already logged >= cap {budget.cap:.4f} USD, "
+                             f"{len(todo)} games left")
+    if todo:
+        record_budget(cfg, runs_dir)
     done = []
-    for spec in expand_games(cfg):
-        if (runs_dir / f"{spec.game_id}.json").exists():
-            continue
+    for spec in todo:
         done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit, addendum=addendum))
     return done

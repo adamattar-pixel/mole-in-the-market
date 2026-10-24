@@ -77,3 +77,26 @@ No blockers found. 4 majors, 4 minors.
 ### m4. The real-mode run_all root defaults to the current directory
 - Where: `tools/run_all.py:399`. Configs and prereg paths are absolute (`ROOT`), but `runs/` is `./runs`. If you run it from another directory with the package importable, the run writes to, and reads past spend from, the wrong `runs/`.
 - Fix: default `root` to `ROOT` in real mode.
+
+## Fixes applied
+
+Branch `artem-review-fixes` (from `artem`). Each fix: a locked test commit, red first, then the fix with the full
+suite green (`python3 -m pytest -q`: 581 before, 617 after), then a mutation check (fix broken on purpose, the new
+tests fail, fix restored). New tests are in new files only. No real API call.
+
+| Item | Locked test | Fix | What changed |
+|---|---|---|---|
+| M1 | e232bb4 | b8d7fa4 | `run_batch` starts the config's tracker at the spend already logged for that config, and raises `BudgetExceeded` before any call when that spend is at or above the cap and games are left. A finished config at its cap is not an error. Tests: `tests/test_review_M1_budget_resume.py`. |
+| M2 | b6922a2 | 6cfb477 | `run_batch` refuses (`ResumeMismatch`, a `RealRunRefused`) when a logged game of the config has another family, models, temperature, reasoning or config_hash; the error names the field. Raising only `budget_usd` still resumes: each budget a config ran with is kept in `runs/_budgets/<config>.json` (not a game log, so `load_logs` and the checksums skip it; dry logs gain no key). Tests: `tests/test_review_M2_resume_settings.py`. |
+| M3 | d95c063 | 382e866 | run_all keeps each step's own family entries (a failing family is swapped for its fallback entry), O1 derives from core. `check_settings` refuses a different `n_rounds`, `spy_start` or `demand` in any step, monitor or ethics seeds that differ from core, and a different temperature or (per-family) reasoning between pilot and core or between core, monitor and ethics. Only that last check is lifted by `--allow-settings-mismatch`. Smoke may differ. Tests: `tests/test_review_M3_run_all_settings.py`. |
+| M4 | 1c284f3 | 68806f2 | `reproduce` writes `defenses.json` and `defenses.md` (configs espion_core, espion_monitor, espion_ethics) and lists both in `checksums.txt`; the separate call in run_all is removed. Two runs give identical files. Tests: `tests/test_review_M4_reproduce_defenses.py`. |
+| m2 | 04d719b | 162a402 | `effort: max` accepted; `effort` with `max_tokens` refused. |
+| m4 | 04d719b | 162a402 | Real-mode run_all root defaults to the repo root. Tests (m2, m4): `tests/test_review_minors.py`. |
+
+Not done: m1 (append-only spend ledger for dropped games) and m3 (config and mock filters in the standalone
+`sensitivity`, `monitor_view` and `score_detectors` CLIs). Both need more than a small change.
+
+End to end: `python3 -m tools.run_all --dry --root <scratchpad>/dry2 --exploratory --o1` exits 0 with every step;
+`results/checksums.txt` lists both defense files; a rerun runs 0 new games and gives byte-identical results.
+Side note (unchanged, not from this review): on the first `--o1` run, `results/checksums.txt` is written before the
+O1 logs exist, so a later rerun lists the O1 log files as inputs too and its checksums file differs once.

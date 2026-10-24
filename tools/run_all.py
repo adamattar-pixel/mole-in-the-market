@@ -11,6 +11,9 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
 - Resumable: games already logged are skipped (write-once logs, R12).
 - Real mode refuses unless PREREGISTRATION.md and PREREGISTRATION_ADDENDUM.md are FROZEN, no model id is
   `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here).
+- Each step keeps its own family entries (a failing family is swapped for its fallback). One game design and
+  matched seeds everywhere; temperature and reasoning must match between pooled or matched steps (pilot and
+  core; core, monitor and ethics) unless --allow-settings-mismatch.
 - --dry: the same chain on the mock client (dry families, mock costs) into a scratch folder, never runs/.
   The dry client prices at the deal price when the E instruction is in its prompt, so the gate passes;
   --dry-gate fail drops that to exercise the fallback and plan B path. Dry numbers are never results.
@@ -18,7 +21,7 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
 Usage:
   python -m tools.run_all --dry [--root dry_runs/run_all] [--exploratory] [--o1] [--dry-gate fail]
   python -m tools.run_all [--stop-after smoke|pilot|gate|core|monitor|ethics|scoring|exploratory]
-                          [--exploratory] [--o1]
+                          [--exploratory] [--o1] [--allow-settings-mismatch]
 Exit code: 0 done or stopped as asked, 1 refused, 2 plan B, 3 budget cap hit.
 """
 import argparse
@@ -35,9 +38,9 @@ from harness.config import GameConfig
 from harness.defenses import addendum_is_frozen
 from harness.dryclient import make_dry_client
 from harness.runlog import load_logs
-from harness.runner import RealRunRefused, run_batch, validate_config
+from harness.runner import RealRunRefused, family_reasoning, run_batch, validate_config
 from harness.validation import e_validation
-from tools import monitor_view, price_paths, score_defenses, sensitivity
+from tools import monitor_view, price_paths, sensitivity
 from tools.reproduce import PREREG_CONFIGS, config_name, filter_logs, reproduce
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -105,14 +108,54 @@ def _derived(st, name, families, **over):
     return cfg
 
 
-def check_settings(st, o1):
-    """Guards that need no file other than the configs: families, fallback, config validity, tbd ids."""
+# Steps whose games are pooled (pilot A, E with core B, B_T, C, D) or matched (core with monitor, ethics).
+POOLED_OR_MATCHED = (("pilot", "core"), ("core", "monitor", "ethics"))
+DESIGN_KEYS = ("n_rounds", "spy_start", "demand")
+
+
+def check_step_settings(st, cfgs, allow_mismatch=False):
+    """Review M3: one game design everywhere, matched seeds, and the same temperature and reasoning in pooled or
+    matched steps (that last check only is lifted by allow_mismatch)."""
+    pilot = st["steps"]["pilot"]
+    for c in cfgs:
+        for k in DESIGN_KEYS:
+            if c.get(k) != pilot.get(k):
+                raise RunAllRefused(f"{k} differs between espion_pilot and {c['name']}: one frozen game design "
+                                    "in every step")
+    for step in ("monitor", "ethics"):
+        if st["steps"][step]["seeds"] != st["steps"]["core"]["seeds"]:
+            raise RunAllRefused(f"seeds differ between the core and the {step} config (matched episodes)")
+    if allow_mismatch:
+        return
+    for group in POOLED_OR_MATCHED:
+        first = st["steps"][group[0]]
+        for step in group[1:]:
+            other = st["steps"][step]
+            for fam in [f["family"] for f in first["families"]]:
+                for field, get in (("temperature", lambda c, f: c.get("temperature")),
+                                   ("reasoning", family_reasoning)):
+                    a, b = get(first, fam), get(other, fam)
+                    if a != b:
+                        raise RunAllRefused(
+                            f"{field} differs between {first['name']} ({a!r}) and {other['name']} ({b!r}) for "
+                            f"family {fam}: these steps are pooled or matched. Make them equal, or pass "
+                            "--allow-settings-mismatch to run them anyway")
+
+
+def swap_families(families, swap):
+    """A step's own family entries, with each failing family replaced by its fallback entry."""
+    return [copy.deepcopy(swap.get(f["family"], f)) for f in families]
+
+
+def check_settings(st, o1, allow_mismatch=False):
+    """Guards that need no file other than the configs: families, fallback, config validity, tbd ids, settings."""
     primary = st["steps"]["pilot"]["families"]
     cfgs = list(st["steps"].values())
     if st["fallback"]:
         cfgs.append(_derived(st, FALLBACK_PILOT, list(st["fallback"].values())))
     if o1:
-        cfgs.append(_derived(st, O1_NAME, primary, seeds=st["o1_seeds"], budget_usd=st["o1_budget_usd"]))
+        cfgs.append(_derived(st, O1_NAME, st["steps"]["core"]["families"], seeds=st["o1_seeds"],
+                             budget_usd=st["o1_budget_usd"]))
     ids = [m for c in cfgs for f in c["families"] for m in f["models"].values()]
     if any("tbd" in str(m).lower() for m in ids):
         raise RunAllRefused("model ids are placeholders (tbd) in a step config or in the run_all.yaml fallback: "
@@ -133,6 +176,7 @@ def check_settings(st, o1):
             validate_config(c)
         except ValueError as exc:
             raise RunAllRefused(f"config {c.get('name')}: {exc}") from exc
+    check_step_settings(st, cfgs, allow_mismatch)
 
 
 def dryify(st, root):
@@ -213,7 +257,7 @@ def _logs(path, dry, names=None):
 
 def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, exploratory=False, o1=False,
                  stop_after=None, prereg_path=None, addendum_path=None, dry_gate="pass", n_draws=1000, seed=0,
-                 log=print):
+                 log=print, allow_settings_mismatch=False):
     root = Path(root)
     if stop_after is not None and stop_after not in STOP_AFTER:
         raise ValueError(f"stop_after must be one of {STOP_AFTER}")
@@ -223,13 +267,13 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
         if root.resolve() == ROOT or (root / "runs").resolve() == (ROOT / "runs").resolve():
             raise RunAllRefused("--dry writes into a scratch folder, never into the repo runs/")
         st = dryify(st, root)
-        check_settings(st, o1)
+        check_settings(st, o1, allow_settings_mismatch)
     else:
         if texts.get("status") != "FROZEN":
             raise RunAllRefused("PREREGISTRATION.md is not FROZEN")
         if not addendum_is_frozen(addendum_path):
             raise RunAllRefused("PREREGISTRATION_ADDENDUM.md is not FROZEN (R35)")
-        check_settings(st, o1)
+        check_settings(st, o1, allow_settings_mismatch)
     if client_factory is None:
         client_factory = default_client_factory(dry, dry_gate)
 
@@ -282,7 +326,7 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
                 "fallback_used": False, "fallback": {}}
         res["gate"] = gate
         failing = [f for f in labels if not gate["primary"][f]]
-        active, superseded = copy.deepcopy(primary), None
+        swap, superseded = {}, None
         log(f"[gate] E on the pilot: {gate['primary']} (effects {gate['effects']}, threshold {threshold})")
         if failing:
             if not all(f in st["fallback"] for f in failing):
@@ -303,14 +347,14 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
                 res["status"] = "plan_b"
                 log(f"[gate] {PLAN_B}")
                 return res
-            active = [copy.deepcopy(st["fallback"][f["family"]]) if f["family"] in failing else f for f in active]
+            swap = {f: st["fallback"][f] for f in failing}
             superseded = {g["game_id"] for g in pilot if g["family"] in failing}
         if done("gate"):
             return res
 
         for step in ("core", "monitor", "ethics"):
             cfg = copy.deepcopy(steps[step])
-            cfg["families"] = copy.deepcopy(active)
+            cfg["families"] = swap_families(cfg["families"], swap)
             run_cfg(step, cfg)
             if done(step):
                 return res
@@ -320,8 +364,6 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
         reproduce(runs, results, n_draws=n_draws, seed=seed, viz_dir=root / "viz" / "data",
                   figures_dir=root / "figures", prereg_path=prereg_path, configs=prereg_cfgs, include_mock=dry,
                   exclude_ids=superseded)
-        defense_logs, _ = filter_logs(load_logs(runs), score_defenses.DEFENSE_CONFIGS, include_mock=dry)
-        score_defenses.write_outputs(score_defenses.score_defenses(defense_logs), results)
         res["outputs"] += [str(results), str(root / "viz" / "data"), str(root / "figures" / "game_grid.pdf")]
         log(f"[scoring] tables, detectors, defenses -> {results}; viz -> {root / 'viz' / 'data'}; "
             f"figure -> {root / 'figures' / 'game_grid.pdf'}")
@@ -330,7 +372,7 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
 
         if exploratory:
             cfg = copy.deepcopy(steps["exploratory"])
-            cfg["families"] = copy.deepcopy(active)
+            cfg["families"] = swap_families(cfg["families"], swap)
             run_cfg("exploratory", cfg)
             ex = root / "results_exploratory"
             reproduce(mem_dir, ex / "memory", n_draws=n_draws, seed=seed, prereg_path=prereg_path,
@@ -361,7 +403,7 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
                 return res
 
         if o1:
-            cfg = _derived(st, O1_NAME, active, seeds=st["o1_seeds"], budget_usd=st["o1_budget_usd"])
+            cfg = _derived(st, O1_NAME, swap_families(steps["core"]["families"], swap), seeds=st["o1_seeds"], budget_usd=st["o1_budget_usd"])
             if dry:
                 cfg["out_dir"] = str(runs)
             run_cfg("o1", cfg)
@@ -387,19 +429,22 @@ EXIT = {"done": 0, "stopped": 0, "plan_b": 2, "budget_stop": 3}
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry", action="store_true", help="mock client into a scratch folder (never runs/)")
-    ap.add_argument("--root", default=None, help=f"base folder (default: . real, {DEFAULT_DRY_ROOT} dry)")
+    ap.add_argument("--root", default=None, help=f"base folder (default: the repo root real, {DEFAULT_DRY_ROOT} dry)")
     ap.add_argument("--configs-dir", default=str(CONFIGS))
     ap.add_argument("--exploratory", action="store_true", help="memory arm + sensitivity, monitor_view, price_paths")
     ap.add_argument("--o1", action="store_true", help="option O1 (seeds 6-10 on B, B_T, C, D), last")
     ap.add_argument("--stop-after", choices=STOP_AFTER, default=None)
     ap.add_argument("--dry-gate", choices=("pass", "fail"), default="pass")
+    ap.add_argument("--allow-settings-mismatch", action="store_true",
+                    help="run even if temperature or reasoning differ between pooled or matched steps")
     ap.add_argument("--n-draws", type=int, default=1000)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
-    root = a.root or (DEFAULT_DRY_ROOT if a.dry else ".")
+    root = a.root or (DEFAULT_DRY_ROOT if a.dry else ROOT)
     try:
         res = run_pipeline(root, configs_dir=a.configs_dir, dry=a.dry, exploratory=a.exploratory, o1=a.o1,
-                           stop_after=a.stop_after, dry_gate=a.dry_gate, n_draws=a.n_draws, seed=a.seed)
+                           stop_after=a.stop_after, dry_gate=a.dry_gate, n_draws=a.n_draws, seed=a.seed,
+                           allow_settings_mismatch=a.allow_settings_mismatch)
     except RealRunRefused as exc:
         print(f"run_all REFUSED: {exc}")
         return 1
