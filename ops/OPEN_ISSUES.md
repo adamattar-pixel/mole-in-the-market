@@ -1,0 +1,32 @@
+# OPEN_ISSUES - numbered backlog
+One row per issue. Ids are never reused. Before working on one, claim it in ops/CLAIMS.md and set the status
+to `in progress`. When done, set `done` with the commit or PR, and keep the row.
+Status: `open`, `blocked` (waits on a person), `in progress`, `done`, `wontfix`. Owner `-` = not assigned yet.
+Questions with a default already taken stay in ops/QUESTIONS.md; this file tracks the work they need.
+Replay page items (#12-#16, #18, #19, #21, #22): Phase 8 is CUT (D17), so they are low priority and come after the report.
+
+| # | Title | Owner | Status | Link |
+|---|---|---|---|---|
+| 1 | Model ids for the 2 families: fill the six step configs, the run_all fallbacks and configs/prices.yaml (real runs refused while `tbd`) | Adam | blocked | D10, QUESTIONS #7, RUNBOOK_REAL_RUNS.md step 2, docs/team-artem/MODEL_AND_COST.md |
+| 2 | OpenRouter API key in the shell and GO for the first real run (smoke, pilot, E gate) | Artem | blocked | H2, RUNBOOK_REAL_RUNS.md |
+| 3 | Affiliations placeholder "to be filled" in README.md:10, report/AUTHORS.md:3-4, report/SKELETON.md:17; fill or delete before submission | Artem, Adam | open | review m3 (pre-main review) |
+| 4 | QUESTIONS #10: invalid price keeps the previous price (Nash in round 1); confirm or pick another rule | Artem | open | ops/QUESTIONS.md #10 |
+| 5 | QUESTIONS #11, #17, #22: budget caps (smoke 1, pilot 5, core 10, monitor 7.5, ethics 2.5, global 30 USD) | Artem | open | ops/QUESTIONS.md, configs/run_all.yaml |
+| 6 | QUESTIONS #12-#16, #18-#20: confirm the defaults taken (report skeleton, frozen addendum stands, literal readings) before the real runs | Artem | open | ops/QUESTIONS.md |
+| 7 | QUESTIONS #21-#23: test(fix) on placeholder copies, run_all settings, validate_e --config; closed by merging PR #1 | Artem | in progress | docs/team-artem/OWNER_APPROVAL.md |
+| 8 | Spend of dropped games (cap, timeout, HTTP error) is never logged, so run_all's "already spent" is too low; add an append-only spend ledger | - | open | docs/team-artem/REVIEW_ARTEM_DIFF.md m1 |
+| 9 | Standalone CLIs `sensitivity`, `monitor_view`, `score_detectors` do not filter by config or mock, so they pool smoke and O1 games with the pilot | - | open | docs/team-artem/REVIEW_ARTEM_DIFF.md m3 |
+| 10 | `python tools/X.py` crashes with `ModuleNotFoundError: No module named 'harness'`; only `python -m tools.X` works. Fix the entry points or document `-m` everywhere | - | open | tools/ |
+| 11 | `python -m tools.price_paths --help`: options (`--out-dir`, `--memory-runs`, `--game-id`, `--layout`, ...) have no help text | - | open | tools/price_paths.py |
+| 12 | Replay page: at the offer round the speech bubble covers the mole and the price labels | - | open | viz/app.js, docs/viz/DESIGN.md |
+| 13 | Replay page: sparse scene with tiny price bars | - | open | viz/app.js |
+| 14 | Replay page: the meaning of the scene sits in small grey text | - | open | viz/app.js, viz/style.css |
+| 15 | Replay page: labels "No spy" vs "Deal allowed (control)" confuse readers. The names are asserted by a locked test (tests/test_R22_R27_viz_export.py:77), so a change needs an owner-approved test(fix) | - | open | harness/vizexport.py:12 |
+| 16 | Replay page: the price chart is 112px high on mobile | - | open | viz/style.css |
+| 17 | docs/context/contexte_projet_v7.md is a French internal planning note in the public repo, incl. speculation about the judges' scoring. Keep public before judging, or move out (never edited, so moving it is the owner's call) | Artem | open | pre-main review, notes |
+| 18 | viz/app.js:251 defines Do with the "Nash-to-deal gap"; the preregistration and the code use the Nash-to-monopoly gap. Fix the wording | - | open | pre-main review m1 |
+| 19 | viz/demo/meta.json:3 (and viz/demo/data.js) records the prereg hash of a CRLF copy, so it does not match the frozen file. Add `.gitattributes` with `* text=auto eol=lf` (or normalize before hashing), then regenerate viz/demo | - | open | pre-main review m2, harness/vizexport.py:77, tools/reproduce.py:63 |
+| 20 | ops/HANDOFF.md is stale (254 passed, "R28-R36 no code") | - | done | dated historical note added on `artem-ops-reorg`; current state in ops/STATE.md |
+| 21 | tools/make_demo_data.py:33-36 guards output folders with a denylist (`--out viz`, `figures/`, `report/` pass); switch to an allowlist (viz/demo or a temp dir) | - | open | pre-main review m5 |
+| 22 | viz/app.js:103, 265: `g.outcome` and the condition go into markup without `esc()` (local data, low risk) | - | open | pre-main review m6 |
+| 23 | Optional 3 to 5 minute video demo | - | open | docs/apart/Guidelines.md:40, report/SUBMISSION_CHECKLIST.md:15 |
