@@ -35,3 +35,4 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 ## Active claims
 | Who | Branch | Files / areas | Started | Expected end |
 |---|---|---|---|---|
+| Artem (Claude session, workers) | wip/phase-4-artem-workers | harness/runner.py run_batch concurrency, tools/run_all.py gate continuation and --workers, tools/run.py --workers, the budget tracker (new harness/concurrency.py) | 2026-10-24 | 2026-10-25 |
