@@ -13,6 +13,11 @@ Branched from `origin/wip/phase-4` at 764b623 (Artem's last commit). No API call
 3. **OPEN_ISSUES #19, REPRO_CHECK.md**: `reproduce` on the committed logs now gives byte-identical results and
    checksums on Windows (`.gitattributes` eol=lf, LF writes in the reproduce chain, viz/demo regenerated).
 
+4. **REFERENCES_CHECK.md**: the 12 citations of report/SKELETON.md fetched: 11 match (title, authors, year), the SSRN
+   paper (Giebel et al.) blocks automated access (open it in a browser). Difference notes checked against the
+   papers: Fish et al. and Colosseum notes confirmed; do NOT claim "first sting" (GroupGuard uses honeypots as a
+   defense); Agrawal et al.: oversight reduces and CEO urgency increases collusion, a different manipulation from B_T.
+
 ## Merge notes
 - Into `wip/phase-4`: no conflict (`git merge-tree` at bffa6f1+).
 - With `wip/phase-4-hoang`: `.gitattributes` is now the same file on both branches (no conflict). Two conflicts left,
