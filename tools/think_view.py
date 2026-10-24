@@ -13,6 +13,11 @@ full traces of those rounds, sidecar). Dual-use: publish codes and a few short e
 
 Usage: python -m tools.think_view runs_exploratory/think results_exploratory/think [--coder PATH]
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import csv
 import json

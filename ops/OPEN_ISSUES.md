@@ -14,10 +14,10 @@ Replay page items (#12-#16, #18, #19, #21, #22): Phase 8 is CUT (D17), so they a
 | 5 | QUESTIONS #11, #17, #22: budget caps (smoke 1, pilot 5, core 10, monitor 7.5, ethics 2.5, global 30 USD) | Artem | open | ops/QUESTIONS.md, configs/run_all.yaml |
 | 6 | QUESTIONS #12-#16, #18-#20: confirm the defaults taken (report skeleton, frozen addendum stands, literal readings) before the real runs | Artem | open | ops/QUESTIONS.md |
 | 7 | QUESTIONS #21-#23: test(fix) on placeholder copies, run_all settings, validate_e --config; closed by merging PR #1 | Artem | in progress | docs/team-artem/OWNER_APPROVAL.md |
-| 8 | Spend of dropped games (cap, timeout, HTTP error) is never logged, so run_all's "already spent" is too low; add an append-only spend ledger | - | open | docs/team-artem/REVIEW_ARTEM_DIFF.md m1 |
-| 9 | Standalone CLIs `sensitivity`, `monitor_view`, `score_detectors` do not filter by config or mock, so they pool smoke and O1 games with the pilot | - | open | docs/team-artem/REVIEW_ARTEM_DIFF.md m3 |
-| 10 | `python tools/X.py` crashes with `ModuleNotFoundError: No module named 'harness'`; only `python -m tools.X` works. Fix the entry points or document `-m` everywhere | - | open | tools/ |
-| 11 | `python -m tools.price_paths --help`: options (`--out-dir`, `--memory-runs`, `--game-id`, `--layout`, ...) have no help text | - | open | tools/price_paths.py |
+| 8 | Spend of dropped games (cap, timeout, HTTP error) is never logged, so run_all's "already spent" is too low; add an append-only spend ledger | Hoang | done | wip/phase-4-hoang: runs/_spend.jsonl, counted once with the game log |
+| 9 | Standalone CLIs `sensitivity`, `monitor_view`, `score_detectors` do not filter by config or mock, so they pool smoke and O1 games with the pilot | Hoang | done | wip/phase-4-hoang: tools/cli_logs.py keeps pilot and core on an espion_* folder; hand-built test logs stay unfiltered (locked CLI tests) |
+| 10 | `python tools/X.py` crashes with `ModuleNotFoundError: No module named 'harness'`; only `python -m tools.X` works. Fix the entry points or document `-m` everywhere | Hoang | done | wip/phase-4-hoang: each tool adds the repo root to the path when run as a script |
+| 11 | `python -m tools.price_paths --help`: options (`--out-dir`, `--memory-runs`, `--game-id`, `--layout`, ...) have no help text | Hoang | done | wip/phase-4-hoang: tools/price_paths.py help strings |
 | 12 | Replay page: at the offer round the speech bubble covers the mole and the price labels | Artem | done | viz/app.js, docs/viz/DESIGN.md |
 | 13 | Replay page: sparse scene with tiny price bars | Artem | done | viz/app.js |
 | 14 | Replay page: the meaning of the scene sits in small grey text | Artem | done | viz/app.js, viz/style.css |
@@ -25,8 +25,8 @@ Replay page items (#12-#16, #18, #19, #21, #22): Phase 8 is CUT (D17), so they a
 | 16 | Replay page: the price chart is 112px high on mobile | Artem | done | viz/style.css |
 | 17 | docs/context/contexte_projet_v7.md is a French internal planning note in the public repo, incl. speculation about the judges' scoring. Keep public before judging, or move out (never edited, so moving it is the owner's call) | Artem | open | pre-main review, notes |
 | 18 | viz/app.js:251 defines Do with the "Nash-to-deal gap"; the preregistration and the code use the Nash-to-monopoly gap. Fix the wording | Artem | done | pre-main review m1 |
-| 19 | viz/demo/meta.json:3 (and viz/demo/data.js) records the prereg hash of a CRLF copy, so it does not match the frozen file. Add `.gitattributes` with `* text=auto eol=lf` (or normalize before hashing), then regenerate viz/demo | - | open | pre-main review m2, harness/vizexport.py:77, tools/reproduce.py:63 |
+| 19 | viz/demo/meta.json:3 (and viz/demo/data.js) records the prereg hash of a CRLF copy, so it does not match the frozen file. Add `.gitattributes` with `* text=auto eol=lf` (or normalize before hashing), then regenerate viz/demo | Hoang | open | `.gitattributes` added on wip/phase-4-hoang. Demo not regenerated: this checkout of the frozen file is still CRLF, and the frozen file must not be rewritten |
 | 20 | ops/HANDOFF.md is stale (254 passed, "R28-R36 no code") | - | done | dated historical note added on `artem-ops-reorg`; current state in ops/STATE.md |
-| 21 | tools/make_demo_data.py:33-36 guards output folders with a denylist (`--out viz`, `figures/`, `report/` pass); switch to an allowlist (viz/demo or a temp dir) | - | open | pre-main review m5 |
+| 21 | tools/make_demo_data.py:33-36 guards output folders with a denylist (`--out viz`, `figures/`, `report/` pass); switch to an allowlist (viz/demo or a temp dir) | Hoang | done | wip/phase-4-hoang: only a viz/demo* folder is allowed |
 | 22 | viz/app.js:103, 265: `g.outcome` and the condition go into markup without `esc()` (local data, low risk) | Artem | done | pre-main review m6 |
 | 23 | Optional 3 to 5 minute video demo | - | open | docs/apart/Guidelines.md:40, report/SUBMISSION_CHECKLIST.md:15 |

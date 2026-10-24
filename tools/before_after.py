@@ -18,6 +18,11 @@ Writes before_after.pdf, before_after.png and before_after.csv. Like tools/price
 keep only real games (mock false) from the preregistered configs by default; --exploratory folders keep any
 config and are drawn with hollow markers, flagged "exploratory" in the legend.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import csv
 import random

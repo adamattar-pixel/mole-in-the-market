@@ -2,6 +2,7 @@
 import json
 import math
 import os
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -88,6 +89,34 @@ def _reasoning_trace(message):
     return out
 
 
+def _http_message(exc, key):
+    """Server body of an HTTP error, with the API key removed. Falls back to the reason phrase."""
+    raw = b""
+    try:
+        raw = exc.read() or b""
+    except Exception:
+        raw = b""
+    detail = raw.decode("utf-8", errors="replace")
+    message = str(exc.reason or "")
+    parsed = None
+    if detail.strip():
+        try:
+            parsed = json.loads(detail)
+        except (json.JSONDecodeError, ValueError):
+            parsed = None
+    if isinstance(parsed, dict):
+        err = parsed.get("error")
+        if isinstance(err, dict) and err.get("message"):
+            message = str(err["message"])
+        elif isinstance(err, str) and err:
+            message = err
+    elif detail.strip():
+        message = detail.strip()
+    if key:
+        message = message.replace(key, "[redacted]")
+    return message[:500]
+
+
 class OpenRouterClient:
     """Real client. The key is read from the OPENROUTER_API_KEY environment variable at call time.
 
@@ -129,8 +158,14 @@ class OpenRouterClient:
         body = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(OPENROUTER_URL, data=body, method="POST", headers={
             "Authorization": f"Bearer {key}", "Content-Type": "application/json"})
-        with urllib.request.urlopen(req, timeout=self.timeout) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            # Keep the status code (403 stays 403, so it is still not retried) and put the server
+            # text on the error. The key is never copied into that text.
+            raise urllib.error.HTTPError(req.full_url, exc.code, _http_message(exc, key),
+                                          exc.headers, None) from None
         choice = data["choices"][0]
         message = choice["message"]
         # The reply is `content` only: the reasoning trace is logged, never parsed (THINK_ARM.md).

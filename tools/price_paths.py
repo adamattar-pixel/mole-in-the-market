@@ -13,6 +13,11 @@ Writes price_paths.pdf, and excerpt.md when --game-id is given (also printed). L
 the default keeps only real games (mock false) from the preregistered configs; --include-mock and
 --all-configs are for dry runs and diagnostics.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 from pathlib import Path
 
@@ -397,13 +402,13 @@ def load_arms(runs_dir, memory_dir, include_mock=False, all_configs=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("runs_dir")
-    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR)
-    ap.add_argument("--memory-runs", default=None)
-    ap.add_argument("--game-id", default=None)
-    ap.add_argument("--include-mock", action="store_true")
-    ap.add_argument("--all-configs", action="store_true")
-    ap.add_argument("--layout", choices=LAYOUTS, default="grid")
+    ap.add_argument("runs_dir", help="folder of game logs (*.json)")
+    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR, help="folder for price_paths.pdf and excerpt.md")
+    ap.add_argument("--memory-runs", default=None, help="exploratory memory-arm logs, drawn dashed")
+    ap.add_argument("--game-id", default=None, help="also write excerpt.md for this game id")
+    ap.add_argument("--include-mock", action="store_true", help="keep mock (dry run) games")
+    ap.add_argument("--all-configs", action="store_true", help="keep every config, including smoke and O1")
+    ap.add_argument("--layout", choices=LAYOUTS, default="grid", help="figure layout (grid or shift)")
     a = ap.parse_args(argv)
     logs = load_arms(a.runs_dir, a.memory_runs, a.include_mock, a.all_configs)
     out = Path(a.out_dir)

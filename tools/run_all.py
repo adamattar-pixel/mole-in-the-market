@@ -19,7 +19,7 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
   the other, as before; the logs are identical either way. A cap can be passed by at most N calls in flight
   (harness/concurrency.py). Games that raise are reported (exit 4) and not logged; rerun to retry them.
 - Global budget cap (configs/run_all.yaml budget_usd) over every step, starting from the spend already in
-  the logs; each step config keeps its own cap (R17).
+  the logs plus paid calls recorded in _spend.jsonl; each step config keeps its own cap (R17).
 - Resumable: games already logged are skipped (write-once logs, R12).
 - Real mode refuses unless PREREGISTRATION.md and PREREGISTRATION_ADDENDUM.md are FROZEN, no model id is
   `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here;
@@ -39,6 +39,11 @@ Usage:
                           [--continue-passing-families]
 Exit code: 0 done or stopped as asked, 1 refused, 2 plan B, 3 budget cap hit, 4 some games failed.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import copy
 import json
@@ -54,7 +59,7 @@ from harness.config import GameConfig
 from harness.defenses import addendum_is_frozen
 from harness.dryclient import make_dry_client
 from harness.envfile import load_env
-from harness.runlog import load_logs
+from harness.runlog import load_logs, spend_already
 from harness.runner import (BatchFailed, RealRunRefused, check_workers, family_provider, family_reasoning, run_batch,
                             validate_config)
 from harness.validation import e_validation
@@ -349,7 +354,7 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
     runs, mem_dir = root / "runs", root / "runs_exploratory" / "memory"
     think_dir = root / "runs_exploratory" / "think"
     tracker = ConcurrentBudget(st["budget_usd"])
-    tracker.total = sum(g["cost_usd"] for p in (runs, mem_dir, think_dir) for g in _logs(p, dry, MANAGED))
+    tracker.total = sum(spend_already(p, MANAGED, mock=dry) for p in (runs, mem_dir, think_dir))
     res = {"status": None, "steps": [], "gate": None, "spent_usd": tracker.total, "dry": dry, "outputs": [],
            "deviations": []}
     mode = "DRY (mock client, not results)" if dry else "REAL"

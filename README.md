@@ -6,6 +6,7 @@ Status: work in progress (see ops/STATE.md and ops/PLAN.md; process docs are map
 ## Authors
 - Artem (project owner from 2026-10-24)
 - Adam Attar (adamattar-pixel)
+- Hoang (runner and tool fixes on branch wip/phase-4-hoang)
 
 Affiliations: to be filled by the authors.
 

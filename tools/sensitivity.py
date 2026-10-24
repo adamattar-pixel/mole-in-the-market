@@ -7,7 +7,13 @@ much the "do" rate depends on those two choices. The 10% / 3-round cell equals t
 every other cell is exploratory and must be labelled as such wherever it is reported.
 
 Usage: python -m tools.sensitivity runs [--out results/sensitivity.md]
+On an espion_* run folder, smoke and O1 are left out (pilot and core only). A folder of hand-built logs is not filtered.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 from pathlib import Path
 
@@ -61,7 +67,8 @@ def main(argv=None):
     ap.add_argument("runs_dir", nargs="?", default="runs")
     ap.add_argument("--out", default=None)
     a = ap.parse_args(argv)
-    text = table_md(sensitivity_rows(load_logs(a.runs_dir)))
+    from tools.cli_logs import select_standalone_logs
+    text = table_md(sensitivity_rows(select_standalone_logs(load_logs(a.runs_dir))))
     if a.out:
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
         Path(a.out).write_text(text, encoding="utf-8")

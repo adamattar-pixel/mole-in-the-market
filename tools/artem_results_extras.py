@@ -17,6 +17,11 @@ Usage:
   python3 -m tools.artem_results_extras RUNS --fallback DIR [--fallback DIR] --think DIR --novita DIR \
       --out-dir results_exploratory/extras
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import json
 import re

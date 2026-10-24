@@ -12,7 +12,7 @@ from harness.concurrency import ConcurrentBudget, GuardedClient, RetryingClient,
 from harness.conditions import CONDITIONS, build_condition, load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import ADDENDUM_CONDITIONS, addendum_is_frozen, load_addendum
-from harness.runlog import config_hash, current_git_commit, write_game_log
+from harness.runlog import REQUIRED_FIELDS, append_spend, config_hash, current_git_commit, spend_already, write_game_log
 from harness.spy import ScriptedSpy
 
 FIRMS = ("0", "1")
@@ -194,7 +194,26 @@ def expand_games(cfg):
     return games
 
 
+def _complete_log(runs_dir, game_id):
+    """A log already on disk for this game, or None when the file is missing or not a complete log."""
+    path = Path(runs_dir) / f"{game_id}.json"
+    if not path.is_file():
+        return None
+    try:
+        log = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(log, dict) or log.get("game_id") != game_id:
+        return None
+    if any(f not in log for f in REQUIRED_FIELDS):
+        return None
+    return log
+
+
 def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", addendum=None):
+    found = _complete_log(runs_dir, spec.game_id)
+    if found is not None:
+        return found
     gc = GameConfig.from_dict(cfg)
     demand = gc.demand()
     if addendum is None and spec.condition in ADDENDUM_CONDITIONS:
@@ -226,6 +245,8 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
             if provenance is not None and retries:
                 provenance = dict(provenance, retries=retries)
             cost += call_cost
+            # The call is already paid. Record it before the cap check, so a dropped game still counts.
+            append_spend(runs_dir, cfg["name"], spec.game_id, call_cost)
             budget.add(call_cost)  # raises BudgetExceeded: the game is dropped, no log written
             parsed = parse_reply(text)
             price = parsed["price"]
@@ -282,7 +303,13 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
         known = [n for n in reasoning_counts if n is not None]
         log["reasoning_tokens"] = sum(known) if known else None
         log["reasoning_used"] = (log["reasoning_tokens"] > 0) if known else None
-    write_game_log(log, runs_dir)
+    try:
+        write_game_log(log, runs_dir)
+    except FileExistsError:
+        found = _complete_log(runs_dir, spec.game_id)
+        if found is not None:
+            return found
+        raise
     return log
 
 
@@ -347,7 +374,9 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
 
     workers=1: one game after the other, in expand_games order. workers>1: the games run in a thread pool
     (games are independent, so the logs are byte-identical) and the logs come back sorted by game id; the
-    budget bound is in harness/concurrency.py. Both modes retry HTTP 429 and 5xx (RetryingClient)."""
+    budget bound is in harness/concurrency.py. Both modes retry HTTP 429 and 5xx (RetryingClient).
+    A game that raises is reported in BatchFailed and the other games of the batch are kept.
+    A log that appears for a game before it is saved is kept and not overwritten."""
     check_workers(workers)
     validate_config(cfg)
     if cfg["mock"] and not getattr(client, "is_mock", False):
@@ -370,9 +399,10 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
     runs_dir = Path(runs_dir)
     existing = existing_logs(cfg, runs_dir)
     check_resume(cfg, existing, runs_dir)
-    # The cap bounds the config's total spend across reruns: start from the spend already logged.
+    # The cap bounds the config's total spend across reruns: logged games, plus paid calls that
+    # never became a log (_spend.jsonl). A game that is in both is counted once.
     budget = ConcurrentBudget(cfg["budget_usd"])
-    budget.total = sum(float(g["cost_usd"]) for g in existing)
+    budget.total = spend_already(runs_dir, [cfg["name"]])
     todo = [s for s in expand_games(cfg) if not (runs_dir / f"{s.game_id}.json").exists()]
     if todo and budget.total >= budget.cap:
         raise BudgetExceeded(f"{cfg['name']}: {budget.total:.4f} USD already logged >= cap {budget.cap:.4f} USD, "
@@ -381,10 +411,21 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
         record_budget(cfg, runs_dir)
     if workers == 1:
         client = RetryingClient(client)
-        done = []
+        done, failed = [], {}
         for spec in todo:
-            done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit,
-                                 addendum=addendum))
+            found = _complete_log(runs_dir, spec.game_id)
+            if found is not None:
+                done.append(found)
+                continue
+            try:
+                done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit,
+                                     addendum=addendum))
+            except BudgetExceeded:
+                raise
+            except Exception as exc:  # one game's error does not drop the games that follow
+                failed[spec.game_id] = f"{type(exc).__name__}: {exc}"
+        if failed:
+            raise BatchFailed(failed, done)
         return done
     return _run_concurrent(cfg, todo, client, texts, budget, runs_dir, git_commit, addendum, workers)
 

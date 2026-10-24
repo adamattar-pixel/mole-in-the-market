@@ -21,6 +21,11 @@ Usage: python -m tools.insight_checks RUNS [RUNS ...] [--out-dir results_explora
                                      [--configs a,b] [--include-mock]
 Writes checks.md and checks.json in the out dir, never under results/.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import json
 import re

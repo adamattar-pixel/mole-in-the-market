@@ -1,7 +1,7 @@
 """Review M1 (docs/team-artem/REVIEW_ARTEM_DIFF.md), R17: a rerun must not reset the per-config budget cap.
 
-The spend counter of a config starts from the spend already logged for that config (game ids
-"<config name>__..."), so the cap bounds the total spend of the config across reruns.
+The spend counter of a config starts from the spend already recorded for that config: finished logs, plus
+paid calls in _spend.jsonl that never became a log. A game in both is counted once.
 Hand values: helpers3.cfg has 4 rounds x 2 firms = 8 calls per game; at 0.25 USD per call a game costs 2.0 USD.
 """
 import json
@@ -45,12 +45,12 @@ def test_M1_rerun_keeps_the_cap(tmp_path):
     with pytest.raises(BudgetExceeded):
         run_batch(c, m, tmp_path, texts=TEXTS)
     assert len(load_logs(tmp_path)) == 2 and len(calls) == 21
-    # Run 2, same config: the counter starts at the logged 4.0, so game 3 stops again after 4 calls
-    # (4.25, 4.5, 4.75, 5.0 allowed, 5.25 > cap on the 5th call). No new log, logged spend stays 4.0.
+    # Run 2: games 1 and 2 are 4.0 in the logs and in the ledger. Game 3's 5 paid calls (1.25) are in the
+    # ledger and have no log. 4.0 + 1.25 = 5.25 >= cap 5.0, so the rerun sends nothing. Logged spend stays 4.0.
     m, calls = client()
     with pytest.raises(BudgetExceeded):
         run_batch(c, m, tmp_path, texts=TEXTS)
-    assert len(calls) == 5
+    assert len(calls) == 0
     logs = load_logs(tmp_path)
     assert len(logs) == 2
     assert sum(g["cost_usd"] for g in logs) == pytest.approx(4.0)

@@ -1,17 +1,19 @@
 # STATE - where the repo stands (resume here)
 This is the single "resume here". ops/PROGRESS.md keeps only the history log. Update this file in the same
-commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-24 23:30 HKT.
+commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-25 01:56 +08:00.
 
 ## Branches
 | Branch | Tip | What it is for |
 |---|---|---|
 | `main` (origin) | 55553c0 | Reviewed, CI-green work (D24). Up to date with wip/phase-4 as of PR #3 (21:01); gates are `gate-N` tags |
-| `wip/phase-4` (origin) = local `artem` | dd1ffcc | Shared phase branch: everything merged (R28-R36, provider pins, THINK arm, workers, retries, key figure, insight checks), real run data, results summary |
+| `wip/phase-4` (origin) | 764b623 | Shared phase branch: everything merged (R28-R36, provider pins, THINK arm, workers, retries, key figure, insight checks), real run data, results summary |
+| `wip/phase-4-hoang` | this branch | Hoang: dropped-call spend ledger, one failed game no longer stops the step, HTTP errors keep the server text, a log that appears mid-batch is kept |
 | `wip/phase-4-artem-viz`, `wip/phase-4-artem-grid` (local, in progress) | see git log | Replay page on real data; Figure 1 label fix |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3) |
 
 ## Tests
-- Last green: a6b6022 (`artem-owner-approval`), `python3 -m pytest` -> 653 passed, 0 failed. On `artem-ops-reorg` (2b2b6b3): 678 passed (+25 for tools/check_ops).
+- Last green on `wip/phase-4-hoang`: `python -m pytest` -> 915 passed, 0 failed (2026-10-25). No red tests. The tool fixes and the README author line are in the working tree and are not committed yet.
+- Earlier: a6b6022 (`artem-owner-approval`), `python3 -m pytest` -> 653 passed, 0 failed. On `artem-ops-reorg` (2b2b6b3): 678 passed (+25 for tools/check_ops).
 - Install and test: `python3 -m pip install -r requirements.txt` then `python3 -m pytest`.
 - Whole pipeline dry (mock client, no key, no cost): `python3 -m tools.run_all --dry --exploratory --think --o1` (add `--workers 4` to run the games of each step 4 at a time; same logs).
 - Ops check: `python3 -m tools.check_ops`.
@@ -34,6 +36,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 |---|---|---|
 | More runs (monitor, ethics, memory, THINK, O1, Haiku exploratory): need OpenRouter credit, or a direct Anthropic client for Haiku | Artem | QUESTIONS #27 |
 | Confirm the night deviations (#26 re-pin, #27 Llama-only, test(fix) commits 85bf3e1/178f1ea and the pin fixes) | Artem | ops/QUESTIONS.md |
+| Accept the locked M1 test change on wip/phase-4-hoang: a rerun no longer pays the dropped game's calls again | Artem | tests/test_review_M1_budget_resume.py |
 | Gate-4 tag (E gate passed for Llama only, a deviation) | Artem | D24 |
 | Affiliations in README.md and report/AUTHORS.md | Artem and Adam | OPEN_ISSUES #3 |
 | Keep docs/context/contexte_projet_v7.md public or not | Artem | OPEN_ISSUES #17 |

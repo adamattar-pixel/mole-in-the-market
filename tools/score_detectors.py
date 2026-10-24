@@ -7,8 +7,14 @@ A and D, flag rate per condition, all with Wilson 95% intervals, next to the fam
 The unit is the game.
 
 Usage: python -m tools.score_detectors runs results_detectors [--n-draws 1000 --seed 0]
-(scores every log in the folder; `tools.reproduce` is the official path, with its game filter)
+On an espion_* run folder, smoke and O1 are left out (pilot and core only). A folder of hand-built logs is not filtered.
+(scores every kept log; `tools.reproduce` is the official path, with its own game filter)
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import json
 from pathlib import Path
@@ -126,7 +132,8 @@ def main(argv=None):
     ap.add_argument("--n-draws", type=int, default=1000)
     ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args(argv)
-    scores = score_detectors(load_logs(a.runs_dir), n_draws=a.n_draws, seed=a.seed)
+    from tools.cli_logs import select_standalone_logs
+    scores = score_detectors(select_standalone_logs(load_logs(a.runs_dir)), n_draws=a.n_draws, seed=a.seed)
     write_outputs(scores, a.out_dir)
     print(f"score_detectors: {scores['n_core_games']} core games -> {a.out_dir}")
     return 0

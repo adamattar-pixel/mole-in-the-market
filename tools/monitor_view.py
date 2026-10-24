@@ -8,7 +8,13 @@ no network). Two outputs per model family:
 The "ground truth" is whether an offer was sent, NOT whether the agent intended to collude.
 
 Usage: python -m tools.monitor_view runs [--out-dir results_exploratory/monitor]
+On an espion_* run folder, smoke and O1 are left out (pilot and core only). A folder of hand-built logs is not filtered.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import csv
 from pathlib import Path
@@ -138,7 +144,8 @@ def main(argv=None):
     out = Path(a.out_dir).resolve()
     if any(_inside(out, base / "results") for base in (ROOT, Path.cwd().resolve())):
         ap.error("exploratory output must not go into results/ (preregistered outputs)")
-    logs = load_logs(a.runs_dir)
+    from tools.cli_logs import select_standalone_logs
+    logs = select_standalone_logs(load_logs(a.runs_dir))
     cells, monitors = cell_rows(logs), monitor_rows(logs)
     text = table_md(cells, monitors)
     out.mkdir(parents=True, exist_ok=True)

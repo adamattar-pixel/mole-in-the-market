@@ -8,6 +8,11 @@ Usage: python -m tools.score_defenses runs results [--configs espion_core,espion
        [--include-mock]
 Writes defenses.json and defenses.md in the out dir.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import json
 from pathlib import Path

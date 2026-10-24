@@ -1,0 +1,8 @@
+# Keep text files as LF so hashes of the frozen preregistration match on every machine.
+* text=auto eol=lf
+*.png binary
+*.pdf binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
