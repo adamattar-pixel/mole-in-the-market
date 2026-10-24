@@ -188,6 +188,7 @@ PREREGISTRATION_ADDENDUM.md. Wilson 95% intervals. Unit = the game unless stated
 - "Seeds?" Providers may ignore the seed; most games are flat, so seeds act as near-replicates.
 - Figures: figures/exploratory/before_after.png is legible (4 panels, own scales). price_paths.pdf: the Llama E
   opening at up to 10.00 sets the y-axis to about 6, which compresses the other rows. figures/game_grid.pdf:
-  column labels overlap ("meta-llamameta-llama") and the left row label is clipped; fix before the report.
+  one row per family, full condition names, 8 pt, 6.3 in wide, no overlapping labels (a family that failed
+  the positive control gets "failed positive control, exploratory" in its row label).
 - Dual-use: think_excerpts.md, think_traces.md and traces/ are committed on this branch for the team; THINK_ARM.md
   says keep them internal (publish codes and short excerpts only).

@@ -185,7 +185,9 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     if figures_dir is not None:
         if viz_dir is None:
             raise ValueError("figures need the viz export (games.csv): pass viz_dir")
-        make_game_grid(Path(viz_dir) / "games.csv", Path(figures_dir) / "game_grid.pdf")
+        failed = [f for f, ev in summary["e_validation"].items()
+                  if ev["effect_gap_fraction"] is not None and not ev["pass"]]
+        make_game_grid(Path(viz_dir) / "games.csv", Path(figures_dir) / "game_grid.pdf", failed_families=failed)
     return summary
 
 
