@@ -32,7 +32,7 @@ from pathlib import Path
 
 import yaml
 
-from harness.clients import BudgetExceeded, BudgetTracker, MockClient, OpenRouterClient
+from harness.clients import BudgetExceeded, BudgetTracker, MockClient, OpenRouterClient, load_prices
 from harness.conditions import load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import addendum_is_frozen
@@ -147,16 +147,26 @@ def swap_families(families, swap):
     return [copy.deepcopy(swap.get(f["family"], f)) for f in families]
 
 
-def check_settings(st, o1, allow_mismatch=False):
-    """Guards that need no file other than the configs: families, fallback, config validity, tbd ids, settings."""
-    primary = st["steps"]["pilot"]["families"]
+def _all_configs(st, o1):
+    """Every config the pipeline may run: the steps, the fallback pilot, O1."""
     cfgs = list(st["steps"].values())
     if st["fallback"]:
         cfgs.append(_derived(st, FALLBACK_PILOT, list(st["fallback"].values())))
     if o1:
         cfgs.append(_derived(st, O1_NAME, st["steps"]["core"]["families"], seeds=st["o1_seeds"],
                              budget_usd=st["o1_budget_usd"]))
-    ids = [m for c in cfgs for f in c["families"] for m in f["models"].values()]
+    return cfgs
+
+
+def _model_ids(cfgs):
+    return [m for c in cfgs for f in c["families"] for m in f["models"].values()]
+
+
+def check_settings(st, o1, allow_mismatch=False):
+    """Guards that need no file other than the configs: families, fallback, config validity, tbd ids, settings."""
+    primary = st["steps"]["pilot"]["families"]
+    cfgs = _all_configs(st, o1)
+    ids = _model_ids(cfgs)
     if any("tbd" in str(m).lower() for m in ids):
         raise RunAllRefused("model ids are placeholders (tbd) in a step config or in the run_all.yaml fallback: "
                             "the owner has not given the models")
@@ -218,14 +228,29 @@ def dry_client(cfg, e_instruction, gate="pass"):
     return MockClient(reply, cost_per_call=base.cost_per_call)
 
 
+class _RealFactory:
+    """One OpenRouter client for every step, charging max(usage.cost, tokens x configs/prices.yaml) (BYOK)."""
+
+    def __init__(self):
+        self.client = OpenRouterClient(prices=load_prices())
+
+    def __call__(self, cfg):
+        return self.client
+
+    def check_models(self, ids):
+        missing = sorted(set(ids) - set(self.client.prices))
+        if missing:
+            raise RunAllRefused(f"no price in configs/prices.yaml for {missing}: under BYOK the budget caps "
+                                "need a price for every model (R17)")
+
+
 def default_client_factory(dry, gate):
     if dry:
         e_text = load_prereg_texts()["e_instruction"]
         return lambda cfg: dry_client(cfg, e_text, gate)
     if not os.environ.get("OPENROUTER_API_KEY"):
         raise RunAllRefused("OPENROUTER_API_KEY is not set in this shell (export it, never write it in a file)")
-    client = OpenRouterClient()
-    return lambda cfg: client
+    return _RealFactory()
 
 
 def smoke_report(logs):
@@ -276,6 +301,8 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
         check_settings(st, o1, allow_settings_mismatch)
     if client_factory is None:
         client_factory = default_client_factory(dry, dry_gate)
+    if not dry and hasattr(client_factory, "check_models"):
+        client_factory.check_models(_model_ids(_all_configs(st, o1)))
 
     runs, mem_dir = root / "runs", root / "runs_exploratory" / "memory"
     tracker = BudgetTracker(st["budget_usd"])

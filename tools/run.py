@@ -10,7 +10,7 @@ from pathlib import Path
 
 import yaml
 
-from harness.clients import OpenRouterClient
+from harness.clients import OpenRouterClient, load_prices
 from harness.costs import cost_summary
 from harness.dryclient import make_dry_client
 from harness.runlog import load_logs
@@ -25,7 +25,7 @@ def main(argv=None):
     cfg = yaml.safe_load(Path(a.config).read_text(encoding="utf-8"))
     validate_config(cfg)
     out = Path(a.out_dir or cfg["out_dir"])
-    client = make_dry_client(cfg) if cfg["mock"] else OpenRouterClient()
+    client = make_dry_client(cfg) if cfg["mock"] else OpenRouterClient(prices=load_prices())
     run_batch(cfg, client, out)
     s = cost_summary([g for g in load_logs(out) if g["game_id"].startswith(cfg["name"] + "__")])
     mean = s["all"]["mean_per_game_usd"]
