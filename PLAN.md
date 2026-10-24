@@ -12,7 +12,7 @@ Times are a proposal for Saturday Oct 24 and Sunday Oct 25 (deadline Sunday 11:5
 | 5 | Core runs B, B_T, C, D (5 seeds, 2 families), base rate on A and D | Logs saved, `reproduce` regenerates the tables, audit pass 3 | |
 | 6 | Options O1 then O2 then O3, each behind its own gate | Core finished and saved | |
 | 7 | Report on the official Apart template, abstract, appendix, submission checks (R19 to R21), repo public | Audit pass 4, checklist in docs/apart/README.md, submit early Sunday | |
-| 8 | OPTIONAL visual replay page (R24 to R26), design in docs/viz/DESIGN.md. Tests first: tools/check_viz.py and data tests before the HTML | Entry: phases 0 to 5 green, core runs saved, `reproduce` working. Never blocks Phase 7. Time cap: if not done by Sunday 4:00 PM (owner local time, to confirm), cut it and keep only figure R27 | |
+| 8 | OPTIONAL visual replay page (R24 to R26), design in docs/viz/DESIGN.md. Tests first: tools/check_viz.py and data tests before the HTML | Entry: Phase 3 green; wiring to real data only after Phases 4 and 5 (decision D13). Until then the page runs on demo data only (viz/demo/, DEMO DATA banner). Never blocks Phase 7. Time cap: if not done by Sunday 4:00 PM (owner local time, to confirm), cut it and keep only figure R27 | |
 
 Cut order: the Phase 8 page is cut before any option O1 to O3.
 
