@@ -202,7 +202,8 @@ def test_real_configs_pin_llama_and_anthropic(name):
 
 def test_run_all_fallbacks_are_pinned():
     fb = load("run_all")["fallback"]
-    assert fb["anthropic"]["provider"] == ANTHROPIC_PIN
+    # The anthropic fallback was removed (QUESTIONS #27): every fallback that remains must be pinned.
+    assert "anthropic" not in fb
     assert fb["meta-llama"]["provider"] == QWEN_PIN
 
 
