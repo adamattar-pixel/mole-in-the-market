@@ -1,4 +1,5 @@
 """Game loop and batch runner. R12 logs, R16 design validation, R17 budget stop."""
+import math
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -10,6 +11,8 @@ from harness.runlog import config_hash, current_git_commit, write_game_log
 from harness.spy import ScriptedSpy
 
 FIRMS = ("0", "1")
+# OpenRouter `reasoning` request object (docs/team-artem/FIXES_CLIENT.md).
+REASONING_EFFORTS = ("none", "minimal", "low", "medium", "high", "xhigh")
 
 
 class RealRunRefused(RuntimeError):
@@ -33,6 +36,37 @@ def model_family(model_id):
     return parts[0]
 
 
+def _check_temperature(t):
+    if t is None:
+        return
+    if isinstance(t, bool) or not isinstance(t, (int, float)) or not math.isfinite(t) or not 0 <= t <= 2:
+        raise ValueError(f"temperature must be null or a number in [0, 2]: {t!r}")
+
+
+def _check_reasoning(r):
+    if r is None:
+        return
+    if not isinstance(r, dict) or not r or set(r) - {"effort", "max_tokens", "exclude", "enabled"}:
+        raise ValueError(f"reasoning must be null or an object with effort, max_tokens, exclude, enabled: {r!r}")
+    if "effort" in r and r["effort"] not in REASONING_EFFORTS:
+        raise ValueError(f"reasoning effort must be one of {REASONING_EFFORTS}: {r['effort']!r}")
+    for k in ("exclude", "enabled"):
+        if k in r and not isinstance(r[k], bool):
+            raise ValueError(f"reasoning {k} must be true or false")
+    if "max_tokens" in r:
+        m = r["max_tokens"]
+        if isinstance(m, bool) or not isinstance(m, int) or m < 0:
+            raise ValueError("reasoning max_tokens must be an integer >= 0")
+
+
+def family_reasoning(cfg, family):
+    """Per-family reasoning wins over the top-level one. None = not sent."""
+    for fam in cfg["families"]:
+        if fam["family"] == family and "reasoning" in fam:
+            return fam["reasoning"]
+    return cfg.get("reasoning")
+
+
 def validate_config(cfg):
     for key in ("name", "mock", "n_rounds", "spy_start", "demand", "seeds", "conditions", "families", "budget_usd"):
         if key not in cfg:
@@ -54,6 +88,10 @@ def validate_config(cfg):
         families = {model_family(m) for m in models.values()}
         if families != {fam["family"]}:
             raise ValueError(f"family {fam['family']!r} mixes or mislabels model families: {sorted(families)}")
+    _check_temperature(cfg.get("temperature"))
+    _check_reasoning(cfg.get("reasoning"))
+    for fam in cfg["families"]:
+        _check_reasoning(fam.get("reasoning"))
     if float(cfg["budget_usd"]) <= 0:
         raise ValueError("budget_usd must be > 0")
     if not isinstance(cfg.get("memory", False), bool):
@@ -89,6 +127,10 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
     memory = bool(cfg.get("memory", False))  # EXPLORATORY arm, off in every frozen config
     past_messages = {f: [] for f in FIRMS}
     prev_price = {f: None for f in FIRMS}
+    temperature = cfg.get("temperature")
+    reasoning = family_reasoning(cfg, spec.family)
+    settings = {k: v for k, v in (("temperature", temperature), ("reasoning", reasoning)) if v is not None}
+    reasoning_counts = []
     rounds, cost = [], 0.0
     invalid_prices = invalid_responses = 0
     for r in range(1, gc.n_rounds + 1):
@@ -97,7 +139,8 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
         for f in FIRMS:
             prompt = build_messages(f, r, gc.n_rounds, demand.unit_cost, history[f], msgs[f],
                                     cond.extra_instruction, past_messages[f] if memory else None)
-            text, call_cost = client.complete(prompt, spec.models[f], spec.seed)
+            text, call_cost = client.complete(prompt, spec.models[f], spec.seed, **settings)
+            provenance = getattr(client, "last_call", None)
             cost += call_cost
             budget.add(call_cost)  # raises BudgetExceeded: the game is dropped, no log written
             parsed = parse_reply(text)
@@ -110,6 +153,9 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
             firms[f] = {"price": price, "response_to_message": parsed["response_to_message"],
                         "invalid_price": parsed["invalid_price"], "invalid_response": parsed["invalid_response"],
                         "prompt": prompt, "reply": text}
+            if provenance is not None:
+                firms[f]["provenance"] = provenance
+                reasoning_counts.append(provenance.get("reasoning_tokens"))
         q = demand.quantities(firms["0"]["price"], firms["1"]["price"])
         pi = demand.profits(firms["0"]["price"], firms["1"]["price"])
         for i, f in enumerate(FIRMS):
@@ -132,6 +178,15 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test"):
     }
     if memory:
         log["memory"] = True
+    # New keys only when set, so dry logs stay byte-identical; a real game always records its temperature.
+    if "temperature" in cfg or not cfg["mock"]:
+        log["temperature"] = temperature
+    if reasoning is not None:
+        log["reasoning"] = reasoning
+    if reasoning_counts:
+        known = [n for n in reasoning_counts if n is not None]
+        log["reasoning_tokens"] = sum(known) if known else None
+        log["reasoning_used"] = (log["reasoning_tokens"] > 0) if known else None
     write_game_log(log, runs_dir)
     return log
 

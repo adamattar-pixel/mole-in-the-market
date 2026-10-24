@@ -15,3 +15,5 @@ families:
   - family: family2-tbd
     models: {"0": family2-tbd/model-tbd, "1": family2-tbd/model-tbd}
 budget_usd: 5.0
+# PLACEHOLDER (owner decision, docs/team-artem/FIXES_CLIENT.md): null = no temperature sent, provider default
+temperature: null
