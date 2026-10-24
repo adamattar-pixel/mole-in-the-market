@@ -23,3 +23,13 @@ claims was NOT checked: the team should read the abstracts before writing the re
 ## Also noticed
 - report/SUBMISSION_CHECKLIST.md says the tag `preexisting-baseline` is missing on the remote. It is pushed
   (`git ls-remote --tags origin` lists `refs/tags/preexisting-baseline` -> fd8c920, 2026-10-25). The checklist line is outdated.
+
+## Difference notes vs abstracts (closest works, abstracts read 2026-10-25)
+Only the arXiv abstract pages were read, not the full papers.
+| # | Skeleton note | What the abstract supports | Advice for the text |
+|---|---|---|---|
+| opt GroupGuard | "Honeypot as defense component in QA tasks; CHECK before 'first sting'" | Abstract: defense with "active honeypot inducement" to identify and isolate collusive agents; collaborative tasks, five datasets, four topologies; no market or pricing mentioned | Do NOT write "first sting" or "first honeypot". A safe form: "to our knowledge, the first scripted pact offer in a pricing game; honeypots exist as a defense in collaborative tasks (GroupGuard)" |
+| 5 Colosseum | "CLOSEST on say vs do; cooperative DCOP, assigned coalitions" | Abstract: cooperative tasks; "collusion on paper" = agents plan to collude in text but often pick non-collusive actions. How coalitions are set is not clear from the abstract | Cite it as the closest prior on say vs do. Check the paper body before writing "assigned coalitions" |
+| 4 Voluntary Collusion | "Offer from environment as a tool, non-market games" | Abstract: tools offered by the environment; Liar's Bar and Cleanup; "only explicit ethical framing reduces adoption" | Note supported. The ethical framing result is the prior for B_ETH (H7) |
+| 3 Agrawal et al. | "Free seller talk; authority-pressure result = closest prior for B_T" | Abstract: direct seller communication increases collusion; oversight and urgency from authority figures "influence" collusion (direction not stated in the abstract) | Do not state the direction of the authority effect without reading the paper |
+| 2 Fish et al. | "Same game, no channel" | Abstract: LLM pricing agents in oligopoly settings reach supracompetitive prices; prompt wording matters. It does not state the number of sellers or the absence of a channel | Check the paper body (setup section) before writing "same game, no channel" |
