@@ -94,5 +94,19 @@ def monitor_metrics(logs, family=None):
     return out
 
 
+DEFENSE_ARMS = ("B", "B_ETH", "B_MON")
+
+
 def defenses_comparison(logs, family=None):
-    raise NotImplementedError
+    """R34: say and do rates in B vs B_ETH vs B_MON, on the (family, seed) keys present in all three arms
+    (matched by family and seed), with Wilson 95% intervals. Games outside a full triple are listed."""
+    idx = {arm: _index(logs, arm, family) for arm in DEFENSE_ARMS}
+    keys = sorted(set.intersection(*(set(v) for v in idx.values())))
+    n = len(keys)
+    arms = {}
+    for arm in DEFENSE_ARMS:
+        games = [idx[arm][k] for k in keys]
+        arms[arm] = {"say": _rate(sum(verbal_acceptance_game(g) for g in games), n),
+                     "do": _rate(sum(behavioral_acceptance_game(g) for g in games), n)}
+    unmatched = {arm: [idx[arm][k]["game_id"] for k in sorted(set(idx[arm]) - set(keys))] for arm in DEFENSE_ARMS}
+    return {"n_matched": n, "matched": [list(k) for k in keys], "arms": arms, "unmatched": unmatched}
