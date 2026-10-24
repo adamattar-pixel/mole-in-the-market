@@ -16,7 +16,7 @@ follows the renames to ops/, but the PROGRESS.md "Resume here" line edited by 84
 the removal (this file replaces it).
 
 ## Tests
-- Last green: a6b6022 (`artem-owner-approval`), `python3 -m pytest` -> 653 passed, 0 failed. This branch adds tests/test_check_ops.py.
+- Last green: a6b6022 (`artem-owner-approval`), `python3 -m pytest` -> 653 passed, 0 failed. On `artem-ops-reorg` (2b2b6b3): 678 passed (+25 for tools/check_ops).
 - Install and test: `python3 -m pip install -r requirements.txt` then `python3 -m pytest`.
 - Whole pipeline dry (mock client, no key, no cost): `python3 -m tools.run_all --dry --exploratory --o1`.
 - Ops check: `python3 -m tools.check_ops`.
