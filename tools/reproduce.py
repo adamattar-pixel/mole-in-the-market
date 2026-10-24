@@ -35,18 +35,27 @@ def config_name(log):
     return str(log["game_id"]).split("__", 1)[0]
 
 
-def filter_logs(logs, configs=None, include_mock=True):
-    """(kept, excluded). configs None = every config. A log without mock false counts as mock."""
+def filter_logs(logs, configs=None, include_mock=True, exclude_ids=None):
+    """(kept, excluded). configs None = every config. A log without mock false counts as mock.
+    exclude_ids: game ids superseded by an E-gate model fallback (R36), counted as "superseded"."""
     kept, excluded = [], {"mock": 0, "non_core_config": {}}
+    if exclude_ids is not None:
+        excluded["superseded"] = 0
     for g in logs:
         if not include_mock and g.get("mock") is not False:
             excluded["mock"] += 1
         elif configs is not None and config_name(g) not in configs:
             name = config_name(g)
             excluded["non_core_config"][name] = excluded["non_core_config"].get(name, 0) + 1
+        elif exclude_ids is not None and g["game_id"] in exclude_ids:
+            excluded["superseded"] += 1
         else:
             kept.append(g)
     return kept, excluded
+
+
+def n_excluded(excluded):
+    return excluded["mock"] + sum(excluded["non_core_config"].values()) + excluded.get("superseded", 0)
 
 
 def _sha(path):
@@ -109,7 +118,9 @@ def tables_md(summary):
     if ex is not None:
         parts = [f"mock {ex['mock']}"] + [f"non-core config {k} {v}" for k, v in
                                           sorted(ex["non_core_config"].items())]
-        n_ex = ex["mock"] + sum(ex["non_core_config"].values())
+        if "superseded" in ex:
+            parts.append(f"superseded by the E-gate fallback {ex['superseded']}")
+        n_ex = n_excluded(ex)
         lines.append(f"Excluded games: {n_ex} ({', '.join(parts)})")
     lines.append("")
     if not summary["n_games"]:
@@ -135,14 +146,14 @@ def tables_md(summary):
 
 
 def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir=None, prereg_path=None,
-              configs=None, include_mock=True):
+              configs=None, include_mock=True, exclude_ids=None):
     runs_dir, out_dir = Path(runs_dir), Path(out_dir)
     prereg_path = Path(prereg_path or PREREG_PATH)
     out_dir.mkdir(parents=True, exist_ok=True)
     logs = load_logs(runs_dir)
     if len({bool(g.get("memory", False)) for g in logs}) > 1:
         raise ValueError("runs dir mixes exploratory memory logs with frozen logs: reproduce each folder separately")
-    logs, excluded = filter_logs(logs, configs, include_mock)
+    logs, excluded = filter_logs(logs, configs, include_mock, exclude_ids)
     texts = load_prereg_texts(prereg_path)
     summary, base = build_summary(logs, texts, n_draws, seed)
     summary["excluded"] = excluded
@@ -161,8 +172,8 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     if viz_dir is not None:
         source = hashlib.sha256("\n".join(input_lines).encode("utf-8")).hexdigest()
         export_viz(logs, rows, viz_dir, texts, prereg_path, source, _generated_at())
-        n_excluded = excluded["mock"] + sum(excluded["non_core_config"].values())
-        problems = check_consistency(out_dir / "labels.csv", Path(viz_dir) / "games.csv", runs_dir, n_excluded)
+        problems = check_consistency(out_dir / "labels.csv", Path(viz_dir) / "games.csv", runs_dir,
+                                     n_excluded(excluded))
         if problems:
             raise RuntimeError("viz export inconsistent with labels.csv: " + "; ".join(problems))
     if figures_dir is not None:
