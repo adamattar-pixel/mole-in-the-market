@@ -10,7 +10,8 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
   the logs; each step config keeps its own cap (R17).
 - Resumable: games already logged are skipped (write-once logs, R12).
 - Real mode refuses unless PREREGISTRATION.md and PREREGISTRATION_ADDENDUM.md are FROZEN, no model id is
-  `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here).
+  `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here;
+  the repo-root .env is loaded at startup, harness/envfile.py, without overriding the shell).
 - Each step keeps its own family entries (a failing family is swapped for its fallback). One game design and
   matched seeds everywhere; temperature and reasoning must match between pooled or matched steps (pilot and
   core; core, monitor and ethics) unless --allow-settings-mismatch.
@@ -37,6 +38,7 @@ from harness.conditions import load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import addendum_is_frozen
 from harness.dryclient import make_dry_client
+from harness.envfile import load_env
 from harness.runlog import load_logs
 from harness.runner import RealRunRefused, family_reasoning, run_batch, validate_config
 from harness.validation import e_validation
@@ -249,7 +251,7 @@ def default_client_factory(dry, gate):
         e_text = load_prereg_texts()["e_instruction"]
         return lambda cfg: dry_client(cfg, e_text, gate)
     if not os.environ.get("OPENROUTER_API_KEY"):
-        raise RunAllRefused("OPENROUTER_API_KEY is not set in this shell (export it, never write it in a file)")
+        raise RunAllRefused("OPENROUTER_API_KEY is not set (put it in the repo-root .env, see .env.example, or export it)")
     return _RealFactory()
 
 
@@ -458,6 +460,7 @@ EXIT = {"done": 0, "stopped": 0, "plan_b": 2, "budget_stop": 3}
 
 
 def main(argv=None):
+    load_env()  # repo-root .env, if any; never overrides the shell, never printed
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry", action="store_true", help="mock client into a scratch folder (never runs/)")
     ap.add_argument("--root", default=None, help=f"base folder (default: the repo root real, {DEFAULT_DRY_ROOT} dry)")
