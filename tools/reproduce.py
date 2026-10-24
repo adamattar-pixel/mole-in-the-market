@@ -20,7 +20,7 @@ from collections import Counter
 from pathlib import Path
 
 from harness.conditions import CONDITIONS, PREREG_PATH, load_prereg_texts
-from harness.labels import family_base_rates, make_labels, write_labels_csv
+from harness.labels import check_one_arm, family_base_rates, make_labels, write_labels_csv
 from harness.metrics import (behavioral_acceptance_game, false_positive_rate, game_rate, permutation_p_value,
                              verbal_acceptance_game, wilson)
 from harness.runlog import load_logs
@@ -154,8 +154,8 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     prereg_path = Path(prereg_path or PREREG_PATH)
     out_dir.mkdir(parents=True, exist_ok=True)
     all_logs = logs = load_logs(runs_dir)
-    if len({bool(g.get("memory", False)) for g in logs}) > 1:
-        raise ValueError("runs dir mixes exploratory memory logs with frozen logs: reproduce each folder separately")
+    # Exploratory arms (memory, think) are never pooled with each other or with the frozen games.
+    check_one_arm(logs)
     logs, excluded = filter_logs(logs, configs, include_mock, exclude_ids)
     texts = load_prereg_texts(prereg_path)
     summary, base = build_summary(logs, texts, n_draws, seed)
