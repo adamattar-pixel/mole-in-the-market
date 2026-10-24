@@ -8,15 +8,18 @@ budget_usd: 30.0
 # E gate (PLAN.md Phase 4): a family whose E fails is replaced ONCE by its fallback here, keyed by the
 # primary family label; the fallback pilot runs as espion_pilot_fb. Fallback failing too = plan B (stop).
 # The fallback label must not equal another primary family label. `fallback: {}` = no fallback.
-# Placeholders until Adam gives them (D10; candidates: docs/team-artem/MODEL_AND_COST.md). A real run refuses
-# "tbd" ids. A fallback label may be "<provider>-fb" so its logs never pool with the primary family.
+# Owner decision D22 (docs/context/DECISIONS.md; ids, prices and parameters checked on OpenRouter 2026-10-24).
+# anthropic -> claude-sonnet-4.5 (3.00 / 15.00 per 1M, same BYOK key): accepts temperature, reasoning not on by
+# default, so no reasoning key, same settings as Haiku 4.5. Cheaper Anthropic models fail one test: haiku-5.5 has
+# no temperature. Label anthropic-fb, not anthropic: Sonnet logs must not share a family label with the Haiku logs.
+# meta-llama -> qwen3-235b-a22b-2507 (open weights, non-thinking, OpenRouter credits).
 fallback:
-  family1-tbd:
-    family: family1fb-tbd
-    models: {"0": family1fb-tbd/model-tbd, "1": family1fb-tbd/model-tbd}
-  family2-tbd:
-    family: family2fb-tbd
-    models: {"0": family2fb-tbd/model-tbd, "1": family2fb-tbd/model-tbd}
+  anthropic:
+    family: anthropic-fb
+    models: {"0": anthropic/claude-sonnet-4.5, "1": anthropic/claude-sonnet-4.5}
+  meta-llama:
+    family: qwen
+    models: {"0": qwen/qwen3-235b-a22b-2507, "1": qwen/qwen3-235b-a22b-2507}
 # Option O1 (--o1 only, last step): espion_core with these seeds, written as espion_o1, its own cap.
 o1_seeds: [6, 7, 8, 9, 10]
 o1_budget_usd: 10.0
