@@ -1,8 +1,8 @@
-"""R36: one command for the whole pipeline (SPEC.md R36, DECISIONS.md D20, RUNBOOK_REAL_RUNS.md).
+"""R36: one command for the whole pipeline (SPEC.md R36, ops/DECISIONS.md D20, RUNBOOK_REAL_RUNS.md).
 
 Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline scoring
        [-> --exploratory: memory arm, sensitivity, monitor_view, price_paths] [-> --o1: seeds 6-10, last].
-- E gate (PLAN.md Phase 4): per family, on the pilot games only. A failing family is replaced ONCE by its
+- E gate (ops/PLAN.md Phase 4): per family, on the pilot games only. A failing family is replaced ONCE by its
   fallback (configs/run_all.yaml), whose pilot runs as espion_pilot_fb; if a fallback fails too, or no
   fallback is set, the pipeline stops and prints plan B. The decision is recomputed from the logs on every
   run, so a resumed run takes the same path.
@@ -58,7 +58,7 @@ MANAGED = {"espion_smoke", "espion_pilot", FALLBACK_PILOT, "espion_core", "espio
 DRY_COST_PER_CALL = 0.0001
 DEFAULT_DRY_ROOT = "dry_runs/run_all"
 PLAN_B = ("E gate FAILED after the one allowed model change: stop here, no core run. "
-          "Go to plan B (PLAN.md): track 1.5, Pareto curve of restrictions, "
+          "Go to plan B (ops/PLAN.md): track 1.5, Pareto curve of restrictions, "
           "docs/context/contexte_projet_v7.md section 10.")
 
 

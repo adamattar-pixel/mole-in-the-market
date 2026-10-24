@@ -1,16 +1,8 @@
-# PROGRESS - Claude's memory and the owner's dashboard
-Claude updates this file at the end of every phase and whenever the state changes. After a context reset, read this file first.
+# PROGRESS - history log of phases and gates
+Append a row at the end of every phase or gate (what was done, evidence, deviations). The current state is in ops/STATE.md: after a context reset, read that first.
 
-## Resume here (read this first)
-- READ HANDOFF.md FIRST. Project owner: **Artem** (full handoff 2026-10-24). Adam Attar (adamattar-pixel) stays co-author and is reachable for decisions.
-- Branch `artem` = origin/wip/phase-4 + R28-R36 + independent audit/review fixes (M1-M4). `python3 -m pytest` -> 617 passed, 0 red. Owner decisions (models: anthropic/claude-haiku-4.5 via BYOK + meta-llama/llama-3.3-70b-instruct, temperature 1.0, test(fix) #21, abstract 150-250, validate_e --config) are on branch `artem-owner-approval`, to merge before the smoke run.
-- main = gate-3 + preregistration freeze (tag `prereg-frozen`). Addendum frozen (tag `addendum-frozen`).
-- Install and test: `python3 -m pip install -r requirements.txt` then `python3 -m pytest`. Whole pipeline dry: `python3 -m tools.run_all --dry --exploratory --o1`.
-- Next action: owner decisions (model ids, temperature, fallback, budget caps: RUNBOOK_REAL_RUNS.md step 2, QUESTIONS #11, #17, #21-#23), then the real smoke run `python3 -m tools.run_all --stop-after smoke` (H2: key exported in the shell, GO). Then follow RUNBOOK_REAL_RUNS.md. Runs freeze Sunday Oct 25 noon; submit early Sunday before 23:59 AoE.
-- Frozen, never edited: PREREGISTRATION.md, PREREGISTRATION_ADDENDUM.md, locked tests (D1). Any change = QUESTIONS.md + reported deviation.
-
-## Current state
-Phase: 4 no-API part done (gate open, H2); R19, R24-R25, R28-R36 done (tests green, no real run) | Tests: 581 passed
+## Resume here
+Moved to ops/STATE.md (single source for the current state). This file is the history log only.
 
 ## Log
 | Date | Phase | What was done | Evidence (command, result) | Deviations |
@@ -24,12 +16,10 @@ Phase: 4 no-API part done (gate open, H2); R19, R24-R25, R28-R36 done (tests gre
 | 2026-10-24 | 4/7/8 + handoff | R19 check_submission (locked a0cd120, 20 red NotImplementedError, then green; mutations: 150->151 3 red, <= -> < 1 red, appendix heading check 1 red, overall not-run-as-pass 2 red). R24-R25 page + demo data (locked ef5bccd, 25 red; mutations: script list 1 red, external URL 2 red, runs/ refusal 2 red, synthetic flag 1 red; page rendered in headless Chrome and inspected). Plan v2: SPEC R28-R36, DECISIONS D16-D21, Phase 8 cut, addendum frozen (8b7b5a1/378f1dd, tag addendum-frozen). HANDOFF.md for Artem | `python -m pytest` -> 254 passed; git status clean | R28-R36 draft tests written but not committed (moved out of the repo) on the owner's handoff order. Self-audit: written, fresh-session audit NOT RUN |
 | 2026-10-24 | handoff | Full ownership handoff to Artem: HANDOFF.md, CLAUDE.md (owner, identity rule), CONTRIBUTING.md, README.md authors and run commands, report/AUTHORS.md | `python -m pytest` -> 254 passed; git status clean | No requirement started. Adam stays co-author |
 | 2026-10-24 | A5 | R36 tools/run_all (one command, E-gate fallback once then plan B, global budget, resume, guards, --dry, --exploratory, --o1), tools/score_defenses.py, reproduce exclude_ids for superseded pilot games; integration guard D2 x monitor (no bug: blocked logs carry message None); RUNBOOK_REAL_RUNS.md | `python3 -m pytest` -> 581 passed; R36 tests locked at 20aec22 (33 red, module missing); 10 guard mutations red then restored; `python3 -m tools.run_all --dry --exploratory --o1` -> done, every table and figure produced | Filling model ids turns 11 placeholder tests red (QUESTIONS #21). Fresh-session audit NOT RUN |
+| 2026-10-24 | ops | Process docs moved to ops/ (git mv, references updated); ops/README.md, STATE.md (single resume point), OPEN_ISSUES.md, CLAIMS.md; CHANGELOG.md; CLAUDE.md coordination section, owner addressed in English; tools/check_ops.py (tests locked at 58e6de7, 23 red NotImplementedError, then green; gap tests 2b2b6b3) | `python3 -m pytest` -> 678 passed; `python3 -m tools.check_ops` OK; mutations (exists check off 4 red, end-before-start off 2 red, lookbehind off 1 red, tests/ scanned 2 red, empty-cell check off 0 red -> gap tests added, 2 red) then restored | Frozen files, locked tests and contexte_projet_v7.md untouched; locked test comments still cite bare QUESTIONS.md/DECISIONS.md |
 
-## Waiting on the owner (hard stops, owner = Artem since 2026-10-24)
-- H2: API key and GO for the first real run (Phase 4)
-- Audit pass 1 (Phase 2): run /audit in a fresh chat
-- QUESTIONS.md open rows (1-9 answered 2026-10-24, see DECISIONS.md)
-- Audit pass 2 (Phase 3): run /audit in a fresh chat
+## Waiting on the owner
+Moved to ops/STATE.md ("Blocked, and on whom") and ops/OPEN_ISSUES.md.
 
 ## Workflow rule (owner, 2026-10-24)
 Per phase: write ALL tests from SPEC/PREREGISTRATION first (skeletons raise NotImplementedError), show them red, commit `test(Rxx-Ryy): add failing tests from spec (locked)` (not pushed until green), record its hash here, then implement without touching locked tests. End of phase: `git diff <locked> -- tests/` must be empty except listed new tests.

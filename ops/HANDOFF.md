@@ -1,3 +1,7 @@
+> **Historical snapshot (note added 2026-10-24).** This file records the state at the handoff to Artem and is no longer
+> updated: its test count (254) and its "R28-R36 have no code" are out of date, and its paths predate the move of the
+> process docs to ops/. For the current state read ops/STATE.md.
+
 # HANDOFF - full handoff: Artem is the project owner
 Date: 2026-10-24. First checkpoint tag: `handoff-artem-1` (kept). Full ownership transfer: commit "docs: handoff ownership to Artem" on `wip/phase-4`.
 Artem owns the project from now on. Adam Attar (adamattar-pixel) stays co-author and is reachable for decisions.

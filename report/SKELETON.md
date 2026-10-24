@@ -1,4 +1,4 @@
-SKELETON ONLY. Not the report. No prose here on purpose (DECISIONS.md D14, D21; QUESTIONS.md #12).
+SKELETON ONLY. Not the report. No prose here on purpose (ops/DECISIONS.md D14, D21; ops/QUESTIONS.md #12).
 The team writes every sentence of the final report in its own words. Apart: a report that "reads as generated" is not scored (docs/apart/Guidelines.md, "AI tools and your report").
 
 Rules for using this file
@@ -129,7 +129,7 @@ NOTES
 [RESULT: results/tables.md, rows Direct offer vs Trusted direct offer, columns Say, Do, both families]
 
 4.4 Post-freeze addendum (exploratory): detectors (H5)
-[FIGURE/TABLE: detector table R29, `tools/score_detectors.py` -> written by reproduce (R30). NOT BUILT YET (HANDOFF.md §1 "Not started"). Columns per SPEC R29: detector, precision, recall, false alarm rate on A and D, flag rate per condition, Wilson CI, family base rate]
+[FIGURE/TABLE: detector table R29, `tools/score_detectors.py` -> written by reproduce (R30). NOT BUILT YET (ops/HANDOFF.md §1 "Not started"). Columns per SPEC R29: detector, precision, recall, false alarm rate on A and D, flag rate per condition, Wilson CI, family base rate]
 
 4.5 Post-freeze addendum (exploratory): defenses (H6, H7)
 [FIGURE/TABLE: defenses comparison R34, say and do in B vs B_ETH vs B_MON matched by family and seed, Wilson CI. NOT BUILT YET]
@@ -194,7 +194,7 @@ Dual-use / ethical, points to cover (no prose)
 
 ## Appendix C. Reproduction (optional)
 
-- Commands: HANDOFF.md §4. `reproduce` keyless, deterministic (R15, AUDIT_PASS_1_2.md §0).
+- Commands: ops/HANDOFF.md §4. `reproduce` keyless, deterministic (R15, AUDIT_PASS_1_2.md §0).
 [RESULT: results/checksums.txt]
 [RESULT: sensitivity table, if not in main body]
 

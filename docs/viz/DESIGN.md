@@ -1,7 +1,7 @@
 # Visual replay page - design brief
 Purpose: let the team explore results. It displays results, it never produces any. Dark dashboard style inspired by GridReady (idea only, no code or assets copied).
 
-Status: OPTIONAL, Phase 8 (see PLAN.md). The report figure R27 comes first.
+Status: OPTIONAL, Phase 8 (see ops/PLAN.md). The report figure R27 comes first.
 
 ## Layout
 3 columns then a lower band (stack in one column on narrow screens).

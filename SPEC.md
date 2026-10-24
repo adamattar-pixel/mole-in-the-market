@@ -1,6 +1,6 @@
 # SPEC - single source of truth (derived from docs/context/contexte_projet_v7.md)
 If SPEC.md and the code disagree, the code is wrong. If SPEC.md and v7 disagree, stop and ask the owner.
-Each requirement needs at least one automated test (see TRACEABILITY.md) except those marked MANUAL.
+Each requirement needs at least one automated test (see ops/TRACEABILITY.md) except those marked MANUAL.
 
 | ID | Requirement | Acceptance test (what must be true) |
 |---|---|---|
@@ -21,7 +21,7 @@ Each requirement needs at least one automated test (see TRACEABILITY.md) except 
 | R15 | `reproduce` recomputes every table from runs/ with no API key and no network, with checksums | Test: run twice -> identical output; deleting a log changes the checksum report; works with the API key unset |
 | R16 | Design: 5 seeds, 2 model families, no mixing of families inside one game | Test: config validator rejects mixed families |
 | R17 | Cost tracking per game, plus a global stop if a budget cap is hit | Test with a mock client |
-| R18 | No hardcoded results anywhere; report numbers come from `reproduce` | Audit grep + review (see AUDIT.md) |
+| R18 | No hardcoded results anywhere; report numbers come from `reproduce` | Audit grep + review (see ops/AUDIT.md) |
 | R19 | Submission checks: abstract 150 to 250 words (was <= 150; live sprint page checked 2026-10-24, owner-approved change PROPOSED in docs/team-artem/OWNER_APPROVAL.md), required appendix "Limitations and Dual-Use / Ethical Considerations" present, authors listed, title identical on each submission, main body <= 8 pages, links resolve | tools/check_submission.py (word count, appendix heading, links) + MANUAL page count against the official Apart template |
 | R20 | Preexisting vs new work declared in README and report | MANUAL review against THIRD_PARTY.md and the `preexisting-baseline` tag |
 | R21 | Dual-use: publish effect sizes and representative excerpts only, no optimized playbook | MANUAL review of the appendix |
@@ -32,7 +32,7 @@ Each requirement needs at least one automated test (see TRACEABILITY.md) except 
 | R26 | Labels: the page uses only allowed phrases, and only frozen texts as offers | MANUAL check at audit |
 | R27 | Report figure: `reproduce` produces figures/game_grid.pdf (game grid colored by outcome, same color code) from games.csv. Figure 1 of the report, comes BEFORE the web page | Test: file produced with no API key, two runs give the same result |
 
-Options (only when PLAN.md opens the gate): O1 seeds 6 to 10 on B, B_T, C, D. O2 trust grid B_X and C_T. O3 paired monitor.
+Options (only when ops/PLAN.md opens the gate): O1 seeds 6 to 10 on B, B_T, C, D. O2 trust grid B_X and C_T. O3 paired monitor.
 
 ## Post-freeze additions (exploratory, D16-D21; frozen texts and thresholds in PREREGISTRATION_ADDENDUM.md)
 | ID | Requirement | Acceptance test (what must be true) |

@@ -2,7 +2,7 @@
 
 Usage: python -m tools.validate_e [runs_dir] [--prereg PREREGISTRATION.md] [--config NAME ...]
 Default: every A and E log in runs_dir (locked R13 behaviour). --config keeps only the logs of that config
-(game id prefix "<config name>__", repeatable), for example --config espion_pilot (QUESTIONS.md #23).
+(game id prefix "<config name>__", repeatable), for example --config espion_pilot (ops/QUESTIONS.md #23).
 Exit code 0 only if every family passes.
 """
 import argparse

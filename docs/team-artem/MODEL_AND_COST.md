@@ -6,7 +6,7 @@ Prices were fetched from `https://openrouter.ai/api/v1/models` on **2026-10-24 0
 
 ## Final choice (owner decision D23, 2026-10-24)
 
-The owners (Artem and Adam) chose, in docs/context/DECISIONS.md D23 (settles D10 / QUESTIONS #7):
+The owners (Artem and Adam) chose, in ops/DECISIONS.md D23 (settles D10 / QUESTIONS #7):
 
 | Family | OpenRouter id | Paid by | In / Out $/1M | Reasoning | Temperature |
 |---|---|---|---|---|---|

@@ -5,7 +5,7 @@
 # cost per call: max of usage.cost and tokens x configs/prices.yaml).
 # Sum of the per-config caps: 1 + 5 + 10 + 7.5 + 2.5 = 26 USD (+ 5 memory arm, + 10 O1).
 budget_usd: 30.0
-# E gate (PLAN.md Phase 4): a family whose E fails is replaced ONCE by its fallback here, keyed by the
+# E gate (ops/PLAN.md Phase 4): a family whose E fails is replaced ONCE by its fallback here, keyed by the
 # primary family label; the fallback pilot runs as espion_pilot_fb. Fallback failing too = plan B (stop).
 # The fallback label must not equal another primary family label. `fallback: {}` = no fallback.
 # Owner decision D23 (docs/context/DECISIONS.md; ids, prices and parameters checked on OpenRouter 2026-10-24).
