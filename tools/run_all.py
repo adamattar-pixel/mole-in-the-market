@@ -40,7 +40,7 @@ from harness.defenses import addendum_is_frozen
 from harness.dryclient import make_dry_client
 from harness.envfile import load_env
 from harness.runlog import load_logs
-from harness.runner import RealRunRefused, family_reasoning, run_batch, validate_config
+from harness.runner import RealRunRefused, family_provider, family_reasoning, run_batch, validate_config
 from harness.validation import e_validation
 from tools import monitor_view, price_paths, sensitivity
 from tools.reproduce import PREREG_CONFIGS, config_name, filter_logs, reproduce
@@ -135,7 +135,7 @@ def check_step_settings(st, cfgs, allow_mismatch=False):
             other = st["steps"][step]
             for fam in [f["family"] for f in first["families"]]:
                 for field, get in (("temperature", lambda c, f: c.get("temperature")),
-                                   ("reasoning", family_reasoning)):
+                                   ("reasoning", family_reasoning), ("provider", family_provider)):
                     a, b = get(first, fam), get(other, fam)
                     if a != b:
                         raise RunAllRefused(

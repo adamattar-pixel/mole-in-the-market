@@ -65,10 +65,30 @@ class MockClient:
         return self.reply_fn(messages, model, seed), self.cost_per_call
 
 
+def _reasoning_trace(message):
+    """Raw reasoning of a response message: {} when the message has none, else reasoning_text (message.reasoning,
+    or the joined reasoning.text entries of reasoning_details; None when only summaries or encrypted blocks came
+    back) and, when reasoning_details is present, the sorted list of its entry types."""
+    details = message.get("reasoning_details")
+    out = {}
+    if isinstance(details, list) and details:
+        out["reasoning_detail_types"] = sorted({str(d.get("type")) for d in details if isinstance(d, dict)})
+    raw = message.get("reasoning")
+    if isinstance(raw, str) and raw:
+        out["reasoning_text"] = raw
+    elif "reasoning_detail_types" in out:
+        parts = [d["text"] for d in details if isinstance(d, dict) and d.get("type") == "reasoning.text"
+                 and isinstance(d.get("text"), str)]
+        out["reasoning_text"] = "\n".join(parts) if parts else None
+    return out
+
+
 class OpenRouterClient:
     """Real client. The key is read from the OPENROUTER_API_KEY environment variable at call time.
 
-    temperature and reasoning are sent only when not None (None = provider default, as before).
+    temperature, reasoning and provider (OpenRouter's routing object) are sent only when not None (None =
+    provider default, as before). The raw reasoning trace, when the response has one, is kept in last_call
+    (reasoning_text, reasoning_detail_types) and is never part of the returned reply.
     After each call, last_call holds the provenance: served model, provider, raw usage, reasoning tokens and
     usage.cost_details.upstream_inference_cost (the provider's bill under BYOK; only when present, log only).
     With a price table (load_prices), each call is charged max(usage.cost, tokens x price): under BYOK usage.cost
@@ -82,7 +102,7 @@ class OpenRouterClient:
         self.prices = prices
         self.last_call = None
 
-    def complete(self, messages, model, seed, temperature=None, reasoning=None):
+    def complete(self, messages, model, seed, temperature=None, reasoning=None, provider=None):
         key = os.environ.get("OPENROUTER_API_KEY")
         if not key:
             raise MissingAPIKey("OPENROUTER_API_KEY is not set")
@@ -94,16 +114,21 @@ class OpenRouterClient:
             payload["temperature"] = temperature
         if reasoning is not None:
             payload["reasoning"] = reasoning
+        if provider is not None:
+            payload["provider"] = provider
         body = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(OPENROUTER_URL, data=body, method="POST", headers={
             "Authorization": f"Bearer {key}", "Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=self.timeout) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-        text = data["choices"][0]["message"]["content"] or ""
+        message = data["choices"][0]["message"]
+        # The reply is `content` only: the reasoning trace is logged, never parsed (THINK_ARM.md).
+        text = message.get("content") or ""
         usage = data.get("usage")
         details = (usage or {}).get("completion_tokens_details") or {}
         self.last_call = {"served_model": data.get("model"), "provider": data.get("provider"),
                           "usage": usage, "reasoning_tokens": details.get("reasoning_tokens")}
+        self.last_call.update(_reasoning_trace(message))
         upstream = ((usage or {}).get("cost_details") or {}).get("upstream_inference_cost")
         if upstream is not None:
             self.last_call["upstream_inference_cost"] = float(upstream)
