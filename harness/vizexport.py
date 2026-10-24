@@ -85,12 +85,12 @@ def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, g
                                      encoding="utf-8")
 
 
-def check_consistency(labels_csv, games_csv, runs_dir):
-    """List of problems (empty when viz/data/games.csv matches labels.csv and runs/)."""
+def check_consistency(labels_csv, games_csv, runs_dir, n_excluded=0):
+    """List of problems (empty when viz/data/games.csv matches labels.csv and runs/ minus excluded games)."""
     problems = []
     labels = {r["game_id"]: r for r in _read_csv(labels_csv)}
     games = {r["game_id"]: r for r in _read_csv(games_csv)}
-    n_runs = len(list(Path(runs_dir).glob("*.json")))
+    n_runs = len(list(Path(runs_dir).glob("*.json"))) - n_excluded
     if not len(labels) == len(games) == n_runs:
         problems.append(f"row counts differ: labels {len(labels)}, games {len(games)}, runs {n_runs}")
     for gid in sorted(set(labels) | set(games)):

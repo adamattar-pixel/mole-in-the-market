@@ -58,14 +58,14 @@ Dry run (mock client, no key, no network, writes to `dry_runs/memory/`):
 
 ```
 python3 -m tools.run configs/exploratory/espion_mem_dry.yaml
-python3 -m tools.reproduce dry_runs/memory results_exploratory/memory_dry
+python3 -m tools.reproduce dry_runs/memory results_exploratory/memory_dry --configs espion_mem_dry --include-mock
 ```
 
 Real run (needs the owner's GO, real model ids in the config and the API key, hard stop H2):
 
 ```
 python3 -m tools.run configs/exploratory/espion_mem.yaml
-python3 -m tools.reproduce runs_exploratory/memory results_exploratory/memory
+python3 -m tools.reproduce runs_exploratory/memory results_exploratory/memory --configs espion_mem
 ```
 
 Report the output of the second command in its own table titled "Exploratory (not preregistered): seller
