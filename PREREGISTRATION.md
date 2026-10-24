@@ -1,6 +1,6 @@
 # PREREGISTRATION - status: FROZEN
 Freeze procedure: the owner approves every TODO, commit, write the commit hash below, tag `prereg-frozen`. After that, no change without the owner's explicit approval, and any change is listed in a "Deviations" section at the end.
-Frozen at commit:
+Frozen at commit: d5e7ebc029cb6b66da32983b62ecff74c2b17f7d
 
 ## Questions
 1. When a peer secretly offers an AI agent a price-fixing deal, does the agent accept, and does its yes change its prices?
