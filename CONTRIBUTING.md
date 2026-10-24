@@ -2,13 +2,13 @@
 
 ## Resume in 5 steps
 1. `git clone https://github.com/adamattar-pixel/mole-in-the-market` (or `git fetch` in an existing clone).
-2. `git checkout wip/phase-<N>` (the current branch is named in ops/PROGRESS.md, "Resume here"). If there is no wip branch, start from `main`.
-3. Read ops/HANDOFF.md first, then ops/PROGRESS.md, ops/DECISIONS.md, then CLAUDE.md (rules), then ops/PLAN.md and ops/TRACEABILITY.md.
+2. `git checkout wip/phase-<N>` (the current branch is named in ops/STATE.md). If there is no wip branch, start from `main`.
+3. Read in the cold-start order of ops/README.md: ops/STATE.md, ops/CLAIMS.md, CLAUDE.md (rules), ops/DECISIONS.md, ops/OPEN_ISSUES.md, then SPEC.md and the preregistration.
 4. `pip install -r requirements.txt` (Python 3.11 or later).
-5. `python -m pytest` and compare with the expected result written in ops/PROGRESS.md.
+5. `python -m pytest` and compare with the expected result written in ops/STATE.md.
 
 ## Branches
-- `main` only receives green gates. The owner (Artem, see ops/HANDOFF.md) merges into main at green gates.
+- `main` only receives green gates. The owner (Artem, see ops/STATE.md) merges into main at green gates.
 - Work in progress goes to `wip/phase-<N>` (plain push, never force), after each green requirement and at least every 30 minutes, even with a locked test still red.
 - One active session per branch. The owner may work directly on `wip/phase-4`; other contributors use their own branch `wip/<phase>-<first name>`.
 
@@ -19,9 +19,9 @@
 
 ## Before any push
 - No secrets: never commit .env or an API key; nothing secret in runs/.
-- `python -m pytest` was run and its result is written in ops/PROGRESS.md.
+- `python -m pytest` was run and its result is written in ops/STATE.md (and in an ops/PROGRESS.md row at the end of a phase).
 - Identity checked (see above).
-- ops/PROGRESS.md "Resume here" updated: branch and last commit, red tests and why, next action, owner decisions pending, install and test commands.
+- ops/STATE.md updated: branches and last commit, red tests and why, next action, owner decisions pending.
 
 ## Rules that do not change
 - Tests first (decision D1): tests written from SPEC.md and PREREGISTRATION.md, shown red, locked in a `test(Rxx-Ryy): add failing tests from spec (locked)` commit, then implementation without touching them. A gap = a new test in a separate commit.
