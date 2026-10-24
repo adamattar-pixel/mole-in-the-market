@@ -30,7 +30,12 @@ def load_addendum(path=None):
 
 
 def addendum_is_frozen(path=None):
-    raise NotImplementedError
+    """R35: the addendum carries two status marks (title line and yaml block); both must say FROZEN
+    (QUESTIONS.md #16)."""
+    text = Path(path or ADDENDUM_PATH).read_text(encoding="utf-8")
+    title = text.splitlines()[0] if text else ""
+    m = re.search(r"status:\s*(\S+)\s*$", title)
+    return bool(m) and m.group(1) == "FROZEN" and load_addendum(path).get("status") == "FROZEN"
 
 
 def pact_rule_matches(message, pattern):

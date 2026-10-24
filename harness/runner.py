@@ -7,7 +7,7 @@ from harness.agent import build_messages, parse_reply
 from harness.clients import BudgetTracker
 from harness.conditions import CONDITIONS, build_condition, load_prereg_texts
 from harness.config import GameConfig
-from harness.defenses import ADDENDUM_CONDITIONS, load_addendum
+from harness.defenses import ADDENDUM_CONDITIONS, addendum_is_frozen, load_addendum
 from harness.runlog import config_hash, current_git_commit, write_game_log
 from harness.spy import ScriptedSpy
 
@@ -215,6 +215,8 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
         raise RealRunRefused("real run refused: model ids are placeholders (tbd), the owner has not given the models")
     addendum = None
     if any(c in ADDENDUM_CONDITIONS for c in cfg["conditions"]):
+        if not cfg["mock"] and not addendum_is_frozen(addendum_path):
+            raise RealRunRefused("real run refused: PREREGISTRATION_ADDENDUM.md status is not FROZEN (R35)")
         addendum = load_addendum(addendum_path)
     git_commit = git_commit or current_git_commit()
     budget = BudgetTracker(cfg["budget_usd"])
