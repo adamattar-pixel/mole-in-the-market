@@ -1,4 +1,4 @@
-"""BYOK provenance (D22): log OpenRouter's `usage.cost_details.upstream_inference_cost` when present.
+"""BYOK provenance (D23): log OpenRouter's `usage.cost_details.upstream_inference_cost` when present.
 
 Under BYOK, usage.cost is only OpenRouter's fee (about 0) and the provider bills the owner's own key. OpenRouter
 reports that upstream bill in usage.cost_details.upstream_inference_cost. It is logged per call (provenance)

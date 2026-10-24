@@ -1,4 +1,4 @@
-"""Local .env support without a new dependency (D22, RUNBOOK_REAL_RUNS.md step 1).
+"""Local .env support without a new dependency (D23, RUNBOOK_REAL_RUNS.md step 1).
 
 harness.envfile.load_env reads KEY=VALUE lines from the repo-root .env if it exists. It never overrides a
 variable already set in the environment, ignores comments and blank lines, strips optional quotes, and never
