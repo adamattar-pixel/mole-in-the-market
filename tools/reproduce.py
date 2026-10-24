@@ -4,7 +4,8 @@ Usage:
   python -m tools.reproduce runs results --viz-dir viz/data --figures-dir figures
 
 Outputs in the out dir: labels.csv (R14), summary.json, tables.md, detectors.json and detectors.md (R30,
-exploratory detector scores of R29 on the same kept games), checksums.txt.
+exploratory detector scores of R29 on the same kept games), defenses.json and defenses.md (R30, monitor and
+ethics tables of R32 and R34 on the defense configs espion_core, espion_monitor, espion_ethics), checksums.txt.
 With --viz-dir: the viz export (R22, checked by R23). With --figures-dir: figures/game_grid.pdf (R27).
 
 The CLI keeps only real games (log field mock false) from the preregistered configs (PREREG_CONFIGS, read
@@ -147,10 +148,12 @@ def tables_md(summary):
 
 def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir=None, prereg_path=None,
               configs=None, include_mock=True, exclude_ids=None):
+    from tools import score_defenses  # imports filter_logs from here
+
     runs_dir, out_dir = Path(runs_dir), Path(out_dir)
     prereg_path = Path(prereg_path or PREREG_PATH)
     out_dir.mkdir(parents=True, exist_ok=True)
-    logs = load_logs(runs_dir)
+    all_logs = logs = load_logs(runs_dir)
     if len({bool(g.get("memory", False)) for g in logs}) > 1:
         raise ValueError("runs dir mixes exploratory memory logs with frozen logs: reproduce each folder separately")
     logs, excluded = filter_logs(logs, configs, include_mock, exclude_ids)
@@ -163,10 +166,13 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     (out_dir / "summary.json").write_text(json.dumps(summary, sort_keys=True, indent=1) + "\n", encoding="utf-8")
     (out_dir / "tables.md").write_text(tables_md(summary), encoding="utf-8")
     write_detector_outputs(score_detectors(logs, n_draws=n_draws, seed=seed), out_dir)
+    defense_logs, _ = filter_logs(all_logs, score_defenses.DEFENSE_CONFIGS, include_mock, exclude_ids)
+    score_defenses.write_outputs(score_defenses.score_defenses(defense_logs), out_dir)
 
     input_lines = sorted(f"{_sha(p)}  runs/{p.name}" for p in runs_dir.glob("*.json"))
     output_lines = [f"{_sha(out_dir / n)}  out/{n}" for n in ("labels.csv", "summary.json", "tables.md",
-                                                               "detectors.json", "detectors.md")]
+                                                               "detectors.json", "detectors.md",
+                                                               "defenses.json", "defenses.md")]
     (out_dir / "checksums.txt").write_text("\n".join(input_lines + output_lines) + "\n", encoding="utf-8")
 
     if viz_dir is not None:

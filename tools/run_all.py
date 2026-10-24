@@ -40,7 +40,7 @@ from harness.dryclient import make_dry_client
 from harness.runlog import load_logs
 from harness.runner import RealRunRefused, family_reasoning, run_batch, validate_config
 from harness.validation import e_validation
-from tools import monitor_view, price_paths, score_defenses, sensitivity
+from tools import monitor_view, price_paths, sensitivity
 from tools.reproduce import PREREG_CONFIGS, config_name, filter_logs, reproduce
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -364,8 +364,6 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
         reproduce(runs, results, n_draws=n_draws, seed=seed, viz_dir=root / "viz" / "data",
                   figures_dir=root / "figures", prereg_path=prereg_path, configs=prereg_cfgs, include_mock=dry,
                   exclude_ids=superseded)
-        defense_logs, _ = filter_logs(load_logs(runs), score_defenses.DEFENSE_CONFIGS, include_mock=dry)
-        score_defenses.write_outputs(score_defenses.score_defenses(defense_logs), results)
         res["outputs"] += [str(results), str(root / "viz" / "data"), str(root / "figures" / "game_grid.pdf")]
         log(f"[scoring] tables, detectors, defenses -> {results}; viz -> {root / 'viz' / 'data'}; "
             f"figure -> {root / 'figures' / 'game_grid.pdf'}")
