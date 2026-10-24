@@ -3,7 +3,11 @@
 
 class ScriptedSpy:
     def __init__(self, message, spy_start, firm_ids=("0", "1")):
-        raise NotImplementedError
+        self.message = message
+        self.spy_start = int(spy_start)
+        self.firm_ids = tuple(firm_ids)
 
     def messages_for_round(self, round_number):
-        raise NotImplementedError
+        """Same text object for every firm in round spy_start, nothing otherwise."""
+        text = self.message if round_number == self.spy_start else None
+        return {f: text for f in self.firm_ids}
