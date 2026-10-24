@@ -10,7 +10,8 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
   the logs; each step config keeps its own cap (R17).
 - Resumable: games already logged are skipped (write-once logs, R12).
 - Real mode refuses unless PREREGISTRATION.md and PREREGISTRATION_ADDENDUM.md are FROZEN, no model id is
-  `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here).
+  `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here;
+  the repo-root .env is loaded at startup, harness/envfile.py, without overriding the shell).
 - Each step keeps its own family entries (a failing family is swapped for its fallback). One game design and
   matched seeds everywhere; temperature and reasoning must match between pooled or matched steps (pilot and
   core; core, monitor and ethics) unless --allow-settings-mismatch.
@@ -37,6 +38,7 @@ from harness.conditions import load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import addendum_is_frozen
 from harness.dryclient import make_dry_client
+from harness.envfile import load_env
 from harness.runlog import load_logs
 from harness.runner import RealRunRefused, family_reasoning, run_batch, validate_config
 from harness.validation import e_validation
@@ -249,18 +251,20 @@ def default_client_factory(dry, gate):
         e_text = load_prereg_texts()["e_instruction"]
         return lambda cfg: dry_client(cfg, e_text, gate)
     if not os.environ.get("OPENROUTER_API_KEY"):
-        raise RunAllRefused("OPENROUTER_API_KEY is not set in this shell (export it, never write it in a file)")
+        raise RunAllRefused("OPENROUTER_API_KEY is not set (put it in the repo-root .env, see .env.example, or export it)")
     return _RealFactory()
 
 
 def smoke_report(logs):
-    """Per family: games, mean cost per game, invalid reply rates, served models, providers, reasoning tokens."""
+    """Per family: games, mean cost per game, invalid reply rates, served models, providers, reasoning tokens,
+    summed upstream_inference_cost (None when no call reported it)."""
     out = {}
     for fam in sorted({g["family"] for g in logs}):
         gl = [g for g in logs if g["family"] == fam]
         replies = sum(2 * g["n_rounds"] for g in gl)
         prov = [f["provenance"] for g in gl for r in g["rounds"] for f in r["firms"].values() if f.get("provenance")]
         known = [g["reasoning_tokens"] for g in gl if g.get("reasoning_tokens") is not None]
+        upstream = [p["upstream_inference_cost"] for p in prov if p.get("upstream_inference_cost") is not None]
         out[fam] = {
             "games": len(gl), "mean_cost_usd": sum(g["cost_usd"] for g in gl) / len(gl),
             "invalid_price_rate": sum(g["invalid_prices"] for g in gl) / replies,
@@ -268,6 +272,7 @@ def smoke_report(logs):
             "served_models": sorted({p["served_model"] for p in prov if p.get("served_model")}),
             "providers": sorted({p["provider"] for p in prov if p.get("provider")}),
             "reasoning_tokens": sum(known) if known else None,
+            "upstream_inference_cost_usd": sum(upstream) if upstream else None,
         }
     return out
 
@@ -336,7 +341,8 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
             log(f"[smoke] {fam}: {r['games']} games, cost per game {r['mean_cost_usd']:.6f} USD, invalid prices "
                 f"{r['invalid_price_rate']:.3f}, invalid responses {r['invalid_response_rate']:.3f}, served "
                 f"{r['served_models'] or 'n/a'}, providers {r['providers'] or 'n/a'}, "
-                f"reasoning tokens {r['reasoning_tokens']}")
+                f"reasoning tokens {r['reasoning_tokens']}, upstream inference cost (BYOK) "
+                f"{r['upstream_inference_cost_usd']}")
         if done("smoke"):
             return res
         run_cfg("pilot", steps["pilot"])
@@ -454,6 +460,7 @@ EXIT = {"done": 0, "stopped": 0, "plan_b": 2, "budget_stop": 3}
 
 
 def main(argv=None):
+    load_env()  # repo-root .env, if any; never overrides the shell, never printed
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry", action="store_true", help="mock client into a scratch folder (never runs/)")
     ap.add_argument("--root", default=None, help=f"base folder (default: the repo root real, {DEFAULT_DRY_ROOT} dry)")

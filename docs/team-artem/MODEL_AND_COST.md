@@ -4,6 +4,52 @@ Prepared 2026-10-24 for the owner. Nothing in this file changes the harness or c
 
 Prices were fetched from `https://openrouter.ai/api/v1/models` on **2026-10-24 07:48 UTC** (469 models listed). OpenRouter prices change and can differ by upstream provider, so re-check before the real run.
 
+## Final choice (owner decision D23, 2026-10-24)
+
+The owners (Artem and Adam) chose, in ops/DECISIONS.md D23 (settles D10 / QUESTIONS #7):
+
+| Family | OpenRouter id | Paid by | In / Out $/1M | Reasoning | Temperature |
+|---|---|---|---|---|---|
+| `anthropic` | `anthropic/claude-haiku-4.5` | Artem's Anthropic key via OpenRouter BYOK | 1.00 / 5.00 | optional, off by default: no `reasoning` key | 1.0 |
+| `meta-llama` | `meta-llama/llama-3.3-70b-instruct` | OpenRouter credits | 0.10 / 0.32 | none | 1.0 |
+| fallback `anthropic-fb` | `anthropic/claude-sonnet-4.5` | Anthropic key via BYOK | 3.00 / 15.00 | optional, off by default | 1.0 |
+| fallback `qwen` | `qwen/qwen3-235b-a22b-2507` | OpenRouter credits | 0.09 / 0.55 | none (non-thinking) | 1.0 |
+
+Prices and parameters re-checked on `https://openrouter.ai/api/v1/models` 2026-10-24 12:06 UTC (unchanged from
+`configs/prices.yaml`, fetched 11:36 UTC). All four accept `temperature`. Sonnet 4.5 is the Anthropic fallback
+because the cheaper current Anthropic models (Haiku 5.5, Sonnet 5.5) do not accept `temperature`.
+
+**BYOK note.** Under BYOK, OpenRouter's `usage.cost` is only its own fee (about 0) and Anthropic bills the key
+directly; the provider's bill is in `usage.cost_details.upstream_inference_cost`. So each real call is charged
+`max(usage.cost, prompt_tokens x input + completion_tokens x output)` against the per-config and global caps,
+and `upstream_inference_cost` is logged in each call's `provenance` (and summed per family in the `[smoke]`
+line) to compare. Set the BYOK key to "Never use shared capacity" so Haiku is never silently billed to
+OpenRouter credits. The Anthropic key is never in `.env`; only `OPENROUTER_API_KEY` is.
+
+**Cost per step** (basis of section 1: 15,000 input + 2,400 output tokens per game, conservative). Per game:
+Haiku 4.5 0.0270 USD, Llama 3.3 0.0023 USD, Sonnet 4.5 0.0810 USD, Qwen3 0.0027 USD. Every step has half its
+games per family; 40 calls per game (20 rounds x 2 firms).
+
+| Step | Games | Calls | Raw USD | With 3x margin | Of which Haiku (Anthropic key), raw | Cap |
+|---|---|---|---|---|---|---|
+| Smoke | 4 | 160 | 0.059 | 0.18 | 0.054 | 1.0 |
+| Pilot | 20 | 800 | 0.29 | 0.88 | 0.27 | 5.0 |
+| Core | 40 | 1,600 | 0.59 | 1.76 | 0.54 | 10.0 |
+| Monitor | 30 | 1,200 | 0.44 | 1.32 | 0.41 | 7.5 |
+| Ethics | 10 | 400 | 0.15 | 0.44 | 0.14 | 2.5 |
+| Main chain | 104 | 4,160 | 1.52 | 4.57 | 1.40 | global 30 (proposal) |
+| + memory arm | 30 | 1,200 | ~0.44 | ~1.32 (longer prompts) | ~0.41 | 5.0 |
+| + O1 | 40 | 1,600 | 0.59 | 1.76 | 0.54 | 10.0 |
+| + fallback pilot, Sonnet | 10 | 400 | 0.81 | 2.43 | 0.81 | pilot cap |
+| + fallback pilot, Qwen | 10 | 400 | 0.027 | 0.08 | 0 | pilot cap |
+
+**Margin.** The 3x margin covers the token estimate being optimistic. Even the worst case (main chain + memory +
+O1 + both fallback pilots) is about 3.4 USD raw, 10.2 USD with 3x, under the 30 USD global cap. Hidden reasoning is the one thing
+the margin does not cover (section R2: Haiku 4.5 with ~1,000 reasoning tokens per call is about 8x more), so the
+smoke step checks `reasoning_tokens` is 0. OpenRouter's BYOK fee on top is small; check its current terms.
+
+The sections below are the earlier input to the decision, kept as is.
+
 ## 1. Token estimate (from the real prompt template)
 
 Method: called `harness.agent.build_messages` with the frozen texts (`load_prereg_texts()`), the frozen demand from `configs/espion_core.yaml` (marginal cost 1.00, `n_rounds` 20, `spy_start` 8) and a realistic history row (`price 1.73, other 1.69, quantity 0.37, profit 27.31`). No offline tokenizer is installed (`tiktoken` absent), so tokens are estimated from characters. The prompt is digit-heavy, and tokenizers split numbers into short pieces, so chars/4 is optimistic. I give a central value (chars/4) and a conservative value (chars/3). Both add about 8 tokens of chat-template overhead per message (2 messages per call).
