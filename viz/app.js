@@ -151,69 +151,84 @@
   }
 
   // ---------- replay scene ----------
-  function house(x, color) {
-    var s = 6, out = "";
+  // Layout (viewBox 440 x 366): spy message band on top (never over the mole or the price labels), price bars
+  // in the middle with the deal and Nash lines, shops and the mole's mound at the bottom.
+  var SC = { W: 440, H: 366, top: 132, bottom: 268, shops: [["0", 110], ["1", 330]], mx: 220 };
+  function house(xc, color) {
+    var s = 6, x = xc - 21, y0 = 272, out = "";
     var roof = [[3, 0], [2, 1], [3, 1], [4, 1], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [0, 3], [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3]];
-    roof.forEach(function (p) { out += '<rect x="' + (x + p[0] * s) + '" y="' + (226 + p[1] * s) + '" width="' + s + '" height="' + s + '" fill="' + color + '"/>'; });
-    out += '<rect x="' + (x + 6) + '" y="250" width="' + (5 * s) + '" height="' + (4 * s) + '" fill="#2a313a" stroke="' + color + '" stroke-width="2"/>';
-    out += '<rect x="' + (x + 18) + '" y="262" width="' + s + '" height="' + (2 * s) + '" fill="' + color + '"/>';
+    roof.forEach(function (p) { out += '<rect x="' + (x + p[0] * s) + '" y="' + (y0 + p[1] * s) + '" width="' + s + '" height="' + s + '" fill="' + color + '"/>'; });
+    out += '<rect x="' + (x + 6) + '" y="' + (y0 + 24) + '" width="' + (5 * s) + '" height="' + (3 * s) + '" fill="#2a313a" stroke="' + color + '" stroke-width="2"/>';
+    out += '<rect x="' + (x + 18) + '" y="' + (y0 + 30) + '" width="' + s + '" height="' + (2 * s) + '" fill="' + color + '"/>';
     return out;
   }
   function moleSvg(cx, up) {
-    var s = 5, px = function (x, y, c) { return '<rect x="' + (cx + x * s) + '" y="' + (y * s) + '" width="' + s + '" height="' + s + '" fill="' + c + '"/>'; };
-    var body = "#8a6a4f", nose = "#f472b6", hat = "#0d0f12", band = "#f0b429", glass = "#0d0f12";
+    var s = 6, base = 248, px = function (x, y, c) { return '<rect x="' + (cx + x * s) + '" y="' + (base + y * s) + '" width="' + s + '" height="' + s + '" fill="' + c + '"/>'; };
+    var body = "#a07a58", nose = "#f472b6", hat = "#0d0f12", band = "#f0b429", glass = "#0d0f12";
     var out = "";
     for (var x = -5; x <= 3; x++) out += px(x, 0, hat);
     for (x = -3; x <= 1; x++) { out += px(x, -1, band); out += px(x, -2, hat); out += px(x, -3, hat); }
     for (var y = 1; y <= 7; y++) for (x = -4; x <= 2; x++) out += px(x, y, body);
     out += px(-3, 2, glass) + px(-2, 2, glass) + px(0, 2, glass) + px(1, 2, glass) + px(-1, 2, glass);
     out += px(-1, 4, nose);
-    return '<g class="mole" style="transform:translateY(' + (up ? 0 : 120) + 'px)"><g transform="translate(0,182)">' + out + "</g></g>";
+    return '<g class="mole" style="transform:translateY(' + (up ? 0 : 80) + 'px)">' + out + "</g>";
+  }
+  function txt(x, y, fill, size, anchor, body, extra) {
+    return '<text x="' + x + '" y="' + y + '" fill="' + fill + '" font-size="' + size + '"' + (anchor ? ' text-anchor="' + anchor + '"' : "") + (extra || "") + ">" + body + "</text>";
   }
   function renderScene() {
-    var g = state.game, r = state.round;
-    var W = 520, H = 300, yr = priceRange(g), top = 30, bottom = 222;
+    var g = state.game, r = state.round, W = SC.W, H = SC.H, top = SC.top, bottom = SC.bottom, mx = SC.mx;
+    var yr = priceRange(g);
     var y = function (p) { return bottom - (p - yr[0]) / (yr[1] - yr[0]) * (bottom - top); };
     var rs = (rounds[g.game_id] || {})[r] || {};
     var b = band(g), svg = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Replay of round ' + r + '">';
     svg += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + COLORS.bg + '"/>';
-    svg += '<rect x="40" y="' + y(b[1]) + '" width="' + (W - 80) + '" height="' + (y(b[0]) - y(b[1])) + '" fill="rgba(240,180,41,.10)"/>';
-    svg += '<line x1="40" x2="' + (W - 40) + '" y1="' + y(g.nash) + '" y2="' + y(g.nash) + '" stroke="' + COLORS.muted + '" stroke-dasharray="2 4"/>';
-    svg += '<text x="' + (W - 40) + '" y="' + (y(g.nash) - 4) + '" fill="' + COLORS.muted + '" font-size="10" text-anchor="end">Nash ' + fmt(g.nash) + "</text>";
-    svg += '<line x1="40" x2="' + (W - 40) + '" y1="' + y(g.deal_price) + '" y2="' + y(g.deal_price) + '" stroke="' + COLORS.say_only + '" stroke-dasharray="8 5"/>';
-    svg += '<text x="' + (W - 40) + '" y="' + (y(g.deal_price) - 4) + '" fill="' + COLORS.say_only + '" font-size="10" text-anchor="end">deal ' + fmt(g.deal_price) + "</text>";
-    [["0", 92, COLORS.shop1], ["1", 386, COLORS.shop2]].forEach(function (s) {
-      var p = rs[s[0]] ? rs[s[0]].price : null;
-      svg += house(s[1], s[2]);
-      if (p !== null) {
-        svg += '<rect x="' + (s[1] + 10) + '" y="' + y(p) + '" width="22" height="' + Math.max(0, bottom - y(p)) + '" fill="' + s[2] + '" opacity=".85"/>';
-        svg += '<text x="' + (s[1] + 21) + '" y="' + (y(p) - 5) + '" fill="' + COLORS.text + '" font-size="11" text-anchor="middle">' + fmt(p) + "</text>";
-      }
-      svg += '<text x="' + (s[1] + 21) + '" y="292" fill="' + COLORS.muted + '" font-size="10" text-anchor="middle">shop ' + (num(s[0]) + 1) + "</text>";
-      if (g.condition !== "A" && r >= g.spy_start) {
-        var rep = replyAt(g, s[0]), col = rep === "accept" ? COLORS.say_do : rep === "decline" ? COLORS.muted : COLORS.line;
-        svg += '<rect x="' + (s[1] - 4) + '" y="200" width="50" height="16" rx="8" fill="' + COLORS.bg + '" stroke="' + col + '"/>';
-        svg += '<text x="' + (s[1] + 21) + '" y="211" fill="' + col + '" font-size="10" text-anchor="middle">' + replyText(rep) + "</text>";
-      }
-    });
-    if (g.condition === "A") {
-      svg += '<text x="' + (W / 2) + '" y="270" fill="' + COLORS.muted + '" font-size="12" text-anchor="middle">No spy in this condition</text>';
+    var spy = g.condition !== "A", up = spy && r >= g.spy_start;
+    // message band
+    if (!spy) {
+      svg += txt(W / 2, 64, COLORS.muted, 14, "middle", "No spy in this game: the two shops only set prices.");
+    } else if (!up) {
+      svg += txt(W / 2, 64, COLORS.muted, 14, "middle", "The spy speaks at round " + g.spy_start + ".");
     } else {
-      var up = r >= g.spy_start;
-      svg += '<ellipse cx="' + (W / 2) + '" cy="276" rx="44" ry="12" fill="#3a2e24"/>';
-      svg += '<clipPath id="mound"><rect x="0" y="0" width="' + W + '" height="276"/></clipPath><g clip-path="url(#mound)">' + moleSvg(W / 2 + 2, up) + "</g>";
-      svg += '<ellipse cx="' + (W / 2) + '" cy="280" rx="44" ry="8" fill="#4a3b2e"/>';
-      if (up) {
-        var lines = wrap(messages[g.condition] || "", 44).slice(0, 6), bh = 14 * lines.length + 12, bw = 290, bx = W / 2 - bw / 2, by = 186 - bh;
-        svg += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="6" fill="#0d0f12" stroke="' + COLORS.say_only + '"/>';
-        svg += '<path d="M' + (W / 2 - 6) + " " + (by + bh) + " l6 8 l6 -8 z" + '" fill="#0d0f12" stroke="' + COLORS.say_only + '"/>';
-        lines.forEach(function (l, i) { svg += '<text x="' + (bx + 10) + '" y="' + (by + 18 + 14 * i) + '" fill="' + COLORS.text + '" font-size="11">' + esc(l) + "</text>"; });
-        if (r === g.spy_start) {
-          svg += '<line class="ray" x1="' + (W / 2 - 30) + '" y1="246" x2="140" y2="240" stroke="' + COLORS.say_only + '"/>';
-          svg += '<line class="ray" x1="' + (W / 2 + 30) + '" y1="246" x2="384" y2="240" stroke="' + COLORS.say_only + '"/>';
-        }
+      var lines = wrap(messages[g.condition] || "", 58).slice(0, 6), bh = 16 * lines.length + 30, bw = 424, bx = 8, by = 6;
+      svg += '<rect x="' + bx + '" y="' + by + '" width="' + bw + '" height="' + bh + '" rx="8" fill="#0d0f12" stroke="' + COLORS.say_only + '" stroke-width="1.5"/>';
+      svg += txt(bx + 12, by + 17, COLORS.say_only, 11, "", "SPY MESSAGE, ROUND " + g.spy_start, ' font-weight="700" letter-spacing=".08em"');
+      lines.forEach(function (l, i) { svg += txt(bx + 12, by + 34 + 16 * i, COLORS.text, 13, "", esc(l)); });
+      svg += '<line x1="' + mx + '" x2="' + mx + '" y1="' + (by + bh) + '" y2="' + 222 + '" stroke="' + COLORS.say_only + '" stroke-dasharray="3 4" stroke-opacity=".7"/>';
+    }
+    // reference band and lines, labels on the left edge (away from the bars)
+    svg += '<rect x="8" y="' + y(b[1]) + '" width="' + (W - 16) + '" height="' + (y(b[0]) - y(b[1])) + '" fill="rgba(240,180,41,.12)"/>';
+    svg += '<line x1="8" x2="' + (W - 8) + '" y1="' + y(g.nash) + '" y2="' + y(g.nash) + '" stroke="#c3cad4" stroke-width="2" stroke-dasharray="3 5"/>';
+    svg += '<line x1="8" x2="' + (W - 8) + '" y1="' + y(g.deal_price) + '" y2="' + y(g.deal_price) + '" stroke="' + COLORS.say_only + '" stroke-width="2.5" stroke-dasharray="10 6"/>';
+    var ld = y(g.deal_price) - 6, ln = y(g.nash) - 6;
+    if (Math.abs(ld - ln) < 16) ln = ld + 16;
+    svg += txt(10, ld, COLORS.say_only, 13, "", "deal " + fmt(g.deal_price), ' font-weight="700"');
+    svg += txt(10, ln, "#c3cad4", 13, "", "Nash " + fmt(g.nash), ' font-weight="700"');
+    // mound and mole (drawn before the bars so a bar never hides behind it)
+    if (spy) {
+      svg += '<ellipse cx="' + mx + '" cy="300" rx="40" ry="11" fill="#3a2e24"/>';
+      svg += '<clipPath id="mound"><rect x="0" y="0" width="' + W + '" height="300"/></clipPath><g clip-path="url(#mound)">' + moleSvg(mx + 3, up) + "</g>";
+      svg += '<ellipse cx="' + mx + '" cy="303" rx="40" ry="7" fill="#4a3b2e"/>';
+      if (r === g.spy_start) {
+        svg += '<line class="ray" x1="' + (mx - 30) + '" y1="280" x2="' + (SC.shops[0][1] + 30) + '" y2="286" stroke="' + COLORS.say_only + '" stroke-width="2"/>';
+        svg += '<line class="ray" x1="' + (mx + 30) + '" y1="280" x2="' + (SC.shops[1][1] - 30) + '" y2="286" stroke="' + COLORS.say_only + '" stroke-width="2"/>';
       }
     }
+    [[SC.shops[0][0], SC.shops[0][1], COLORS.shop1], [SC.shops[1][0], SC.shops[1][1], COLORS.shop2]].forEach(function (s) {
+      var p = rs[s[0]] ? rs[s[0]].price : null, xc = s[1];
+      svg += house(xc, s[2]);
+      if (p !== null) {
+        svg += '<rect x="' + (xc - 28) + '" y="' + y(p) + '" width="56" height="' + Math.max(0, bottom - y(p)) + '" fill="' + s[2] + '" opacity=".9" rx="2"/>';
+        svg += '<rect x="' + (xc - 30) + '" y="' + (y(p) - 24) + '" width="60" height="20" rx="4" fill="#0d0f12" stroke="' + s[2] + '"/>';
+        svg += txt(xc, y(p) - 9, COLORS.text, 14, "middle", fmt(p), ' font-weight="700"');
+      }
+      svg += txt(xc, 334, s[2], 13, "middle", "Shop " + (num(s[0]) + 1), ' font-weight="700"');
+      if (up) {
+        var rep = replyAt(g, s[0]), col = rep === "accept" ? COLORS.say_do : rep === "decline" ? "#e8ecf1" : COLORS.muted;
+        svg += '<rect x="' + (xc - 50) + '" y="341" width="100" height="20" rx="10" fill="' + COLORS.bg + '" stroke="' + col + '" stroke-width="1.5"/>';
+        svg += txt(xc, 355, col, 12, "middle", (rep === "accept" || rep === "decline" ? "replied " : "") + replyText(rep));
+      }
+    });
     svg += "</svg>";
     $("scene").innerHTML = svg;
     $("round-label").textContent = "Round " + r + " / " + g.rounds;
