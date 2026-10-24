@@ -36,3 +36,9 @@ def test_R18_gap_count_numerator_not_above_denominator(tmp_path):
     p = tmp_path / "extras.json"
     p.write_text(json.dumps({"traces": 40, "traces_with_collusion_word": 39}), encoding="utf-8")
     assert [u["token"] for u in cn.check_text("40/39", [p])] == ["40/39"]
+
+
+def test_R18_gap_doi_not_extracted():
+    # a DOI such as 10.1257/aer.20190623 is a reference, not a result number
+    assert cn.extract_numbers("https://www.aeaweb.org/articles?id=10.1257/aer.20190623 and doi 10.48550/arXiv.x") == []
+    assert [t["token"] for t in cn.extract_numbers("ratio 10.12 here")] == ["10.12"]
