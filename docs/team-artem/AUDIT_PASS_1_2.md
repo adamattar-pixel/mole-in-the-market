@@ -1,7 +1,7 @@
 # Audit pass 1 and 2 (independent, fresh session)
 
 - Date: 2026-10-24
-- Reviewer: fresh Claude Code session run by Artem (no part in writing this code). Prompt: `.claude/commands/audit.md`, with one change: this report is a new file, so AUDIT.md was not edited (Adam's session is committing to it at the same time).
+- Reviewer: fresh Claude Code session run by Artem (no part in writing this code). Prompt: `.claude/commands/audit.md`, with one change: this report is a new file, so ops/AUDIT.md was not edited (Adam's session is committing to it at the same time).
 - Code audited: branch `artem` = `origin/wip/phase-4`, HEAD `ef5bccd` ("test(R24-R25): add failing tests from spec (locked)").
 - Scope: Phase 2 (R01-R11) and Phase 3 (R12-R17, R22, R23, R27), plus the Phase 4 no-API work and R19. I also assessed scientific validity the way a judge would.
 - Nothing was fixed, committed or pushed. I did not read `.env`.
@@ -52,7 +52,7 @@ Severity scale: **blocker** = the headline result (say vs do) cannot be read as 
 - Fix: in `reproduce`, keep only `mock == False`, and drop or flag `espion_smoke__*` (or take an explicit `--configs espion_pilot,espion_core` list). Print the per-config game counts in tables.md. About 30 min plus 2 tests.
 
 ### 4. MAJOR: the `preexisting-baseline` tag does not exist
-- Where: THIRD_PARTY.md line 2, SPEC R20, the AUDIT.md checklist, and the Phase 0 PROGRESS row (which says the tag = fd8c920).
+- Where: THIRD_PARTY.md line 2, SPEC R20, the ops/AUDIT.md checklist, and the Phase 0 PROGRESS row (which says the tag = fd8c920).
 - What: no such tag, locally or on the remote. R20 (declare preexisting vs new work) is a sprint submission rule, and the docs point to a tag that is missing.
 - Fix: the owner runs `git tag preexisting-baseline fd8c920 && git push origin preexisting-baseline` after checking that fd8c920 is the scaffolding commit. 2 minutes.
 
@@ -99,7 +99,7 @@ Severity scale: **blocker** = the headline result (say vs do) cannot be read as 
 - `harness/runlog.py:20-23`. Fix: record `git status --porcelain` being non-empty as `dirty: true`, or refuse a real run on a dirty tree.
 
 ### 14. Minor: the docs are stale
-- TRACEABILITY.md lists R19 as TODO, but `tools/check_submission.py` exists and its 20 locked tests pass. PROGRESS.md says "Expected 209 passed", but the actual count is 229, plus 25 red from the R24/R25 lock. THIRD_PARTY.md still has "TODO check" licenses for luciasauer and LLMCartel. README "Run" is still TODO.
+- ops/TRACEABILITY.md lists R19 as TODO, but `tools/check_submission.py` exists and its 20 locked tests pass. ops/PROGRESS.md says "Expected 209 passed", but the actual count is 229, plus 25 red from the R24/R25 lock. THIRD_PARTY.md still has "TODO check" licenses for luciasauer and LLMCartel. README "Run" is still TODO.
 
 ### 15. Minor: false positives count an accept in any round of a D game
 - `harness/metrics.py:45-47` matches the prereg ("any accept in D") word for word, but unlike "say" it is not limited to rounds >= spy_start. Since the only message comes at spy_start, this is harmless in practice. Note the asymmetry in the report or add a test that pins it down.
@@ -140,6 +140,6 @@ Severity scale: **blocker** = the headline result (say vs do) cannot be read as 
 | 7 | O1 seeds 6-10 | 6 | runtime + spend | yes (PLAN gate, H2) |
 | 8 | Minors 11-15 | - | 1 h total | no |
 
-## 5. Ready-to-paste row for the AUDIT.md audit log
+## 5. Ready-to-paste row for the ops/AUDIT.md audit log
 
 | 2026-10-24 | 2 and 3 (audit passes 1 and 2) | independent fresh session (Artem), report docs/team-artem/AUDIT_PASS_1_2.md, audited ef5bccd | pytest: 229 passed, 25 red = locked R24/R25 only (expected). reproduce keyless, twice byte-identical (dry data). Prereg unchanged since tag; tests unweakened (only approved cef08e3); 41/41 commits author=committer=Adam, 0 trailers, 0 secrets. Definitions match prereg word for word. BLOCKER 1: agents are memoryless, offer and own reply absent from prompts after spy_start (runner.py:111, agent.py:42), so the say-do gap is confounded. MAJOR: 2 base rate not time-matched and p ignores sampling; 3 reproduce pools smoke+pilot and never filters mock; 4 tag preexisting-baseline missing; 5 offer leaks the deal price (anchoring); 6 n=5 Wilson width up to 0.65; 7 binary do may hit a ceiling (tacit collusion); 8 spy_start=8 drift; 9 no temperature, seed not honored. 6 minors | no (report only) |

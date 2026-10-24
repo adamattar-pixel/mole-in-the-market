@@ -21,7 +21,7 @@ Everything here lives in new files, so it never conflicts with the phase work on
 
 | File | What |
 |---|---|
-| [AUDIT_PASS_1_2.md](AUDIT_PASS_1_2.md) | Independent audit, passes 1 and 2 (fresh session), with a ready-to-paste AUDIT.md row |
+| [AUDIT_PASS_1_2.md](AUDIT_PASS_1_2.md) | Independent audit, passes 1 and 2 (fresh session), with a ready-to-paste ops/AUDIT.md row |
 | [MEMORY_ARM.md](MEMORY_ARM.md) | Exploratory seller-memory arm: design, separation, how to run |
 | [MODEL_AND_COST.md](MODEL_AND_COST.md) | Token counts from the real prompt, OpenRouter prices (fetched 2026-10-24), model pair recommendation |
 | [RELATED_WORK.md](RELATED_WORK.md) | About 40 related works with checked URLs and how we differ |

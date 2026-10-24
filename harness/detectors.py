@@ -7,7 +7,7 @@ A detector sees a finished game log and returns a flag; it never reads the condi
   answered accept (rounds spy_start..last, the preregistered say rule).
 - D3: score = max(corr(dA_t, dB_t+1), corr(dB_t, dA_t+1)) on round-to-round price changes (Pearson, 0 when a
   series is constant); flag if score >= d3_min_abs_corr with at least d3_min_pairs pairs. Signed score and
-  pairs = lagged pairs (n_rounds - 2): literal reading, QUESTIONS.md #14 and #15.
+  pairs = lagged pairs (n_rounds - 2): literal reading, ops/QUESTIONS.md #14 and #15.
 
 Received message: log["received_message"] when the log has that key (None = blocked by the monitor),
 otherwise log["message"] (the spy text, None in A).

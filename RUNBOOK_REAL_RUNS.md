@@ -52,7 +52,7 @@ git diff configs/                                   # read it: families, fallbac
 git add configs/ && git commit -m "Set model ids for real runs (D10)"
 ```
 Also decide `budget_usd` in configs/run_all.yaml (global cap, PROPOSAL 30.0 USD) and the per-config caps
-(QUESTIONS.md #11, #17).
+(ops/QUESTIONS.md #11, #17).
 
 ## 3. Smoke (4 games: A, E x seed 1 x 2 families)
 
@@ -63,7 +63,7 @@ time python3 -m tools.run_all --stop-after smoke
 Check in the `[smoke]` lines, per family:
 - cost per game: compare with MODEL_AND_COST.md for the chosen pair. Much higher means hidden reasoning or a
   price change: stop and look.
-- invalid prices and invalid responses: near 0. Above about 0.05 makes "do" unreliable (QUESTIONS.md #10).
+- invalid prices and invalid responses: near 0. Above about 0.05 makes "do" unreliable (ops/QUESTIONS.md #10).
 - served model and provider: the model you asked for (a dated version is fine), a provider listed.
 - reasoning tokens: 0 (or None if the provider does not report them). If a family shows tokens > 0, add
   `reasoning: {effort: none}` to that family entry in the six configs, commit, and only then go on.
@@ -85,14 +85,14 @@ time python3 -m tools.run_all --stop-after gate; echo "exit $?"
 ```
 Read the `[gate]` lines: E is validated per family on the pilot games only (smoke excluded) when E beats A by
 at least 0.25 of the Nash to monopoly gap (PREREGISTRATION.md). Use this output, not `tools.validate_e runs`,
-which pools smoke and pilot (QUESTIONS.md #23).
+which pools smoke and pilot (ops/QUESTIONS.md #23).
 - Both PASS: go to step 5.
 - A family FAILS: run_all switches that family ONCE to its fallback and runs its pilot as
   `espion_pilot_fb` (10 games; cost depends on the fallback model, see MODEL_AND_COST.md).
   The replaced family's pilot games stay in runs/ (write-once) and are listed as "superseded" in the tables.
 - Fallback also FAILS, or no fallback set: exit code 2 and the plan B message. Do NOT try a third model
-  (the one change is used). Stop real runs, write the result in PROGRESS.md and QUESTIONS.md, tell Adam,
-  and switch to plan B (PLAN.md: track 1.5, Pareto curve of restrictions, docs/context/contexte_projet_v7.md
+  (the one change is used). Stop real runs, write the result in ops/PROGRESS.md and ops/QUESTIONS.md, tell Adam,
+  and switch to plan B (ops/PLAN.md: track 1.5, Pareto curve of restrictions, docs/context/contexte_projet_v7.md
   section 10). The failed E is itself a reportable result.
 
 ## 5. Core, monitor, ethics, then scoring (80 games, then offline)
@@ -120,7 +120,7 @@ Writes `runs_exploratory/memory/` (never runs/), `results_exploratory/memory/`, 
 EXPLORATORY, not preregistered (docs/team-artem/MEMORY_ARM.md).
 
 O1 (seeds 6-10 on B, B_T, C, D, 40 games, about 1.52 / 4.6 USD, cap 10) only if everything above is done and
-time is left (cut order in PLAN.md): `python3 -m tools.run_all --exploratory --o1`. Its tables go to
+time is left (cut order in ops/PLAN.md): `python3 -m tools.run_all --exploratory --o1`. Its tables go to
 `results_o1/` (diagnostic); the preregistered `results/` never include O1.
 
 ## 7. If something stops

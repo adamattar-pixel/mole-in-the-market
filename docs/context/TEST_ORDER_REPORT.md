@@ -41,7 +41,7 @@ Classes: covered = normal case + limit cases + a case that must fail or be rejec
 | R15 | 8 + 1 gap | covered | twice identical, checksums, deleted log, no key/no network, runs untouched, summary values, CLI, empty; gap: corrupted log stops reproduce |
 | R16 | 6 | covered | family from id, mixed rejected, mislabel rejected, unknown condition, 60 games, seed passed |
 | R17 | 3 + 2 gap | covered | cap inclusive, global stop (21 calls, 2 logs), cost per game; gap: cap <= 0 rejected |
-| R18 | 0 | not covered | audit grep + review (AUDIT.md), no automated test |
+| R18 | 0 | not covered | audit grep + review (ops/AUDIT.md), no automated test |
 | R19 | 0 | not covered | Phase 7 tool tools/check_submission.py, next in Bloc 6 |
 | R20 | 0 | MANUAL | |
 | R21 | 0 | MANUAL | |

@@ -3,11 +3,11 @@
 ## What this repo is
 Research code and report for Apart Research's AI Collusion Research Sprint (Oct 23 to 25, 2026; deadline Sunday Oct 25, 11:59 PM AoE), track 3.2.
 A scripted spy offers a secret price-fixing deal to LLM sellers in a 2-firm price game. We measure what agents SAY (accept) and what they DO (prices).
-Read in this order: HANDOFF.md, PROGRESS.md ("Resume here"), docs/context/DECISIONS.md, then docs/context/contexte_projet_v7.md, SPEC.md, PREREGISTRATION.md, PLAN.md, AUDIT.md, CONTRIBUTING.md.
-DECISIONS.md (owner decisions) wins over v7 and SPEC.md in case of conflict. Never edit contexte_projet_v7.md.
+Read in this order: ops/HANDOFF.md, ops/PROGRESS.md ("Resume here"), ops/DECISIONS.md, then docs/context/contexte_projet_v7.md, SPEC.md, PREREGISTRATION.md, ops/PLAN.md, ops/AUDIT.md, CONTRIBUTING.md.
+ops/DECISIONS.md (owner decisions) wins over v7 and SPEC.md in case of conflict. Never edit contexte_projet_v7.md.
 
 ## Who you work with
-- Project owner (since 2026-10-24, see HANDOFF.md): **Artem**. Hard stops H1 to H6 (freeze approvals, API key, GO for real runs, frozen items) go to Artem.
+- Project owner (since 2026-10-24, see ops/HANDOFF.md): **Artem**. Hard stops H1 to H6 (freeze approvals, API key, GO for real runs, frozen items) go to Artem.
 - Co-author: Adam Attar (adamattar-pixel), reachable for decisions. When Adam runs the session: talk to him in French, start each reply with "maître", short and simple, no jargon, no long dashes (use "-" or "|").
 - Otherwise talk to the person running the session in their language. Keep answers short and simple.
 - Code, comments, commit messages and repo docs: English.
@@ -19,14 +19,14 @@ DECISIONS.md (owner decisions) wins over v7 and SPEC.md in case of conflict. Nev
 4. Known-answer tests: expected values are computed by hand (or by an independent formula written in the test), never copied from the code's own output.
 5. Mocks only in tests and dry runs. A real run uses the real API client. Every log records model, seed, config hash and git commit.
 6. Frozen items (PREREGISTRATION.md: definitions, offer and label texts, hypotheses, E threshold) are not changed after the freeze commit without the owner's explicit approval.
-7. No scope creep. Only what SPEC.md lists. Options O1 to O3 only when PLAN.md says the gate is open.
+7. No scope creep. Only what SPEC.md lists. Options O1 to O3 only when ops/PLAN.md says the gate is open.
 8. Keep preexisting and third-party code separate and recorded in THIRD_PARTY.md. Never present it as new work.
 9. Dual-use: do not write or optimize persuasive offers beyond the frozen texts.
 10. Secrets: never read, print or commit .env or API keys.
 11. If blocked or unsure on a hard stop (see below), ask one short question instead of guessing. Otherwise keep going.
 
 ## Continuous phase-gated workflow (autonomous mode)
-Work through PLAN.md phase after phase WITHOUT waiting for the owner, as long as every gate is green. For each requirement:
+Work through ops/PLAN.md phase after phase WITHOUT waiting for the owner, as long as every gate is green. For each requirement:
 1. Restate the requirement ID(s) from SPEC.md.
 2. Write the test first, run it, see it fail for the right reason.
 3. Implement the minimum to pass.
@@ -35,23 +35,23 @@ Work through PLAN.md phase after phase WITHOUT waiting for the owner, as long as
 6. Commit after every green requirement (small commits, at least one per requirement). Never leave a long stretch of work uncommitted.
 
 Self-gate at the end of each phase (the /gate checks, done by yourself):
-- full tests green, TRACEABILITY.md updated, AUDIT.md checklist items ticked only with evidence, commit identity verified, no deviation from SPEC.md or PREREGISTRATION.md.
-- If ALL green: write the result in PROGRESS.md, commit, `git push origin main` (plain push only), tag gate-N, then continue to the next phase immediately.
+- full tests green, ops/TRACEABILITY.md updated, ops/AUDIT.md checklist items ticked only with evidence, commit identity verified, no deviation from SPEC.md or PREREGISTRATION.md.
+- If ALL green: write the result in ops/PROGRESS.md, commit, `git push origin main` (plain push only), tag gate-N, then continue to the next phase immediately.
 - If something is red: fix it. After 3 failed attempts on the same problem, stop and ask.
 
-Memory across long sessions: PROGRESS.md is your memory. After any context reset or compaction, read PROGRESS.md, docs/context/DECISIONS.md, PLAN.md and TRACEABILITY.md first, then resume where you stopped. Update PROGRESS.md at the end of every phase (what is done, evidence, deviations, open questions).
+Memory across long sessions: ops/PROGRESS.md is your memory. After any context reset or compaction, read ops/PROGRESS.md, ops/DECISIONS.md, ops/PLAN.md and ops/TRACEABILITY.md first, then resume where you stopped. Update ops/PROGRESS.md at the end of every phase (what is done, evidence, deviations, open questions).
 
 ## Git rules
 - `main` only receives green gates (then tag gate-N). Work in progress goes to `wip/phase-4` (the owner Artem may work on it directly) with a plain push after each green requirement and at least every 30 minutes. Never force push a shared branch.
-- Before ANY push: no secrets (.env, API keys, nothing secret in runs/), `python -m pytest` run, `git log -1 --format=fuller` shows the contributor's own name and email (each contributor commits under their own identity) and no Co-Authored-By or other AI trailer, PROGRESS.md "Resume here" updated (branch, last commit, red tests and why, next action, pending owner decisions, install and test commands).
-- Tests first (DECISIONS.md D1): locked test commit `test(Rxx-Ryy): add failing tests from spec (locked)` before implementation; locked tests are never edited, except an owner-approved `test(fix)` commit.
+- Before ANY push: no secrets (.env, API keys, nothing secret in runs/), `python -m pytest` run, `git log -1 --format=fuller` shows the contributor's own name and email (each contributor commits under their own identity) and no Co-Authored-By or other AI trailer, ops/PROGRESS.md "Resume here" updated (branch, last commit, red tests and why, next action, pending owner decisions, install and test commands).
+- Tests first (ops/DECISIONS.md D1): locked test commit `test(Rxx-Ryy): add failing tests from spec (locked)` before implementation; locked tests are never edited, except an owner-approved `test(fix)` commit.
 - Other contributors may use `wip/<phase>-<first name>` under their own identity (see CONTRIBUTING.md). Never change git config.
 
 ## When you MUST stop and ask (hard stops, and only these)
 H1. Freezing PREREGISTRATION.md (offer texts, E threshold, hypotheses). Draft proposals in the file marked PROPOSED, use placeholders in tests, keep going with phases that do not need the final texts, but do not freeze and do not start real runs.
 H2. Any real API call or spend (Phase 4 and later), and the API key. Needs the owner's (Artem's) GO and a frozen preregistration and addendum.
-H3. A requirement is ambiguous, or SPEC.md and PREREGISTRATION.md or v7 contradict each other, in a way that changes a definition and is not settled by docs/context/DECISIONS.md.
+H3. A requirement is ambiguous, or SPEC.md and PREREGISTRATION.md or v7 contradict each other, in a way that changes a definition and is not settled by ops/DECISIONS.md.
 H4. A test looks wrong, or passing it would require weakening it.
 H5. The same failure survives 3 fix attempts.
 H6. Anything touching frozen items, secrets, force push, git config, or deleting runs/ logs.
-When a question does not block other work, write it in QUESTIONS.md and continue with work that does not depend on it.
+When a question does not block other work, write it in ops/QUESTIONS.md and continue with work that does not depend on it.
