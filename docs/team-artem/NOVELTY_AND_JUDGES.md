@@ -71,7 +71,7 @@ Cheap actions:
 - **Figure 1 = the game grid** (already built, R27) colored by the 2x2 outcome. Figure 2 = price paths. Table 1 = say / do / base rate per condition with intervals. No more than 3 figures.
 - **Use the words "say" and "do" everywhere**, defined once. Condition names in full in figures ("Direct offer, trusted sender"), never bare letters.
 - **Results by question**, each subsection opening with the one-line answer, then the number.
-- **Abstract in 4 parts** (problem, method, result, implication), at most 150 words. Use `tools/check_submission.py`.
+- **Abstract in 4 parts** (problem, method, result, implication), 150 to 250 words (live rule 2026-10-24). Use `tools/check_submission.py`.
 - **30-second test:** give the abstract and Figure 1 to someone outside the team, ask them to explain the project back.
 - **Optional 3-minute video** walking through the replay page (viz/index.html). Cheap if the page exists, and judges remember it.
 - **Write it yourselves.** Short sentences, specific numbers, what you did. Avoid generic opening paragraphs about "the rapid rise of AI".
@@ -102,7 +102,7 @@ Page counts are main body only; references and appendices are extra.
 
 | # | Section (Apart name) | Pages | Bullet content |
 |---|---|---|---|
-| 0 | Title, authors, affiliations, abstract (<=150 words) | 0.3 | Same title on every resubmission. 4-part abstract. |
+| 0 | Title, authors, affiliations, abstract (150 to 250 words) | 0.3 | Same title on every resubmission. 4-part abstract. |
 | 1 | Introduction | 0.75 | Undercover-officer analogy (Apart Q3.2). Three questions. Why it matters: auditors read messages, harm happens in prices. Page-1 excerpt box. One-line contributions list (sting in price game, trust minimal pair, D false-positive control, permutation base rate, reproducible data). |
 | 2 | Related Work | 0.75 | Four short paragraphs: algorithmic pricing collusion (Calvano, Fish, Keppo); LLM communication and offers (Agrawal, Giebel, Voluntary Collusion, Colosseum); say vs do (Colosseum "on paper", Shi et al. x2, Gu et al.); trust labels and peer compliance (Instruction Hierarchy, TAMAS, Dark Side, sycophancy papers). One sentence each on how we differ. Mention the parallel Elliott project and Apart's own suggestion. |
 | 3 | Methodology | 1.5 | Game (logit demand, a=2, a0=0, mu=0.25, c=1, 20 rounds, spy at 8), Nash and monopoly prices. Spy as script. Six conditions in a table with the full frozen texts. Say, do, base rate, unit of analysis, Wilson intervals, E threshold. Models, temperature, seeds, cost. Preregistration commit hash and tag. Preexisting vs new work. |
