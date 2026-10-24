@@ -8,6 +8,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | `main` (origin) | 55553c0 | Reviewed, CI-green work (D24). Up to date with wip/phase-4 as of PR #3 (21:01); gates are `gate-N` tags |
 | `wip/phase-4` (origin) = local `artem` | dd1ffcc | Shared phase branch: everything merged (R28-R36, provider pins, THINK arm, workers, retries, key figure, insight checks), real run data, results summary |
 | `wip/phase-4-artem-viz`, `wip/phase-4-artem-grid` (local, in progress) | see git log | Replay page on real data; Figure 1 label fix |
+| `wip/phase-4-adam-numbers` (origin) | see git log | Adam (Claude), 2026-10-25: R18 tools/check_numbers.py + numbers audit, OPEN_ISSUES #19 (byte-identical reproduce on Windows). No PR yet (no gh); merge notes in docs/adam/README.md |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3) |
 
 ## Tests
