@@ -35,7 +35,7 @@ MSGS = [{"role": "user", "content": "x"}]
 REAL_STEPS = ("espion_smoke", "espion_pilot", "espion_core", "espion_monitor", "espion_ethics",
               "exploratory/espion_mem")
 # Hand-written expected pins (FIXES_CLIENT.md "Provider routing")
-LLAMA_PIN = {"order": ["novita"], "allow_fallbacks": False, "quantizations": ["bf16"], "require_parameters": True}
+LLAMA_PIN = {"order": ["coreweave"], "allow_fallbacks": False, "quantizations": ["fp16"], "require_parameters": True}
 ANTHROPIC_PIN = {"order": ["anthropic"], "allow_fallbacks": False}
 QWEN_PIN = {"order": ["parasail"], "allow_fallbacks": False, "quantizations": ["fp8"], "require_parameters": True}
 PIN = {"order": ["provx"], "allow_fallbacks": False}
