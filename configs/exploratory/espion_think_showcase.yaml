@@ -26,5 +26,5 @@ families:
     reasoning: {effort: medium}
     provider: {order: [alibaba], allow_fallbacks: false, require_parameters: true}
 # PROPOSAL: about 0.8 to 2.3 USD expected for the 4 games at the guard's prices (THINK_ARM.md)
-budget_usd: 3.0
+budget_usd: 2.0
 temperature: 1.0
