@@ -1,10 +1,10 @@
-"""R17 cost under OpenRouter BYOK (docs/team-artem/MODEL_AND_COST.md, "Final choice"; FIXES_CLIENT.md).
+"""R17 cost guard against under-reported usage.cost (docs/team-artem/FIXES_CLIENT.md).
 
-With BYOK, OpenRouter's `usage.cost` is what OpenRouter charges (its BYOK fee, or 0 inside the free
-allowance), not the provider's charge on the owner's own key. So every real call is charged
+A provider or account mode can under-report OpenRouter's `usage.cost` (for example BYOK, where it is only
+OpenRouter's fee, or 0 inside the free allowance). So every real call is charged
 max(usage.cost, prompt_tokens x input price + completion_tokens x output price), with the per-model prices
 of configs/prices.yaml (USD per 1M tokens). Both values and the one used are logged per call.
-Also: a fallback family may be labelled "<provider>-fb" (configs/run_all.yaml: anthropic-fb).
+Also: a fallback family may be labelled "<provider>-fb".
 No network: the HTTP layer is a fake, and sockets are blocked. Expected values are computed by hand.
 """
 import io
@@ -189,7 +189,8 @@ def test_repo_price_table_hand_values():
     assert "2026-10-24" in (CONFIGS / "prices.yaml").read_text(encoding="utf-8")
 
 
-def test_every_real_model_and_fallback_has_a_price():
+def test_every_chosen_real_model_and_fallback_has_a_price():
+    # Placeholder (tbd) ids are refused anyway; every chosen id must be priced before a real run.
     prices = load_prices()
     ids = set()
     for name in REAL_STEPS:
@@ -197,7 +198,8 @@ def test_every_real_model_and_fallback_has_a_price():
         ids |= {m for f in c["families"] for m in f["models"].values()}
     ra = yaml.safe_load((CONFIGS / "run_all.yaml").read_text(encoding="utf-8"))
     ids |= {m for f in ra["fallback"].values() for m in f["models"].values()}
-    assert ids and ids <= set(prices)
+    assert ids
+    assert {m for m in ids if "tbd" not in m.lower()} <= set(prices)
 
 
 # ---------------- real entry points use the table ----------------
@@ -219,10 +221,17 @@ def test_run_all_refuses_unpriced_fallback_before_any_call(monkeypatch, tmp_path
     monkeypatch.setattr(socket, "create_connection", lambda *a, **k: (_ for _ in ()).throw(AssertionError("net")))
     d = tmp_path / "configs"
     (d / "exploratory").mkdir(parents=True)
+    # priced primary ids from the repo table, one unpriced fallback
+    fams = [{"family": "meta-llama", "models": {"0": "meta-llama/llama-3.3-70b-instruct",
+                                                "1": "meta-llama/llama-3.3-70b-instruct"}},
+            {"family": "qwen", "models": {"0": "qwen/qwen3-235b-a22b-2507", "1": "qwen/qwen3-235b-a22b-2507"}}]
     for name in REAL_STEPS:
-        (d / f"{name}.yaml").write_text((CONFIGS / f"{name}.yaml").read_text(encoding="utf-8"), encoding="utf-8")
+        c = yaml.safe_load((CONFIGS / f"{name}.yaml").read_text(encoding="utf-8"))
+        c["families"] = fams
+        (d / f"{name}.yaml").write_text(yaml.safe_dump(c), encoding="utf-8")
     ra = yaml.safe_load((CONFIGS / "run_all.yaml").read_text(encoding="utf-8"))
-    ra["fallback"]["anthropic"]["models"] = {"0": "anthropic/claude-unpriced-9", "1": "anthropic/claude-unpriced-9"}
+    ra["fallback"] = {"meta-llama": {"family": "meta-llama-fb", "models": {"0": "meta-llama/unpriced-9",
+                                                                           "1": "meta-llama/unpriced-9"}}}
     (d / "run_all.yaml").write_text(yaml.safe_dump(ra), encoding="utf-8")
     with pytest.raises(run_all.RunAllRefused, match="price"):
         run_all.run_pipeline(tmp_path / "root", configs_dir=d, log=lambda *a: None)
