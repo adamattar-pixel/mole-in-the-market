@@ -3,7 +3,7 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 
 | Req | Test (file::name) | Status | Evidence (command and date) |
 |---|---|---|---|
-| R01 | tests/test_R01_economics.py (12 tests: linear closed form, logit FOC, published values, alpha scaling, config). Cross-check vs luciasauer duopoly.py: not run (repo not available, QUESTIONS #8) | GREEN | `python -m pytest` 99 passed, 2026-10-24, locked at 5c52047 |
+| R01 | tests/test_R01_economics.py (12 tests: linear closed form, logit FOC, published values, alpha scaling, config). Cross-check vs luciasauer/algorithmic_pricing_llms (MIT, cloned read-only outside the repo, 2026-10-24, no code copied): duopoly.py uses env a=2.0, c=1.0, alpha in {1, 3.2, 10}; src/environment/pricing_market_logic_multiproduct.py uses the same logit (delta_i = (a_i - p_i/alpha)/mu, outside option a0/mu, multiplier beta; nested sigma=0 reduces to ours) and defaults a0=0, mu=0.25, beta=100 = ours. Difference: their profit is q*(p/alpha - c), ours (p - alpha*c)*q = alpha * theirs, so Nash and monopoly prices are identical, profit levels differ by the factor alpha when alpha != 1 (PROPOSED design uses alpha=1). Their benchmarks were not executed | GREEN | `python -m pytest` 99 passed, 2026-10-24, locked at 5c52047 |
 | R02 | tests/test_R02_spy.py (8 tests) | GREEN | `python -m pytest` 99 passed, 2026-10-24, locked at 5c52047 |
 | R03 | tests/test_R03_R04_conditions.py::test_R03_* (10 tests) | GREEN | `python -m pytest` 99 passed, 2026-10-24, locked at 5c52047 |
 | R04 | tests/test_R03_R04_conditions.py::test_R04_placeholder_B_BT_differ_only_by_label, test_R04_real_prereg_B_BT_differ_only_by_label | GREEN | `python -m pytest` 99 passed, 2026-10-24, locked at 5c52047 |

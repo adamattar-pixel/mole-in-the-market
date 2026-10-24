@@ -1,9 +1,9 @@
 # THIRD_PARTY - preexisting code, reused code, borrowed ideas
-Everything imported before the sprint work is isolated in the commit tagged `preexisting-baseline`. Everything after that tag is new work done during the sprint.
+No third-party code reused, design inspired by the sources below. The commit tagged `preexisting-baseline` holds only the scaffolding (docs, spec, CI), no harness code. Everything after that tag is new work done during the sprint.
 
 | Source | What we use | License | Status |
 |---|---|---|---|
-| ArnolFokam/ai-collusion-research-sprint | Planned as harness base, but NOT present in this repo: the harness in harness/ is written from scratch during the sprint (see QUESTIONS.md #1) | No LICENSE visible, derived from an MIT repo | Not used (pending owner answer) |
+| ArnolFokam/ai-collusion-research-sprint | Not used. No third-party code reused: the harness in harness/ is written from scratch during the sprint, design inspired by the Fish-style duopoly setup (decision D4) | No LICENSE visible, derived from an MIT repo | Not used, idea only |
 | luciasauer/algorithmic_pricing_llms (Fish-style duopoly) | Reference for economics checks (R01) | TODO check | Reference only |
 | mattriemer/LLMCartel, andyjliu/llm-agent-collusion | Optional references | TODO check | Reference only |
 
