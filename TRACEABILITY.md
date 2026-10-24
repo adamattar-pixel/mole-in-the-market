@@ -21,13 +21,13 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 | R16 | tests/test_R12_R17_pipeline.py::test_R16_* (6: family from id, mixed rejected, mislabel rejected, unknown condition, 60 games, seed passed) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
 | R17 | tests/test_R12_R17_pipeline.py::test_R17_* (3: tracker cap inclusive, global stop after 21 calls, cost per game) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
 | R18 | audit grep | TODO | |
-| R19 | tools/check_submission.py | TODO | |
+| R19 | tests/test_R19_check_submission.py (20: word rules, 150 vs 151, abstract boundaries, LaTeX, exact appendix heading, body-text trap, authors, title, links with injected fetcher, offline NOT RUN, local links, CLI) + MANUAL page count | GREEN | `python -m pytest` 254 passed, 2026-10-24, locked at a0cd120 |
 | R20 | MANUAL | TODO | |
 | R21 | MANUAL | TODO | |
 | R22 | tests/test_R22_R27_viz_export.py::test_R22_* (9: five files, schemas, hand values on 4-game mini-run, frozen texts, meta, data.js, deterministic) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
 | R23 | tests/test_R22_R27_viz_export.py::test_R23_* (4: consistent, altered row, outcome mismatch, row count vs runs) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
-| R24 | tools/check_viz.py + MANUAL | TODO | |
-| R25 | | TODO | |
+| R24 | tests/test_R24_R25_viz_page.py::test_R24_* (tools/check_viz.py on hand-built pages and on viz/) + MANUAL review (headless Chrome screenshot inspected 2026-10-24) | GREEN (phase cut, D17) | locked at ef5bccd |
+| R25 | tests/test_R24_R25_viz_page.py::test_R25_* (synthetic flag, never touches runs/ or labels, refuses real locations, schema, frozen texts, deterministic) | GREEN (phase cut, D17) | locked at ef5bccd |
 | R26 | MANUAL | TODO | |
 | R27 | tests/test_R22_R27_viz_export.py::test_R27_* (3: PDF without key/network, two runs same bytes, depends on games.csv) | GREEN | `python -m pytest` 179 passed, 2026-10-24, locked at c5adce2 (+ approved test(fix) cef08e3) |
 | R28 | | TODO | |
@@ -39,3 +39,5 @@ Claude updates this file at every gate. Status: TODO, RED (test written, failing
 | R34 | | TODO | |
 | R35 | | TODO | |
 | R36 | | TODO | |
+
+Phase 4 no-API tests (configs, dry run, budget, cost per game, tbd guard): tests/test_P4_configs_dryrun.py, 22 tests, GREEN, locked at 87c3b7f. R28-R36: TODO (not started in code).
