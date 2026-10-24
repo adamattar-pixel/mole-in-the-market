@@ -3,14 +3,16 @@
 Prepared 2026-10-24 for Artem (project owner). Base: local `artem` at 00c8f08 (617 tests green).
 Nothing here was pushed, no real API call was made, no frozen file (PREREGISTRATION.md,
 PREREGISTRATION_ADDENDUM.md) was touched. Commits 1 to 6 start with `PROPOSED (needs owner approval):`,
-commits 7 to 13 with `Owner decision:`. Three commits edit locked tests (rule D1, `test(fix)`).
+commits 7 onward with `Owner decision:`. Five commits edit locked tests (rule D1, `test(fix)`).
 
-**Waiting on Adam: model ids (D10).** The owner decided that the model choice stays with Adam and that no
-Anthropic key / BYOK is used. Every real config and the run_all fallbacks are back to `tbd` placeholders, so a
-real run is refused until the ids are filled (candidates and prices: MODEL_AND_COST.md).
+**Models decided (D23, settles D10 / QUESTIONS #7).** The owners (Artem and Adam) chose
+`anthropic/claude-haiku-4.5` (OpenRouter BYOK on Artem's Anthropic key) and `meta-llama/llama-3.3-70b-instruct`
+(OpenRouter credits), temperature 1.0, no reasoning key. D22 was already the handoff, so this is D23. Every real
+config and the run_all fallbacks hold real ids; with the key unset a real run now stops at the key check, not at
+the `tbd` check. Costs: MODEL_AND_COST.md "Final choice". Steps: RUNBOOK_REAL_RUNS.md 1 to 3.
 
-State at the branch tip: `python3 -m pytest` **653 passed**, `python3 -m tools.run_all --dry --exploratory --o1`
-exit 0 (mock client, writes dry_runs/ only; logs identical to before apart from `git_commit`).
+State at the branch tip: `python3 -m pytest` **672 passed**, `python3 -m tools.run_all --dry` exit 0 (mock
+client, scratch folder only).
 
 ## Merge (one command, from `artem`)
 
@@ -36,7 +38,17 @@ To reject a single commit instead, cherry-pick the others (`git log artem..artem
 | 10 | `Owner decision: test(fix): cost guard tests independent of the model ids` | `tests/test_artem_byok_cost.py` | Two tests of 8 named the Anthropic fallback. |
 | 11 | `Owner decision: revert the claude-haiku-4.5 switch` | configs | Revert of 7 (new commit, history kept). |
 | 12 | `Owner decision: model ids back to tbd placeholders (D10 waits on Adam)` | configs | Model choice stays with Adam. |
-| 13 | `Owner decision: docs for the cost guard and the tbd ids` | this file, RUNBOOK, FIXES_CLIENT.md | |
+| 13 | `Owner decision: docs for the cost guard and the tbd ids` | this file, RUNBOOK, FIXES_CLIENT.md | Superseded by 14 to 23 for the ids. |
+| 14 | `Owner decision: claude-haiku-4.5 and llama-3.3-70b as the 2 families (D22)` | 6 step configs, `configs/run_all.yaml`, `configs/prices.yaml` comments | D23 (the message says D22, fixed by 21). Fallbacks reuse commit 7: Sonnet 4.5 (`anthropic-fb`), Qwen3 (`qwen`). |
+| 15 | `Owner decision: add failing tests for upstream_inference_cost logging (locked)` | new `tests/test_artem_upstream_cost.py` | Tests first (rule D1). |
+| 16 | `Owner decision: test(fix): upstream_inference_cost only logged when present` | that new test | The locked `test_provenance_missing_fields_are_none` pins the exact `last_call` keys, so absent = no key. |
+| 17 | `Owner decision: log usage.cost_details.upstream_inference_cost (BYOK)` | `harness/clients.py`, `tools/run_all.py` (`[smoke]` line) | Log only; the charge stays max(usage.cost, tokens x price). |
+| 18 | `Owner decision: add failing tests for the .env loader (locked)` | new `tests/test_artem_envfile.py` | Tests first. |
+| 19 | `Owner decision: load the repo-root .env at startup, no new dependency` | new `harness/envfile.py`, `tools/run.py`, `tools/run_all.py`, `tests/conftest.py`, `.env.example` | conftest points the loader at an empty path: the suite never reads a real .env. |
+| 20 | `Owner decision: test(fix): docstrings cite D23, not D22` | the 2 new test files | Docstrings only. |
+| 21 | `Owner decision: cite D23 for the model choice (D22 is the handoff)` | configs, `harness/envfile.py`, `.env.example` | |
+| 22 | `Owner decision: record D23 (model families) and settle QUESTIONS #7` | DECISIONS.md, QUESTIONS.md | |
+| 23 | `Owner decision: docs for D23 (BYOK, .env, costs, smoke checks)` | this file, MODEL_AND_COST.md, RUNBOOK | |
 
 Note on 11: its message was set by an accidental `--amend` right after `git revert` and then corrected by a
 second amend, on the local, never pushed commit. No other commit was rewritten.
@@ -60,8 +72,9 @@ global caps would then never trigger. Now:
   (charge only usage.cost, only tokens, no price refusal, wrong source, wrong output price, zero price
   accepted, no run_all check, no table in run_all or run.py, `-fb` rule too loose or removed), all killed.
 
-When Adam gives the ids: fill the six step configs and the run_all fallbacks, add or re-check each id in
-`configs/prices.yaml`, run the suite, commit, then the RUNBOOK smoke step.
+D23 ids are filled and priced (re-checked 2026-10-24 12:06 UTC). Under BYOK `usage.cost` is about 0, so the
+token price is what the caps see; `upstream_inference_cost` (Anthropic's bill) is logged per call when present
+and summed per family in the `[smoke]` line. Next: the RUNBOOK smoke step, with the owner's GO (H2).
 
 ### 1. test(fix) for the placeholder-asserting locked tests (QUESTIONS #21)
 
@@ -79,9 +92,9 @@ Checked: with commit 2 alone, exactly these 12 fail and nothing else.
   key must be present and be null or a number in [0, 2]; `validate_config` still runs.
 - M3: the test's pilot copy pins `temperature: None`, so its assertions are unchanged byte for byte.
 
-### 2. Model ids (superseded)
+### 2. Model ids (superseded by D23, commits 14 to 23)
 
-The ids of commit 2 (gpt-5.4 + Llama 3.3) are reverted to `tbd` (commits 11, 12). `temperature: 1.0` stays in
+The ids of commit 2 (gpt-5.4 + Llama 3.3) were reverted to `tbd` (commits 11, 12), then set to the D23 pair. `temperature: 1.0` stays in
 every real config (FIXES_CLIENT decision 1; the `tbd` guards and tests accept it). Candidates, reasoning and
 temperature support per model: MODEL_AND_COST.md (gpt-5.x models do not accept `temperature`).
 
@@ -108,4 +121,5 @@ for reading it by hand.
 ## Not done here
 
 - No real run, no key, no push. GO for the smoke run stays with the owner (H2).
-- Waiting on Adam: model ids (D10). QUESTIONS #10, #11, #17 (and the caps in #22) still open.
+- Owner to do on openrouter.ai: BYOK Anthropic key set to "Never use shared capacity", credits on the account
+  (RUNBOOK step 1). QUESTIONS #10, #11, #17 (and the caps in #22) still open.
