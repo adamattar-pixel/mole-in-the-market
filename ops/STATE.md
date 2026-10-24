@@ -9,8 +9,10 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | `wip/phase-4` (origin) | 846d3d8 | Current shared phase branch: Phase 4 no-API work, R19, R24-R25, R28-R36, review fixes M1-M4, audit records. Same tip as local `artem` |
 | `wip/phase-4-artem` (origin) = local `artem-owner-approval` | a6b6022 | Owner decisions (test(fix) #21, abstract 150-250, validate_e --config, cost guard). PR #1 into `wip/phase-4`, open |
 | `artem-ops-reorg` (local) | this branch | ops/ reorg, coordination board, CHANGELOG, tools/check_ops.py. Stacked on `artem-owner-approval`; PR into `wip/phase-4` after PR #1 |
+| `wip/phase-4-artem-figure` (local) | see git log | Key figure tools/before_after.py and zero-cost checks tools/insight_checks.py (docs/team-artem/KEY_FIGURE.md). Has `wip/phase-4-artem-think` and `wip/phase-4-artem-workers` merged in (`run_all --think --workers N`). Not pushed |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3). No new work |
 | `wip/phase-4-artem-think` (local) | see git log | Provider pins (Llama on Novita bf16, Anthropic on Anthropic) and the EXPLORATORY THINK arm (gpt-oss-120b, showcase configs, tools/think_view, run_all --think). Not pushed. Real smoke v1 logs must be archived before the pinned smoke (RUNBOOK_REAL_RUNS.md step 3) |
+| `wip/phase-4-artem-workers` (local) | see git log | `--workers N` for tools.run and tools.run_all, `--continue-passing-families` (owner decision QUESTIONS #24, test(fix) approval #25). From local `artem`; PR into `wip/phase-4` after review. 727 tests pass |
 
 Merge note: `artem-owner-approval` does not contain 846d3d8 (2 doc lines in AUDIT.md and PROGRESS.md). Git
 follows the renames to ops/, but the PROGRESS.md "Resume here" line edited by 846d3d8 is removed here: keep
@@ -19,7 +21,7 @@ the removal (this file replaces it).
 ## Tests
 - Last green: a6b6022 (`artem-owner-approval`), `python3 -m pytest` -> 653 passed, 0 failed. On `artem-ops-reorg` (2b2b6b3): 678 passed (+25 for tools/check_ops).
 - Install and test: `python3 -m pip install -r requirements.txt` then `python3 -m pytest`.
-- Whole pipeline dry (mock client, no key, no cost): `python3 -m tools.run_all --dry --exploratory --o1`.
+- Whole pipeline dry (mock client, no key, no cost): `python3 -m tools.run_all --dry --exploratory --think --o1` (add `--workers 4` to run the games of each step 4 at a time; same logs).
 - Ops check: `python3 -m tools.check_ops`.
 
 ## Frozen (never edited; any change = hard stop H6, owner only, logged as a deviation)

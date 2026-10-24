@@ -1,11 +1,14 @@
 """Game loop and batch runner. R12 logs, R16 design validation, R17 budget stop."""
 import json
 import math
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 
 from harness.agent import build_messages, parse_reply
-from harness.clients import BudgetExceeded, BudgetTracker
+from harness.clients import BudgetExceeded
+from harness.concurrency import ConcurrentBudget, GuardedClient, RetryingClient, fork_client
 from harness.conditions import CONDITIONS, build_condition, load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import ADDENDUM_CONDITIONS, addendum_is_frozen, load_addendum
@@ -22,6 +25,16 @@ QUANTIZATIONS = ("int4", "int8", "fp4", "mxfp4", "nvfp4", "fp6", "fp8", "mxfp8",
 
 class RealRunRefused(RuntimeError):
     pass
+
+
+class BatchFailed(RuntimeError):
+    """Some games of a concurrent batch raised: they have no log (rerun to retry them), the others are logged.
+    failed: {game id: error text}; done: the logs written, sorted by game id."""
+
+    def __init__(self, failed, done):
+        self.failed, self.done = dict(sorted(failed.items())), done
+        super().__init__(f"{len(failed)} game(s) failed, not logged: " +
+                         "; ".join(f"{k}: {v}" for k, v in self.failed.items()))
 
 
 @dataclass(frozen=True)
@@ -299,8 +312,19 @@ def check_resume(cfg, existing, runs_dir):
                                  "change on a resume). Restore it or run it under a new config name.")
 
 
-def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None, addendum_path=None):
-    """Run every game of the config. Existing logs are skipped (never overwritten)."""
+def check_workers(workers):
+    if isinstance(workers, bool) or not isinstance(workers, int) or workers < 1:
+        raise ValueError(f"workers must be an integer >= 1: {workers!r}")
+
+
+def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=None, addendum_path=None,
+              workers=1):
+    """Run every game of the config. Existing logs are skipped (never overwritten).
+
+    workers=1: one game after the other, in expand_games order. workers>1: the games run in a thread pool
+    (games are independent, so the logs are byte-identical) and the logs come back sorted by game id; the
+    budget bound is in harness/concurrency.py. Both modes retry HTTP 429 and 5xx (RetryingClient)."""
+    check_workers(workers)
     validate_config(cfg)
     if cfg["mock"] and not getattr(client, "is_mock", False):
         raise RealRunRefused("dry run (mock: true) must use the mock client")
@@ -321,7 +345,7 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
     existing = existing_logs(cfg, runs_dir)
     check_resume(cfg, existing, runs_dir)
     # The cap bounds the config's total spend across reruns: start from the spend already logged.
-    budget = BudgetTracker(cfg["budget_usd"])
+    budget = ConcurrentBudget(cfg["budget_usd"])
     budget.total = sum(float(g["cost_usd"]) for g in existing)
     todo = [s for s in expand_games(cfg) if not (runs_dir / f"{s.game_id}.json").exists()]
     if todo and budget.total >= budget.cap:
@@ -329,7 +353,50 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
                              f"{len(todo)} games left")
     if todo:
         record_budget(cfg, runs_dir)
-    done = []
-    for spec in todo:
-        done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit, addendum=addendum))
+    if workers == 1:
+        client = RetryingClient(client)
+        done = []
+        for spec in todo:
+            done.append(run_game(cfg, spec, client, texts, budget, runs_dir, git_commit=git_commit,
+                                 addendum=addendum))
+        return done
+    return _run_concurrent(cfg, todo, client, texts, budget, runs_dir, git_commit, addendum, workers)
+
+
+def _run_concurrent(cfg, todo, client, texts, budget, runs_dir, git_commit, addendum, workers):
+    stop = threading.Event()
+
+    def one(spec):
+        if stop.is_set():
+            raise BudgetExceeded("batch stopped before this game started")
+        own = RetryingClient(GuardedClient(fork_client(client), [budget], stop))
+        try:
+            return run_game(cfg, spec, own, texts, budget, runs_dir, git_commit=git_commit, addendum=addendum)
+        except BudgetExceeded:
+            stop.set()
+            raise
+
+    done, failed, over = [], {}, []
+    pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="game")
+    try:
+        futures = [(spec, pool.submit(one, spec)) for spec in todo]
+        for spec, fut in futures:
+            try:
+                done.append(fut.result())
+            except BudgetExceeded as exc:
+                over.append((spec.game_id, exc))
+            except Exception as exc:  # one game's error never stops or corrupts the others
+                failed[spec.game_id] = f"{type(exc).__name__}: {exc}"
+    except BaseException:
+        stop.set()  # Ctrl-C: no new call; games already in a call finish or are dropped
+        raise
+    finally:
+        pool.shutdown(wait=True, cancel_futures=True)
+    done.sort(key=lambda g: g["game_id"])
+    if over:
+        first = sorted(over, key=lambda x: x[0])[0][1]
+        extra = f"; {len(failed)} other game(s) failed: {sorted(failed)}" if failed else ""
+        raise BudgetExceeded(f"{first} ({len(over)} game(s) dropped, {len(done)} logged in this batch{extra})")
+    if failed:
+        raise BatchFailed(failed, done)
     return done
