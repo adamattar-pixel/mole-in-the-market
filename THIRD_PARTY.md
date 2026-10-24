@@ -3,7 +3,7 @@ Everything imported before the sprint work is isolated in the commit tagged `pre
 
 | Source | What we use | License | Status |
 |---|---|---|---|
-| ArnolFokam/ai-collusion-research-sprint | Duopoly harness base (preexisting, written Oct 22) | No LICENSE visible, derived from an MIT repo. CHECK before republishing | Declared preexisting |
+| ArnolFokam/ai-collusion-research-sprint | Planned as harness base, but NOT present in this repo: the harness in harness/ is written from scratch during the sprint (see QUESTIONS.md #1) | No LICENSE visible, derived from an MIT repo | Not used (pending owner answer) |
 | luciasauer/algorithmic_pricing_llms (Fish-style duopoly) | Reference for economics checks (R01) | TODO check | Reference only |
 | mattriemer/LLMCartel, andyjliu/llm-agent-collusion | Optional references | TODO check | Reference only |
 
