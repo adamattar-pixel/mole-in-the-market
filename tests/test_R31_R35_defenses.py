@@ -21,6 +21,7 @@ from harness.defenses import (ADDENDUM_PATH, addendum_is_frozen, apply_monitor, 
 from harness.runner import RealRunRefused, expand_games, run_batch, run_game, validate_config
 from harness.runlog import load_logs
 from helpers3 import cfg, full_log
+from helpers_placeholder import placeholder_copy
 from tools import run as run_tool
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -570,9 +571,10 @@ def test_R35_mixed_core_and_addendum_real_config_refused_when_unfrozen(tmp_path,
 def test_R35_H2_real_addendum_configs_refused_while_models_are_tbd(name, tmp_path, monkeypatch):
     block_network(monkeypatch)
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    assert any("tbd" in m for f in load_cfg(name)["families"] for m in f["models"].values())
-    with pytest.raises(RealRunRefused):
-        run_tool.main([str(CONFIGS / f"{name}.yaml"), "--out-dir", str(tmp_path / "runs")])
+    copy = placeholder_copy(CONFIGS / f"{name}.yaml", tmp_path / "cfg")
+    assert any("tbd" in m for f in yaml.safe_load(copy.read_text())["families"] for m in f["models"].values())
+    with pytest.raises(RealRunRefused, match="tbd"):
+        run_tool.main([str(copy), "--out-dir", str(tmp_path / "runs")])
     assert not (tmp_path / "runs").exists() or list((tmp_path / "runs").iterdir()) == []
 
 

@@ -318,10 +318,20 @@ def test_R36_refuses_tbd_ids_in_any_step(tmp_path, name):
 
 
 def test_R36_refuses_tbd_in_repo_configs(tmp_path):
+    from helpers_placeholder import placeholder_copy, placeholder_families
     from tools.run_all import RunAllRefused, run_pipeline
+    # copies of the repo configs in their placeholder state: tbd step ids and a tbd fallback
+    d = tmp_path / "configs"
+    for name in STEP_CONFIGS + ("exploratory/espion_mem",):
+        placeholder_copy(CONFIGS / f"{name}.yaml", (d / name).parent)
+    ra = yaml.safe_load((CONFIGS / "run_all.yaml").read_text(encoding="utf-8"))
+    fb = [{"family": f"family{i}fb-tbd", "models": {"0": f"family{i}fb-tbd/model-tbd", "1": f"family{i}fb-tbd/model-tbd"}}
+          for i in (1, 2)]
+    ra["fallback"] = {f["family"]: g for f, g in zip(placeholder_families(2), fb)}
+    (d / "run_all.yaml").write_text(yaml.safe_dump(ra), encoding="utf-8")
     c = FakeReal()
     with pytest.raises(RunAllRefused, match="tbd"):
-        run_pipeline(tmp_path / "root", client_factory=lambda cfg: c, log=lambda *a: None)
+        run_pipeline(tmp_path / "root", configs_dir=d, client_factory=lambda cfg: c, log=lambda *a: None)
     assert c.calls == 0
 
 
