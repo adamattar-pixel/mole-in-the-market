@@ -1,5 +1,5 @@
 """Helpers for running the games of a step concurrently (run_batch workers > 1) and for retrying transient
-HTTP errors. harness/clients.py is not changed: everything here wraps a client.
+HTTP and network errors. harness/clients.py is not changed: everything here wraps a client.
 
 Budget bound (R17) with W workers: a call is sent only after every cap was checked under a lock and found not
 crossed, and its cost is added under the same lock as soon as it returns. When one call crosses a cap, at
@@ -9,6 +9,8 @@ The games in progress when a cap is hit are dropped (no log), as in the sequenti
 spend is real but not in the logs (up to W games instead of 1).
 """
 import copy
+import http.client
+import socket
 import threading
 import time
 import urllib.error
@@ -77,8 +79,16 @@ class GuardedClient(_Wrap):
         return self.inner.complete(messages, model, seed, **settings)
 
 
+_TRANSIENT = (TimeoutError, socket.timeout, ConnectionResetError, ConnectionRefusedError,
+              http.client.RemoteDisconnected, http.client.IncompleteRead)
+
+
 def _retryable(exc):
-    return isinstance(exc, urllib.error.HTTPError) and (exc.code == 429 or 500 <= exc.code <= 599)
+    if isinstance(exc, urllib.error.HTTPError):
+        return exc.code == 429 or 500 <= exc.code <= 599
+    if isinstance(exc, urllib.error.URLError):
+        return isinstance(exc.reason, _TRANSIENT)
+    return isinstance(exc, _TRANSIENT)
 
 
 def _retry_after(exc):
@@ -90,9 +100,12 @@ def _retry_after(exc):
 
 
 class RetryingClient(_Wrap):
-    """Bounded retry of HTTP 429 and 5xx (no cost is charged for a failed request: the client raises before
-    adding it). Delay before retry k (k = 0, 1, ...): Retry-After if the server sent it, else
-    base_delay x 2^k, capped at max_delay. Other errors and the last failure are raised unchanged."""
+    """Bounded retry of HTTP 429 and 5xx and of transient network errors: socket timeouts, connection reset or
+    refused, RemoteDisconnected, IncompleteRead, and a URLError wrapping one of them. No cost is charged for a
+    failed request: the client raises before returning a cost, and only the successful attempt's cost is
+    returned. Delay before retry k (k = 0, 1, ...): Retry-After if the server sent it, else
+    base_delay x 2^k, capped at max_delay. Other errors and the last failure are raised unchanged.
+    last_retries is the retry count of the last call (run_game adds it to the provenance when > 0)."""
 
     def __init__(self, inner, attempts=RETRY_ATTEMPTS, base_delay=RETRY_BASE_DELAY, max_delay=RETRY_MAX_DELAY,
                  sleep=None):
@@ -100,14 +113,19 @@ class RetryingClient(_Wrap):
         if isinstance(attempts, bool) or not isinstance(attempts, int) or attempts < 1:
             raise ValueError("attempts must be an integer >= 1")
         self.attempts, self.base_delay, self.max_delay, self.sleep = attempts, base_delay, max_delay, sleep
+        self.last_retries = 0
 
     def complete(self, messages, model, seed, **settings):
+        self.last_retries = 0
         for k in range(self.attempts):
+            self.last_retries = k
             try:
-                return self.inner.complete(messages, model, seed, **settings)
-            except urllib.error.HTTPError as exc:
+                out = self.inner.complete(messages, model, seed, **settings)
+            except Exception as exc:
                 if not _retryable(exc) or k == self.attempts - 1:
                     raise
-                after = _retry_after(exc)
+                after = _retry_after(exc) if isinstance(exc, urllib.error.HTTPError) else None
                 delay = min(self.max_delay, after if after is not None else self.base_delay * 2 ** k)
                 (self.sleep or _sleep)(float(delay))
+                continue
+            return out
