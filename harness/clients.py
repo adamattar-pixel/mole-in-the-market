@@ -8,6 +8,11 @@ from pathlib import Path
 import yaml
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+DEFAULT_TIMEOUT_S = 120  # read timeout per request (was 60); a config sets its own with `timeout_s`
+# max_tokens sent when the caller gives none: replies are about 50 chars, so 512 stops a runaway generation;
+# a reasoning model needs room for its trace before the reply.
+MAX_TOKENS_DEFAULT = 512
+MAX_TOKENS_REASONING = 16000
 PRICES_PATH = Path(__file__).resolve().parent.parent / "configs" / "prices.yaml"
 
 
@@ -94,15 +99,18 @@ class OpenRouterClient:
     With a price table (load_prices), each call is charged max(usage.cost, tokens x price): under BYOK usage.cost
     is only OpenRouter's fee. last_call then adds cost_reported, cost_computed, cost_charged and cost_source
     ("usage_cost" or "token_price"). A model with no price is refused before the request.
+    max_tokens is sent when not None (run_game always gives one: MAX_TOKENS_REASONING when reasoning is set,
+    else MAX_TOKENS_DEFAULT, unless the family sets max_tokens); last_call then records it. The response's
+    finish_reason is recorded when present ("length" = truncated reply, counted invalid by the parser).
     """
     is_mock = False
 
-    def __init__(self, timeout=60, prices=None):
+    def __init__(self, timeout=DEFAULT_TIMEOUT_S, prices=None):
         self.timeout = timeout
         self.prices = prices
         self.last_call = None
 
-    def complete(self, messages, model, seed, temperature=None, reasoning=None, provider=None):
+    def complete(self, messages, model, seed, temperature=None, reasoning=None, provider=None, max_tokens=None):
         key = os.environ.get("OPENROUTER_API_KEY")
         if not key:
             raise MissingAPIKey("OPENROUTER_API_KEY is not set")
@@ -110,6 +118,8 @@ class OpenRouterClient:
         if self.prices is not None and model not in self.prices:
             raise MissingPrice(f"no price for {model!r} in configs/prices.yaml: refused before any request (R17)")
         payload = {"model": model, "messages": messages, "seed": seed, "usage": {"include": True}}
+        if max_tokens is not None:
+            payload["max_tokens"] = max_tokens
         if temperature is not None:
             payload["temperature"] = temperature
         if reasoning is not None:
@@ -121,13 +131,18 @@ class OpenRouterClient:
             "Authorization": f"Bearer {key}", "Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=self.timeout) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-        message = data["choices"][0]["message"]
+        choice = data["choices"][0]
+        message = choice["message"]
         # The reply is `content` only: the reasoning trace is logged, never parsed (THINK_ARM.md).
         text = message.get("content") or ""
         usage = data.get("usage")
         details = (usage or {}).get("completion_tokens_details") or {}
         self.last_call = {"served_model": data.get("model"), "provider": data.get("provider"),
                           "usage": usage, "reasoning_tokens": details.get("reasoning_tokens")}
+        if max_tokens is not None:
+            self.last_call["max_tokens"] = max_tokens
+        if "finish_reason" in choice:
+            self.last_call["finish_reason"] = choice["finish_reason"]
         self.last_call.update(_reasoning_trace(message))
         upstream = ((usage or {}).get("cost_details") or {}).get("upstream_inference_cost")
         if upstream is not None:

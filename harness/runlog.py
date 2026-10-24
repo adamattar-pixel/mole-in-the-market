@@ -13,6 +13,9 @@ _SAFE_ID = re.compile(r"^[A-Za-z0-9_.\-]+$")
 
 
 def config_hash(cfg):
+    # timeout_s is operational (how long to wait), not part of the experiment: left out, so adding it to a
+    # config keeps its hash and the resume guard (review M2).
+    cfg = {k: v for k, v in cfg.items() if k != "timeout_s"}
     canonical = json.dumps(cfg, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 

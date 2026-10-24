@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from harness.agent import build_messages, parse_reply
-from harness.clients import BudgetExceeded
+from harness.clients import DEFAULT_TIMEOUT_S, MAX_TOKENS_DEFAULT, MAX_TOKENS_REASONING, BudgetExceeded
 from harness.concurrency import ConcurrentBudget, GuardedClient, RetryingClient, fork_client
 from harness.conditions import CONDITIONS, build_condition, load_prereg_texts
 from harness.config import GameConfig
@@ -107,6 +107,18 @@ def family_provider(cfg, family):
     return None
 
 
+def family_max_tokens(cfg, family, real=True):
+    """max_tokens sent for the family: its own max_tokens if set, else (real client only: a mock generates no
+    tokens) MAX_TOKENS_REASONING when reasoning is set, else MAX_TOKENS_DEFAULT. None = not sent.
+    Not a game log field, so the resume guard and config_hash are unchanged."""
+    for fam in cfg["families"]:
+        if fam["family"] == family and "max_tokens" in fam:
+            return fam["max_tokens"]
+    if not real:
+        return None
+    return MAX_TOKENS_REASONING if family_reasoning(cfg, family) is not None else MAX_TOKENS_DEFAULT
+
+
 def family_reasoning(cfg, family):
     """Per-family reasoning wins over the top-level one. None = not sent."""
     for fam in cfg["families"]:
@@ -120,6 +132,10 @@ def validate_config(cfg):
         if key not in cfg:
             raise ValueError(f"config is missing {key!r}")
     GameConfig.from_dict(cfg)
+    if "timeout_s" in cfg:
+        t = cfg["timeout_s"]
+        if isinstance(t, bool) or not isinstance(t, (int, float)) or not math.isfinite(t) or t <= 0:
+            raise ValueError(f"timeout_s must be a positive number of seconds: {t!r}")
     if not isinstance(cfg["mock"], bool):
         raise ValueError("mock must be true or false")
     bad = [c for c in cfg["conditions"] if c not in CONDITIONS + ADDENDUM_CONDITIONS]
@@ -133,6 +149,10 @@ def validate_config(cfg):
         models = fam["models"]
         if set(models) != set(FIRMS):
             raise ValueError(f"family {fam['family']}: need one model per firm {FIRMS}")
+        if "max_tokens" in fam:
+            mt = fam["max_tokens"]
+            if isinstance(mt, bool) or not isinstance(mt, int) or mt < 1:
+                raise ValueError(f"family {fam['family']}: max_tokens must be an integer >= 1: {mt!r}")
         families = {model_family(m) for m in models.values()}
         # A fallback family may be labelled "<provider>-fb", so its logs never pool with the primary's.
         if len(families) != 1 or fam["family"] not in {p + s for p in families for s in ("", "-fb")}:
@@ -188,8 +208,9 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
     temperature = cfg.get("temperature")
     reasoning = family_reasoning(cfg, spec.family)
     provider = family_provider(cfg, spec.family)
-    settings = {k: v for k, v in (("temperature", temperature), ("reasoning", reasoning), ("provider", provider))
-                if v is not None}
+    max_tokens = family_max_tokens(cfg, spec.family, real=not getattr(client, "is_mock", True))
+    settings = {k: v for k, v in (("temperature", temperature), ("reasoning", reasoning), ("provider", provider),
+                                  ("max_tokens", max_tokens)) if v is not None}
     reasoning_counts = []
     rounds, cost = [], 0.0
     invalid_prices = invalid_responses = 0
@@ -201,6 +222,9 @@ def run_game(cfg, spec, client, texts, budget, runs_dir, git_commit="test", adde
                                     cond.extra_instruction, past_messages[f] if memory else None)
             text, call_cost = client.complete(prompt, spec.models[f], spec.seed, **settings)
             provenance = getattr(client, "last_call", None)
+            retries = getattr(client, "last_retries", 0)
+            if provenance is not None and retries:
+                provenance = dict(provenance, retries=retries)
             cost += call_cost
             budget.add(call_cost)  # raises BudgetExceeded: the game is dropped, no log written
             parsed = parse_reply(text)
@@ -340,6 +364,8 @@ def run_batch(cfg, client, runs_dir, texts=None, prereg_path=None, git_commit=No
         if not cfg["mock"] and not addendum_is_frozen(addendum_path):
             raise RealRunRefused("real run refused: PREREGISTRATION_ADDENDUM.md status is not FROZEN (R35)")
         addendum = load_addendum(addendum_path)
+    if not cfg["mock"] and hasattr(client, "timeout"):
+        client.timeout = cfg.get("timeout_s", DEFAULT_TIMEOUT_S)
     git_commit = git_commit or current_git_commit()
     runs_dir = Path(runs_dir)
     existing = existing_logs(cfg, runs_dir)
