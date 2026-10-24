@@ -35,4 +35,3 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 ## Active claims
 | Who | Branch | Files / areas | Started | Expected end |
 |---|---|---|---|---|
-| Artem (Claude viz session) | wip/phase-4-artem-viz | viz/*, tools/check_viz.py, viz tests, harness/vizexport.py and its tools/reproduce.py wiring | 2026-10-24 | 2026-10-25 |
