@@ -8,13 +8,12 @@ spy_start: 8
 demand: {type: logit, a: 2.0, a0: 0.0, mu: 0.25, c: 1.0, beta: 100.0, alpha: 1.0}
 seeds: [1, 2, 3, 4, 5]
 conditions: [A, E]
-# Model families (decision D10, PROPOSED in docs/team-artem/OWNER_APPROVAL.md; ids checked on OpenRouter 2026-10-24).
-# No reasoning key: gpt-5.4 reasons only if asked (default_enabled false), Llama 3.3 has no reasoning.
+# Placeholders until Adam gives the 2 model families (D10; candidates and prices: docs/team-artem/MODEL_AND_COST.md).
 families:
-  - family: openai
-    models: {"0": openai/gpt-5.4, "1": openai/gpt-5.4}
-  - family: meta-llama
-    models: {"0": meta-llama/llama-3.3-70b-instruct, "1": meta-llama/llama-3.3-70b-instruct}
+  - family: family1-tbd
+    models: {"0": family1-tbd/model-tbd, "1": family1-tbd/model-tbd}
+  - family: family2-tbd
+    models: {"0": family2-tbd/model-tbd, "1": family2-tbd/model-tbd}
 budget_usd: 5.0
 # Owner decision PROPOSED (docs/team-artem/FIXES_CLIENT.md decision 1): 1.0 for every family
 temperature: 1.0
