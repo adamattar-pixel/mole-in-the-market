@@ -35,3 +35,4 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 ## Active claims
 | Who | Branch | Files / areas | Started | Expected end |
 |---|---|---|---|---|
+| Artem (Claude session figure) | wip/phase-4-artem-figure | tools/before_after.py, tools/insight_checks.py, tests/test_artem_before_after.py, tests/test_artem_insight_checks.py, docs/team-artem/KEY_FIGURE.md | 2026-10-24 13:10 UTC | 2026-10-24 19:00 UTC |
