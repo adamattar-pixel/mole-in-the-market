@@ -39,3 +39,4 @@ contexte_projet_v7.md is never edited. Decisions here do not freeze anything: th
 | D33 | 2026-10-26 | QUESTIONS #30: authors and affiliations unchanged by default (adding Hoang is a team decision, human blocker) | owner message 2026-10-26 (via Adam) |
 | D34 | 2026-10-26 | QUESTIONS #31: regenerate results/defenses.md with the preregistered scoring command (C1); only the not-run labels may change | owner message 2026-10-26 (via Adam) |
 | D35 | 2026-10-26 | Tag gate-4 is NOT created by Claude; the owner runs the tag commands after merging the PR | owner message 2026-10-26 (via Adam) |
+| D36 | 2026-10-26 | Adam (co-owner) asked Claude to merge `wip/phase-4-adam-final-demo` into `main` directly (merge commit, plain push, no force), instead of a reviewed PR (D24), after pytest and check_ops green and CI green on the branch tip. `wip/phase-4` is left as it was | Adam's answer in the session, 2026-10-26 |

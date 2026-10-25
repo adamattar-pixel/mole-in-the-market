@@ -5,7 +5,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 ## Branches
 | Branch | Tip | What it is for |
 |---|---|---|
-| `main` (origin) | 55553c0 | Reviewed, CI-green work (D24). Up to date with wip/phase-4 as of PR #3 (21:01); gates are `gate-N` tags |
+| `main` (origin) | see git log | Merge of `wip/phase-4-adam-final-demo` on 2026-10-26 (D36): everything below is on main. Gates are `gate-N` tags (gate-4 still to tag, owner) |
 | `wip/phase-4` (origin) | 764b623 | Shared phase branch: everything merged (R28-R36, provider pins, THINK arm, workers, retries, key figure, insight checks), real run data, results summary |
 | `wip/phase-4-hoang` (origin) | 6c07574 | Hoang: spend ledger, resilient runner, CLI filters, entry points, help texts, demo allowlist. Merged into `wip/phase-4-final` (d30493e) |
 | `wip/phase-4-artem-viz`, `wip/phase-4-artem-grid` (local, in progress) | see git log | Replay page on real data; Figure 1 label fix |
@@ -47,7 +47,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 ## Human blockers (2026-10-26, only these are left)
 | What | Who | Ref |
 |---|---|---|
-| Open the PR `wip/phase-4-adam-final-demo` -> `wip/phase-4`, then into `main` | Adam or Artem | no gh CLI on Adam's machine |
+| (done) merged into main directly on Adam's request (D36); `wip/phase-4` not updated | - | ops/DECISIONS.md D36 |
 | Tag gate-4 after the merge (Claude does not create tags, D35) | Artem | commands in docs/team-artem/SUBMISSION_STATUS.md |
 | Affiliations in README.md and report/AUTHORS.md | Artem and Adam | OPEN_ISSUES #3, D33 |
 | Add Hoang as author or not | team | QUESTIONS #30, D33 |
