@@ -2,6 +2,15 @@
 The page only displays viz/data (written by `tools/reproduce.py`). Every number on screen is computed from that data.
 It is not a source for the report: report numbers come from results/ (docs/team-artem/RESULTS_SUMMARY.md).
 
+## Online
+https://mole-in-the-market.vercel.app (story mode) and https://mole-in-the-market.vercel.app/#full (every game).
+Vercel project `mole-in-the-market` (account adam-2ae0), a static deployment of the viz/ folder: no build, no server, no environment
+variable. viz/.vercelignore keeps viz/.env.local (a Vercel CLI token file, git-ignored) and viz/.vercel out of the upload.
+Redeploy after viz/ changes (for example a new `reproduce --viz-dir viz/data`): `npx vercel deploy --prod --cwd viz` from the repo root
+(log in once with `npx vercel login`). GitHub auto-deploy is not connected (the CLI could not attach the repository).
+Verified 2026-10-26: production deployment Ready; index, app.js, data.js and demo.html return 200; .env.local and .vercel return 404;
+headless Chrome at 1280x720 and 390x844 shows the computed headline, the comparison and the full page with no console error.
+
 ## Launch
 ```
 cd viz && python3 -m http.server 8765
