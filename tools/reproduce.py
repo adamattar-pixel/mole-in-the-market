@@ -12,6 +12,11 @@ The CLI keeps only real games (log field mock false) from the preregistered conf
 from the game id prefix "<config name>__"). Excluded games are counted in summary.json and tables.md.
 --all-configs and --include-mock bring them back for diagnostics only (never for the report tables).
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import hashlib
 import json

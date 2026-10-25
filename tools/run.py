@@ -7,6 +7,11 @@ Real configs (mock: false) use OpenRouter and are refused unless the preregistra
 the model ids are real (no "tbd") and OPENROUTER_API_KEY is set (owner's GO, hard stop H2). The repo-root
 .env is loaded at startup (harness/envfile.py), never overriding the shell.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 from pathlib import Path
 

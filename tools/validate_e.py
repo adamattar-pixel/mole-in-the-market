@@ -5,6 +5,11 @@ Default: every A and E log in runs_dir (locked R13 behaviour). --config keeps on
 (game id prefix "<config name>__", repeatable), for example --config espion_pilot (ops/QUESTIONS.md #23).
 Exit code 0 only if every family passes.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 
 from harness.conditions import PREREG_PATH, load_prereg_texts

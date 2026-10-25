@@ -6,6 +6,11 @@ Each mock seller of each game gets a random profile (says yes and follows, says 
 drawn INDEPENDENTLY of the condition, so the demo shows no pattern by design. These are not results.
 Offer texts are the frozen texts of PREREGISTRATION.md. Nothing is written to runs/, results/ or viz/data/.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import hashlib
 import json
@@ -29,9 +34,11 @@ PROFILES = ("say_do", "say_only", "do_only", "neither")
 
 
 def _refuse_real_locations(out):
-    parts = [p.lower() for p in Path(out).resolve().parts]
-    if "runs" in parts or "results" in parts or parts[-2:] == ["viz", "data"]:
-        raise ValueError(f"demo data must not be written to {out} (runs/, results/ or viz/data/)")
+    """Allow only a viz/demo* folder. runs/, results/, figures/, report/ and viz/data/ are refused."""
+    path = Path(out).resolve()
+    if path.parent.name.lower() == "viz" and path.name.lower().startswith("demo"):
+        return
+    raise ValueError(f"demo data can only be written to a viz/demo folder, not {out}")
 
 
 def demo_config():

@@ -5,8 +5,8 @@ Budget bound (R17) with W workers: a call is sent only after every cap was check
 crossed, and its cost is added under the same lock as soon as it returns. When one call crosses a cap, at
 most W - 1 other calls are already in flight; they finish, are added, and no new call is sent. So the spend
 of a cap is at most cap + W x (max cost of one call), against cap + 1 x (max cost of one call) when sequential.
-The games in progress when a cap is hit are dropped (no log), as in the sequential run, and their partial
-spend is real but not in the logs (up to W games instead of 1).
+The games in progress when a cap is hit are dropped (no log), as in the sequential run. Their partial
+spend is written to _spend.jsonl and counts toward the cap on the next run (up to W games instead of 1).
 """
 import copy
 import http.client
