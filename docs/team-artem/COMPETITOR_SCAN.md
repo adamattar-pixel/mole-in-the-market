@@ -52,7 +52,7 @@ Our own public repo shows up in search: `adamattar-pixel/mole-in-the-market` (pu
 
 ## 3. Low overlap (checked, different question)
 
-- **ArnolFokam/collusion-harness, collusion-leaderboard** (23-24 Oct): bid rigging and label-leak tasks with hidden-truth scoring and weak/strong overseers. Same author as our base harness. Note the harness's posted correction: missing bids defaulted to 100 and created fake collusion. Worth checking we have no similar default (our invalid-price fallback count).
+- **ArnolFokam/collusion-harness, collusion-leaderboard** (23-24 Oct): bid rigging and label-leak tasks with hidden-truth scoring and weak/strong overseers. Same author as ArnolFokam/ai-collusion-research-sprint, which we did not use (no code reused; see THIRD_PARTY.md). Note the harness's posted correction: missing bids defaulted to 100 and created fake collusion. Worth checking we have no similar default (our invalid-price fallback count).
 - **taruntrivedi3/collusion-detection** (24 Oct 00:21): null calibration of dependence scans; on archived double auctions, honest paths flagged 37-89%. Supports our permutation base rate.
 - **soumya-nayak-commits/collusion-detetction** (23 Oct): net influence vs Cramer's V in RPS, synthetic.
 - **In9illusion/collusion-process-traces** (22 Oct): process-trace detection on a shared board, Groq models.
