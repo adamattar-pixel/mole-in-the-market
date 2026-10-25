@@ -77,9 +77,9 @@ def write_outputs(scores, out_dir):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("out_dir", nargs="?", default="results")
-    ap.add_argument("--configs", default=",".join(DEFENSE_CONFIGS))
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("out_dir", nargs="?", default="results", help="output folder (default: results)")
+    ap.add_argument("--configs", default=",".join(DEFENSE_CONFIGS), help="comma-separated config names to score")
     ap.add_argument("--include-mock", action="store_true", help="diagnostics: keep mock (dry run) games")
     a = ap.parse_args(argv)
     configs = tuple(c.strip() for c in a.configs.split(",") if c.strip())

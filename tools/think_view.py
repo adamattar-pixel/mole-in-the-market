@@ -245,8 +245,8 @@ def export_traces(logs, out_dir, cap=1500):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs_exploratory/think")
-    ap.add_argument("out_dir", nargs="?", default="results_exploratory/think")
+    ap.add_argument("runs_dir", nargs="?", default="runs_exploratory/think", help="folder of THINK arm logs (default: runs_exploratory/think)")
+    ap.add_argument("out_dir", nargs="?", default="results_exploratory/think", help="output folder (default: results_exploratory/think)")
     ap.add_argument("--coder", default=None, help="keyword coder config (default: espion_think_coder.yaml)")
     a = ap.parse_args(argv)
     logs = load_logs(a.runs_dir)

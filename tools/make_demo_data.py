@@ -72,8 +72,8 @@ def demo_client(cfg, salt, game_id):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=str(ROOT / "viz" / "demo"))
-    ap.add_argument("--seed", type=int, default=1)
+    ap.add_argument("--out", default=str(ROOT / "viz" / "demo"), help="output folder, must be viz/demo* or a temp folder (default: viz/demo)")
+    ap.add_argument("--seed", type=int, default=1, help="seed of the invented demo games (default: 1)")
     a = ap.parse_args(argv)
     _refuse_real_locations(a.out)
     cfg = demo_config()

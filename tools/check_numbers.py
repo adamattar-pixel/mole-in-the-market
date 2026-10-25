@@ -118,10 +118,10 @@ def check_text(text, sources, allow=None, include_code=False):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("document")
+    ap.add_argument("document", help="Markdown file whose result numbers are checked")
     ap.add_argument("--sources", nargs="+", default=["results"], help="files or folders (default: results)")
     ap.add_argument("--allow", nargs="*", default=[], help="design constants that are not results")
-    ap.add_argument("--include-code", action="store_true")
+    ap.add_argument("--include-code", action="store_true", help="also check numbers inside ``` code blocks")
     a = ap.parse_args(argv)
     text = Path(a.document).read_text(encoding="utf-8")
     sources = collect_sources(a.sources)

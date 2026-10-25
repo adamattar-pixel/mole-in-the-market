@@ -307,10 +307,10 @@ def _inside_results(out_dir):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("runs_dirs", nargs="+")
-    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR)
+    ap.add_argument("runs_dirs", nargs="+", help="one or more folders of game logs")
+    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR, help="output folder")
     ap.add_argument("--configs", default=None, help="comma-separated config names to keep (default: every config)")
-    ap.add_argument("--include-mock", action="store_true")
+    ap.add_argument("--include-mock", action="store_true", help="keep mock (dry run) games")
     a = ap.parse_args(argv)
     if _inside_results(a.out_dir):
         raise SystemExit(f"refusing to write under results/ ({a.out_dir}): results/ holds reproduce output only")

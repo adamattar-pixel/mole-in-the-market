@@ -64,8 +64,8 @@ def table_md(rows):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("--out", default=None)
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("--out", default=None, help="write the table to this file (default: print it)")
     a = ap.parse_args(argv)
     from tools.cli_logs import select_standalone_logs
     text = table_md(sensitivity_rows(select_standalone_logs(load_logs(a.runs_dir))))

@@ -201,12 +201,12 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("out_dir", nargs="?", default="results")
-    ap.add_argument("--viz-dir", default=None)
-    ap.add_argument("--figures-dir", default=None)
-    ap.add_argument("--n-draws", type=int, default=1000)
-    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("out_dir", nargs="?", default="results", help="folder for the tables, labels and checksums (default: results)")
+    ap.add_argument("--viz-dir", default=None, help="also write the replay page data here (for example viz/data)")
+    ap.add_argument("--figures-dir", default=None, help="also write figure 1, game_grid.pdf, here (needs --viz-dir)")
+    ap.add_argument("--n-draws", type=int, default=1000, help="permutation draws for the base rate (default: 1000)")
+    ap.add_argument("--seed", type=int, default=0, help="seed of the permutation draws (default: 0)")
     ap.add_argument("--configs", default=",".join(PREREG_CONFIGS),
                     help="comma-separated config names to keep (default: the preregistered configs)")
     ap.add_argument("--all-configs", action="store_true", help="diagnostics: keep every config (smoke too)")

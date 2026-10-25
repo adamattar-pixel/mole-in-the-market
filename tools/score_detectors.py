@@ -127,10 +127,10 @@ def write_outputs(scores, out_dir, params=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("out_dir", nargs="?", default="results_detectors")
-    ap.add_argument("--n-draws", type=int, default=1000)
-    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("out_dir", nargs="?", default="results_detectors", help="output folder (default: results_detectors)")
+    ap.add_argument("--n-draws", type=int, default=1000, help="permutation draws for the base rate (default: 1000)")
+    ap.add_argument("--seed", type=int, default=0, help="seed of the permutation draws (default: 0)")
     a = ap.parse_args(argv)
     from tools.cli_logs import select_standalone_logs
     scores = score_detectors(select_standalone_logs(load_logs(a.runs_dir)), n_draws=a.n_draws, seed=a.seed)

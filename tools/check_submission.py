@@ -147,10 +147,10 @@ def _mark(ok):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("report")
+    ap.add_argument("report", help="the final report file (Markdown or LaTeX), not the checklist")
     ap.add_argument("--title", default=None, help="exact title used on every submission")
     ap.add_argument("--offline", action="store_true", help="do not check web links (reported NOT RUN)")
-    ap.add_argument("--repo-root", default=str(Path(__file__).resolve().parent.parent))
+    ap.add_argument("--repo-root", default=str(Path(__file__).resolve().parent.parent), help="folder used to check relative links (default: this repo)")
     a = ap.parse_args(argv)
     text = Path(a.report).read_text(encoding="utf-8")
     r = check_text(text, expected_title=a.title, fetch=None if a.offline else _http_status, repo_root=a.repo_root)

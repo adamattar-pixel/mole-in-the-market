@@ -571,12 +571,12 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry", action="store_true", help="mock client into a scratch folder (never runs/)")
     ap.add_argument("--root", default=None, help=f"base folder (default: the repo root real, {DEFAULT_DRY_ROOT} dry)")
-    ap.add_argument("--configs-dir", default=str(CONFIGS))
+    ap.add_argument("--configs-dir", default=str(CONFIGS), help="folder with the step configs and run_all.yaml (default: configs)")
     ap.add_argument("--exploratory", action="store_true", help="memory arm + sensitivity, monitor_view, price_paths")
     ap.add_argument("--think", action="store_true", help="EXPLORATORY THINK arm (reasoning traces), off by default")
     ap.add_argument("--o1", action="store_true", help="option O1 (seeds 6-10 on B, B_T, C, D), last")
-    ap.add_argument("--stop-after", choices=STOP_AFTER, default=None)
-    ap.add_argument("--dry-gate", choices=("pass", "fail"), default="pass")
+    ap.add_argument("--stop-after", choices=STOP_AFTER, default=None, help="stop after this step")
+    ap.add_argument("--dry-gate", choices=("pass", "fail"), default="pass", help="with --dry: make the mock E gate pass or fail (to test the plan B path)")
     ap.add_argument("--allow-settings-mismatch", action="store_true",
                     help="run even if temperature or reasoning differ between pooled or matched steps")
     ap.add_argument("--workers", type=int, default=1,
@@ -584,8 +584,8 @@ def main(argv=None):
     ap.add_argument(CONTINUE_FLAG, action="store_true",
                     help="DEVIATION: if a family fails the E gate after its fallback, go on with the passing "
                          "families instead of plan B (owner decision, ops/QUESTIONS.md)")
-    ap.add_argument("--n-draws", type=int, default=1000)
-    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--n-draws", type=int, default=1000, help="permutation draws for the base rate (default: 1000)")
+    ap.add_argument("--seed", type=int, default=0, help="seed of the permutation draws (default: 0)")
     a = ap.parse_args(argv)
     root = a.root or (DEFAULT_DRY_ROOT if a.dry else ROOT)
     try:

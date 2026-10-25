@@ -20,8 +20,8 @@ from tools.reproduce import config_name
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("--prereg", default=str(PREREG_PATH))
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("--prereg", default=str(PREREG_PATH), help="preregistration file with the frozen E threshold (default: PREREGISTRATION.md)")
     ap.add_argument("--config", action="append", default=None, metavar="NAME",
                     help="only logs of this config (repeatable); default: every log")
     a = ap.parse_args(argv)

@@ -138,8 +138,8 @@ def _inside(path, parent):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR)
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR, help="output folder")
     a = ap.parse_args(argv)
     out = Path(a.out_dir).resolve()
     if any(_inside(out, base / "results") for base in (ROOT, Path.cwd().resolve())):
