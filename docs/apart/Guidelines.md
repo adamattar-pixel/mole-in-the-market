@@ -1,3 +1,7 @@
+> NOTE (2026-10-25): this is an old copy of the sprint page. The live page (checked 2026-10-24) differs on two points.
+> AI tools: "Use AI tools however they help you ... or help with the writing ...; made-up results or references can disqualify" (see ops/DECISIONS.md D26).
+> Abstract: 150 to 250 words (not "150 words or fewer" as below). Where this copy and the live page disagree, the live page wins.
+
 Judging Criteria
 Dimension 1: Impact Potential & Innovation
 How much would this matter for the field if it worked? How innovative is it?

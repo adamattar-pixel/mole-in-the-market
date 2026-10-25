@@ -20,24 +20,21 @@ PREREGISTRATION_ADDENDUM.md. Wilson 95% intervals. Unit = the game unless stated
   configs); `... --configs espion_pilot,espion_core --out-dir results_exploratory/checks_prereg_configs`;
   `python3 -m tools.insight_checks $D/runs_archive/sonnet_fb_partial $D/runs_exploratory/think_showcase --out-dir results_exploratory/checks_exploratory`.
   All exit 0 (no STOP).
-- **C4, key figure:** stage all 8 Sonnet games in one folder (6 archived + 2 that are still in runs/, see
-  Deviations), then plot:
+- **C4, key figure:** all 8 Sonnet games are in runs_archive/sonnet_fb_partial (see Deviations), so plot:
   ```
-  mkdir -p $SP/sonnet_all && cp $D/runs_archive/sonnet_fb_partial/*.json $D/runs/espion_pilot_fb__*.json $SP/sonnet_all/
-  python3 -m tools.before_after $D/runs --exploratory $SP/sonnet_all --exploratory $D/runs_exploratory/think_showcase --out-dir figures/exploratory
+  python3 -m tools.before_after $D/runs --exploratory $D/runs_archive/sonnet_fb_partial --exploratory $D/runs_exploratory/think_showcase --out-dir figures/exploratory
   ```
-  ($SP = any scratch folder; the CSV's `source` column shows the scratch path used.)
 - **C5, price paths:** `python3 -m tools.price_paths $D/runs --out-dir figures/exploratory`
 - **C6, THINK view:** `python3 -m tools.think_view $D/runs_exploratory/think_showcase results_exploratory/think_showcase`
 - **C7, extra numbers** (new read-only script, this branch):
   `python3 -m tools.artem_results_extras $D/runs --fallback $D/runs_archive/sonnet_fb_partial --think $D/runs_exploratory/think_showcase --novita $D/runs_archive/novita_v2 --novita $D/runs_archive/smoke_v1 --out-dir results_exploratory/extras`
-- Tests: `python3 -m pytest -o addopts="" | tail -1` -> 892 passed.
+- Tests: `python3 -m pytest -o addopts="" | tail -1` -> 894 passed.
 
 ## Data actually scored
 
 - Preregistered tables (C1): 30 games, all Llama 3.3 70B (CoreWeave fp16): pilot A, E and core B, B_T, C, D, 5 seeds
-  each. Excluded 14: 10 Haiku pilot games (gate deviation), 4 smoke games, 2 Sonnet games in runs/ (non-core
-  config). Source: results/tables.md header.
+  each. Excluded 14: 4 smoke games (non-core config) and 10 Haiku pilot
+  games (superseded by the gate deviation). Source: results/tables.md header.
 - Not run, so empty: monitor (B_MON, C_MON, D_MON), ethics (B_ETH), memory arm, THINK arm (gpt-oss), O1. The
   "0/0 (n/a)" and "Collusion removed 0" cells in results/defenses.md mean **not run**, not zero.
 - No STOP condition in any check: invalid price 0/200 and invalid response 0/200 in every Llama and Haiku group;
@@ -163,9 +160,8 @@ PREREGISTRATION_ADDENDUM.md. Wilson 95% intervals. Unit = the game unless stated
   OpenRouter credits (BYOK refused), about 0.25 USD/game; removed from configs/run_all.yaml. The core is
   Llama-only (`--continue-passing-families`, run_all_deviations.json: 1 of 2 planned families kept, 10 Haiku
   pilot games excluded). Declared deviation from "2 families".
-  - Discrepancy found: QUESTIONS #27 says 6 Sonnet games were archived, but 2 more (E s2, E s3, written 22:58
-    and 23:02) are in runs/. They are excluded from the tables as a non-core config and used here only as an
-    exploratory overlay (8 Sonnet games). Not moved (read-only rule); the owner should archive them.
+  - All 8 Sonnet games (A s1-s5, E s1-s3) are in runs_archive/sonnet_fb_partial/, outside runs/, so they are
+    not in the 14 exclusions. They are used here only as an exploratory overlay.
   - #27 also plans Haiku B, B_T, C, D, B_ETH as an exploratory failed-E family via BYOK: no such logs exist.
 - **DeepSeek showcase stopped** before any game completed (spend lost). The Qwen showcase (B, E) is complete.
 - **Not run because of the credit cap:** monitor (H6), ethics (H7), memory arm, THINK arm (gpt-oss), O1.

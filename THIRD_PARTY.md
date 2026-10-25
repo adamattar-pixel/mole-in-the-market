@@ -11,4 +11,4 @@ Borrowed ideas (no code copied unless stated): identity labels on messages (Dani
 
 Visual replay page (Phase 8, optional): style inspired by GridReady (kuular.site), idea only, no code or images copied. No library vendored so far (native JavaScript and SVG); any library added goes to viz/vendor/ with its license and is listed here.
 
-Tools: code written with the help of an AI coding assistant (Claude Code), reviewed and run by the team. The report is written by the team in its own words.
+Tools: code written with the help of an AI coding assistant (Claude Code), reviewed and run by the team. The report is written by the authors without AI (ops/DECISIONS.md D27); a superseded AI draft is kept, clearly marked, in report/ai_draft/. Numbers, tables and figures come from committed code outputs.

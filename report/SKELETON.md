@@ -1,3 +1,6 @@
+SUPERSEDED by report/REPORT.md (the report draft, 2026-10-25). Kept for history only; do not edit or cite.
+The rules below about who writes the prose are replaced by ops/DECISIONS.md D26.
+
 SKELETON ONLY. Not the report. No prose here on purpose (ops/DECISIONS.md D14, D21; ops/QUESTIONS.md #12).
 The team writes every sentence of the final report in its own words. Apart: a report that "reads as generated" is not scored (docs/apart/Guidelines.md, "AI tools and your report").
 
