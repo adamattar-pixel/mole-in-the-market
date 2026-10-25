@@ -30,6 +30,12 @@ def main(argv=None):
     if a.config:
         logs = [g for g in logs if config_name(g) in set(a.config)]
         print(f"configs: {', '.join(sorted(set(a.config)))}")
+    else:
+        pooled = sorted({config_name(g) for g in logs if g["condition"] in ("A", "E")})
+        if len(pooled) > 1:
+            # OPEN_ISSUES #24: pooling (for example smoke + pilot) can flip a family's verdict.
+            print(f"WARNING: A and E games of {len(pooled)} configs are pooled ({', '.join(pooled)}). "
+                  "The preregistered E gate uses the pilot only: --config espion_pilot")
     res = e_validation(logs, threshold)
     for fam, r in res.items():
         eff = "n/a" if r["effect_gap_fraction"] is None else f"{r['effect_gap_fraction']:.3f}"

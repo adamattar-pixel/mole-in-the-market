@@ -30,3 +30,4 @@ Replay page items (#12-#16, #18, #19, #21, #22): Phase 8 is CUT (D17), so they a
 | 21 | tools/make_demo_data.py:33-36 guards output folders with a denylist (`--out viz`, `figures/`, `report/` pass); switch to an allowlist (viz/demo or a temp dir) | Hoang | done | wip/phase-4-hoang: only a viz/demo* folder is allowed |
 | 22 | viz/app.js:103, 265: `g.outcome` and the condition go into markup without `esc()` (local data, low risk) | Artem | done | pre-main review m6 |
 | 23 | Optional 3 to 5 minute video demo | - | open | docs/apart/Guidelines.md:40, report/SUBMISSION_CHECKLIST.md:15 |
+| 24 | `python -m tools.validate_e runs` (no --config) pools smoke and pilot A/E games: on the real runs Haiku prints PASS 0.277 while the preregistered pilot-only gate is FAIL 0.111. Default is locked R13; add a visible warning | Adam (Claude) | done | wip/phase-4-final: WARNING line naming the pooled configs and `--config espion_pilot` |
