@@ -1,3 +1,5 @@
+> **AI-DRAFTED, NOT THE SUBMISSION.** Decision D27: the submitted report is written by the authors without AI. This file is kept only as an internal record of a superseded attempt; do not copy from it.
+
 <!-- REPORT.md: edited full report, revision 2 after three judge reviews (D26, AI-drafted, for author review). Every number is rechecked against the logs by report/build/factcheck.py (output: report/build/factcheck.txt). The src comments are stripped at build time. -->
 
 # The Number Does the Work: A Price-Fixing Sting on LLM Sellers

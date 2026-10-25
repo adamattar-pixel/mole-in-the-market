@@ -16,7 +16,7 @@ Left panel (Llama): preregistered. Right panel (Haiku, Sonnet): exploratory. n =
 ## Preregistered vs exploratory
 - Preregistered: PREREGISTRATION.md, frozen at commit d5e7ebc, tag `prereg-frozen`. Post-freeze addendum (detectors, H5-H7): PREREGISTRATION_ADDENDUM.md, frozen at 8b7b5a1, tag `addendum-frozen`. Tables: results/.
 - Exploratory (labelled as such everywhere): Haiku after its failed positive control, 8 partial Sonnet 4.5 games, 2 Qwen 3.8 reasoning-trace games (THINK showcase). Outputs: results_exploratory/, figures/exploratory/.
-- Every number with its source: results/tables.md and docs/team-artem/RESULTS_SUMMARY.md. Report draft: report/REPORT.md (in progress).
+- Every number with its source: results/tables.md and docs/team-artem/RESULTS_SUMMARY.md. Report draft: report/ (written by the authors).
 
 ## Reproduce (no API key, no cost)
 ```

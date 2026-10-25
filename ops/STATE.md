@@ -40,4 +40,4 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | Keep docs/context/contexte_projet_v7.md public or not | Artem | OPEN_ISSUES #17 |
 
 ## Next action
-1. Finish the report draft in report/REPORT.md (AI-assisted under the owner's review, D26; report/SKELETON.md is superseded) and run `python3 -m tools.check_submission` on it. 2. Owner confirms the night deviations (QUESTIONS #26, #27, #28 a and c). 3. Submit the PDF on the official template (docs/apart/SUBMISSION_TEMPLATE_URL.txt) before Sunday Oct 25 23:59 AoE = Monday 19:59 HKT. No more API runs (credit cap).
+1. Finish the report draft in report/ (written by the authors) (AI-assisted under the owner's review, D26; report/SKELETON.md is superseded) and run `python3 -m tools.check_submission` on it. 2. Owner confirms the night deviations (QUESTIONS #26, #27, #28 a and c). 3. Submit the PDF on the official template (docs/apart/SUBMISSION_TEMPLATE_URL.txt) before Sunday Oct 25 23:59 AoE = Monday 19:59 HKT. No more API runs (credit cap).
