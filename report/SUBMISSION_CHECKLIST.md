@@ -5,7 +5,7 @@ Sources: docs/apart/Guidelines.md (copied before the sprint) and the live sprint
 ## Official pre-submission checklist (docs/apart/Guidelines.md)
 
 - [ ] Report PDF on the official Apart template (link on the Guidelines tab; not the one in any acceptance email)
-- [ ] Project title and abstract
+- [ ] Project title and abstract (LIVE: 150 to 250 words)
 - [ ] Author names and affiliations (report/AUTHORS.md; affiliations still to fill)
 - [ ] Appendix "Limitations and Dual-Use / Ethical Considerations" present
 - [ ] Links work
@@ -19,13 +19,13 @@ Sources: docs/apart/Guidelines.md (copied before the sprint) and the live sprint
 | Rule | Live value | Repo state | Action |
 |---|---|---|---|
 | Abstract length | 150 to 250 words | tools/check_submission.py MIN/MAX_ABSTRACT_WORDS = 150/250, SPEC R19 "150 to 250" (owner-approved test(fix) of a0cd120, docs/team-artem/OWNER_APPROVAL.md) | check_submission enforces 150 to 250 |
-| Page limit | max 8 pages, excluding references and appendices | check_submission: "page count: MANUAL" | Count on the compiled PDF |
+| Page limit | template recommends 4 pages; max 8 pages, excluding references and appendices | check_submission: "page count: MANUAL" | Count on the compiled PDF |
 | Appendix title | exactly "Limitations and Dual-Use / Ethical Considerations" | APPENDIX_TITLE matches; a prefix like "Appendix A." is accepted | Keep the exact string |
 | Resubmission | same title does NOT replace the PDF (form details only) | Guidelines.md still says files are replaced | New PDF needs a slightly different title, or email sprints@apartresearch.com before the deadline. Get the PDF right the first time |
 
 ## Repo checks before submitting
 
-- [ ] `python -m tools.check_submission <final report file> --title "<exact title>"` (online, so links are checked). Expected: abstract FAIL only if 151-250 words (see above); everything else OK
+- [ ] `python -m tools.check_submission <final report file> --title "<exact title>"` (online, so links are checked). Expected: all OK (abstract must be 150 to 250 words)
 - [ ] Every number traced to a [RESULT: ...] source in report/SKELETON.md (SPEC R18, CLAUDE.md rule 2)
 - [ ] `python -m tools.reproduce runs results --viz-dir viz/data --figures-dir figures` rerun at the submission commit; figures in the PDF match
 - [ ] Positive control E reported per family (`python -m tools.validate_e runs`)
