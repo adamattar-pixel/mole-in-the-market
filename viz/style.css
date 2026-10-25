@@ -95,3 +95,49 @@ h2 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacin
 @media (prefers-reduced-motion: reduce) {
   .mole, .ray { transition: none; animation: none; }
 }
+
+/* ===== story mode (default view of index.html) and full mode (#full) ===== */
+body.mode-story .full-only { display: none !important; }
+body.mode-full .story-only { display: none !important; }
+.story-back { margin-left: 10px; font: inherit; font-size: 13px; background: var(--line); color: var(--text); border: 1px solid var(--muted); border-radius: 4px; padding: 3px 10px; cursor: pointer; vertical-align: middle; }
+.story { max-width: 1100px; margin: 0 auto; padding: 8px 20px 4px; font-size: 18px; }
+.story-headline { font-size: 24px; line-height: 1.35; font-weight: 600; margin: 6px 0 12px; }
+.story-stage { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+.story-scene svg { width: 100%; height: auto; display: block; max-height: 52vh; }
+.story-caption { font-size: 20px; line-height: 1.4; margin: 8px 2px 4px; min-height: 3.2em; }
+.story-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+.story-controls button { font: inherit; cursor: pointer; border-radius: 6px; }
+.story-play { font-size: 20px; font-weight: 700; padding: 10px 22px; background: var(--say); color: #0b0d10; border: 0; }
+.story-nav { font-size: 20px; padding: 8px 14px; background: var(--line); color: var(--text); border: 1px solid var(--muted); }
+.story-explore { margin-left: auto; font-size: 16px; padding: 9px 16px; background: transparent; color: var(--text); border: 1px solid var(--muted); }
+.story-step { color: var(--muted); font-variant-numeric: tabular-nums; min-width: 8em; }
+.story-keys { color: var(--muted); font-size: 13px; margin: 8px 2px 0; }
+.story-compare { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; }
+.story-compare-title { font-size: 16px; color: var(--muted); margin: 0 0 10px; }
+.story-bars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.scond h3 { margin: 0 0 10px; font-size: 20px; }
+.snote { color: var(--muted); font-size: 15px; margin: 0 0 12px; min-height: 2.4em; }
+.sbar { display: grid; grid-template-columns: 1fr; gap: 4px; margin-bottom: 12px; }
+.sbar-label { font-size: 15px; }
+.sbar-track { display: block; height: 22px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.sbar-fill { display: block; height: 100%; border-radius: 4px; transition: width .6s ease; }
+.sbar-val { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.story-lesson { font-size: 20px; font-weight: 600; margin: 8px 0 0; }
+.excluded details summary { cursor: pointer; }
+@media (max-width: 700px) {
+  .story { padding: 6px 14px 4px; font-size: 16px; }
+  .story-headline { font-size: 18px; }
+  .story-caption { font-size: 16px; min-height: 4.5em; }
+  .story-bars { grid-template-columns: 1fr; }
+  .story-explore { margin-left: 0; }
+  .story-play { font-size: 18px; padding: 9px 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sbar-fill { transition: none; }
+}
+@media (max-height: 820px) and (min-width: 701px) {
+  .story-headline { font-size: 20px; margin: 4px 0 8px; }
+  .story-scene svg { max-height: 36vh; }
+  .story-caption { font-size: 18px; min-height: 2.8em; }
+  .story-controls { margin-top: 8px; }
+}
