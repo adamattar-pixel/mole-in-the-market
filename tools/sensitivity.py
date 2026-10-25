@@ -66,9 +66,10 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
     ap.add_argument("--out", default=None, help="write the table to this file (default: print it)")
+    ap.add_argument("--deviations", default=None, help="run_all_deviations.json: exclude the game ids of its declared deviations, as reproduce --deviations does")
     a = ap.parse_args(argv)
-    from tools.cli_logs import select_standalone_logs
-    text = table_md(sensitivity_rows(select_standalone_logs(load_logs(a.runs_dir))))
+    from tools.cli_logs import deviation_ids, select_standalone_logs
+    text = table_md(sensitivity_rows(select_standalone_logs(load_logs(a.runs_dir), deviation_ids(a.deviations) if a.deviations else None)))
     if a.out:
         Path(a.out).parent.mkdir(parents=True, exist_ok=True)
         Path(a.out).write_text(text, encoding="utf-8")

@@ -140,12 +140,13 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
     ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR, help="output folder")
+    ap.add_argument("--deviations", default=None, help="run_all_deviations.json: exclude the game ids of its declared deviations, as reproduce --deviations does")
     a = ap.parse_args(argv)
     out = Path(a.out_dir).resolve()
     if any(_inside(out, base / "results") for base in (ROOT, Path.cwd().resolve())):
         ap.error("exploratory output must not go into results/ (preregistered outputs)")
-    from tools.cli_logs import select_standalone_logs
-    logs = select_standalone_logs(load_logs(a.runs_dir))
+    from tools.cli_logs import deviation_ids, select_standalone_logs
+    logs = select_standalone_logs(load_logs(a.runs_dir), deviation_ids(a.deviations) if a.deviations else None)
     cells, monitors = cell_rows(logs), monitor_rows(logs)
     text = table_md(cells, monitors)
     out.mkdir(parents=True, exist_ok=True)

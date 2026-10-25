@@ -131,9 +131,10 @@ def main(argv=None):
     ap.add_argument("out_dir", nargs="?", default="results_detectors", help="output folder (default: results_detectors)")
     ap.add_argument("--n-draws", type=int, default=1000, help="permutation draws for the base rate (default: 1000)")
     ap.add_argument("--seed", type=int, default=0, help="seed of the permutation draws (default: 0)")
+    ap.add_argument("--deviations", default=None, help="run_all_deviations.json: exclude the game ids of its declared deviations, as reproduce --deviations does")
     a = ap.parse_args(argv)
-    from tools.cli_logs import select_standalone_logs
-    scores = score_detectors(select_standalone_logs(load_logs(a.runs_dir)), n_draws=a.n_draws, seed=a.seed)
+    from tools.cli_logs import deviation_ids, select_standalone_logs
+    scores = score_detectors(select_standalone_logs(load_logs(a.runs_dir), deviation_ids(a.deviations) if a.deviations else None), n_draws=a.n_draws, seed=a.seed)
     write_outputs(scores, a.out_dir)
     print(f"score_detectors: {scores['n_core_games']} core games -> {a.out_dir}")
     return 0

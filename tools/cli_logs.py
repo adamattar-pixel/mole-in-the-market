@@ -6,10 +6,20 @@ configs only (espion_pilot and espion_core). Smoke and O1 are not pooled with th
 Mock logs in that folder are dropped only when a real game is also there. An all-mock dry folder
 keeps its mock pilot and core games.
 """
+import json
+from pathlib import Path
+
 from tools.reproduce import PREREG_CONFIGS, config_name
 
 
-def select_standalone_logs(logs):
+def deviation_ids(path):
+    """Game ids excluded by the declared deviations of run_all_deviations.json (same rule as reproduce --deviations)."""
+    return {i for d in json.loads(Path(path).read_text(encoding="utf-8")) for i in d.get("excluded_game_ids", [])}
+
+
+def select_standalone_logs(logs, exclude_ids=None):
+    if exclude_ids:
+        logs = [g for g in logs if g["game_id"] not in exclude_ids]
     names = {config_name(g) for g in logs}
     if not any(name.startswith("espion_") for name in names):
         return list(logs)
@@ -17,7 +27,3 @@ def select_standalone_logs(logs):
     if any(g.get("mock") is False for g in kept):
         kept = [g for g in kept if g.get("mock") is False]
     return kept
-
-
-def deviation_ids(path):
-    raise NotImplementedError
