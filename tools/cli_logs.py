@@ -17,3 +17,7 @@ def select_standalone_logs(logs):
     if any(g.get("mock") is False for g in kept):
         kept = [g for g in kept if g.get("mock") is False]
     return kept
+
+
+def deviation_ids(path):
+    raise NotImplementedError
