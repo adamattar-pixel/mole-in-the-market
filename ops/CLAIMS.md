@@ -35,3 +35,4 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 ## Active claims
 | Who | Branch | Files / areas | Started | Expected end |
 |---|---|---|---|---|
+| Adam (Claude) | wip/phase-4-final | merge of wip/phase-4-hoang and wip/phase-4-adam-numbers, OPEN_ISSUES #8 #9 #10 #11 #19 #21 (tools/, harness/runlog.py, harness/runner.py, harness/clients.py, harness/vizexport.py, .gitattributes, viz/demo/), README.md Run section, tests for these | 2026-10-25 18:30 +08:00 | 2026-10-25 23:00 +08:00 |
