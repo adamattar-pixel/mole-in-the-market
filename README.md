@@ -21,10 +21,12 @@ Left panel (Llama): preregistered. Right panel (Haiku, Sonnet): exploratory. n =
 ## Reproduce (no API key, no cost)
 ```
 pip install -r requirements.txt
+python3 -m pytest -q        # every test passes (current count in ops/STATE.md)
 python3 -m tools.reproduce runs results --deviations run_all_deviations.json --viz-dir viz/data --figures-dir figures
-python3 -m pytest -q        # 894 passed
+python3 -m tools.validate_e runs --config espion_pilot      # positive control E per family, pilot games only
+python3 -m tools.run_all --dry --exploratory --think --o1   # whole pipeline with the mock client, writes dry_runs/
 ```
-The first command rebuilds every preregistered table from the committed logs (30 games scored, 14 excluded). `python3 -m tools.run configs/espion_dry.yaml` plays one game with the mock client. Real runs need an OpenRouter key (RUNBOOK_REAL_RUNS.md).
+`reproduce` rebuilds every preregistered table from the committed logs (30 games scored, 14 excluded). Two runs give a byte-identical results/checksums.txt, and the outputs match the committed results/ on macOS and Windows (docs/adam/REPRO_CHECK.md). Run `validate_e` with `--config espion_pilot`: without it, the smoke games are pooled with the pilot and a family's verdict can flip (the script prints a warning). The dry run costs nothing and its numbers are not results. `python3 -m tools.run configs/espion_dry.yaml` plays one dry game. Real runs need an OpenRouter key (RUNBOOK_REAL_RUNS.md).
 
 ## Data layout
 - `runs/`: the 44 real game logs. 30 are scored (Llama pilot A, E and core B, B_T, C, D, 5 seeds each); 14 are excluded (4 smoke, 10 Haiku pilot).
