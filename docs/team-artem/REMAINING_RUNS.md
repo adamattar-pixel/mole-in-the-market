@@ -1,6 +1,6 @@
 # Remaining runs: what is left, in what order, at what cost (2026-10-26)
 Everything below has working code and a passing dry run (`python3 -m tools.run_all --dry --exploratory --think --o1 --workers 4`,
-exit 0, no key). Nothing here was run for real: it needs credit and the owner's GO (hard stop H2, OPEN_ISSUES #28).
+exit 0, no key). Nothing here was run for real. 2026-10-26: GO given (D37, at most 3 USD of new spend), but no OPENROUTER_API_KEY was available on the machine, so nothing ran (OPEN_ISSUES #28).
 
 ## Not run yet
 | Step | Config | Games (after the declared Llama-only deviation) | Estimate at the observed rate | Planning rate 0.25 USD/game | Config cap |

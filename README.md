@@ -50,4 +50,4 @@ Offer texts are frozen and published as is. We report effect sizes and short exc
 Code was written with an AI coding assistant (Claude Code) and the report was drafted with AI assistance, both under the authors' review (ops/DECISIONS.md D26). The authors are responsible for all content, and every number traces to a committed output.
 
 ## Authors
-Artem (project owner) and Adam Attar (adamattar-pixel). Affiliations: to be filled by the authors.
+Artem [surname to add] and Adam Attar (adamattar-pixel), both HKUST, Hong Kong (report/AUTHORS.md).

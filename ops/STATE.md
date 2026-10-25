@@ -12,6 +12,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | `wip/phase-4-adam-numbers` (origin) | 429f1c4 | Adam (Claude): R18 tools/check_numbers.py, numbers and references audits, OPEN_ISSUES #19. Merged into `wip/phase-4-final` (a0a56f6) |
 | `wip/phase-4-final` (origin) | see git log | Adam (Claude), 2026-10-26: wip/phase-4 + both branches above + OPEN_ISSUES #24-#27 fixes. Ready for a PR into `wip/phase-4` (no gh on this machine); full suite 970 passed |
 | `wip/phase-4-adam-final-demo` (origin) | see git log | Adam (Claude), 2026-10-26: wip/phase-4-final + owner answers (D28-D35), results/defenses.md NOT RUN labels (QUESTIONS #31), replay page story mode (docs/viz/DEMO.md), direct Anthropic client (mock only), docs/team-artem/SUBMISSION_STATUS.md and REMAINING_RUNS.md. Full suite 994 passed. Ready for a PR into `wip/phase-4` (opened by a human) |
+| `wip/phase-4-adam-report` (origin) | see git log | Adam (Claude), 2026-10-26: D37, AI-drafted report in report/final/ (md, docx, pdf; main body 6 pages), affiliations, consistency fixes. Not merged into main; to review |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3) |
 
 ## Tests
@@ -41,19 +42,19 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | Confirm the night deviations (#26 re-pin, #27 Llama-only, test(fix) commits 85bf3e1/178f1ea and the pin fixes) | Artem | ops/QUESTIONS.md |
 | Accept the locked M1 test change on wip/phase-4-hoang: a rerun no longer pays the dropped game's calls again | Artem | tests/test_review_M1_budget_resume.py |
 | Gate-4 tag (E gate passed for Llama only, a deviation) | Artem | D24 |
-| Affiliations in README.md and report/AUTHORS.md | Artem and Adam | OPEN_ISSUES #3 |
+| (done) Affiliations: HKUST, Hong Kong (report/AUTHORS.md); Artem's surname still missing in report/final/REPORT.md | Artem | OPEN_ISSUES #3 |
 | Keep docs/context/contexte_projet_v7.md public or not | Artem | OPEN_ISSUES #17 |
 
 ## Human blockers (2026-10-26, only these are left)
 | What | Who | Ref |
 |---|---|---|
 | (done) merged into main directly on Adam's request (D36); `wip/phase-4` not updated | - | ops/DECISIONS.md D36 |
-| Tag gate-4 after the merge (Claude does not create tags, D35) | Artem | commands in docs/team-artem/SUBMISSION_STATUS.md |
-| Affiliations in README.md and report/AUTHORS.md | Artem and Adam | OPEN_ISSUES #3, D33 |
+| (done) Tag gate-4 exists on origin (points to ad043fc) | - | D35 |
+| (done) Affiliations: HKUST, Hong Kong (report/AUTHORS.md); Artem's surname still missing in report/final/REPORT.md | Artem | OPEN_ISSUES #3 |
 | Add Hoang as author or not | team | QUESTIONS #30, D33 |
-| Credit (or direct Anthropic key, QUESTIONS #33) and GO for the runs not run | Artem | OPEN_ISSUES #28, docs/team-artem/REMAINING_RUNS.md |
+| Credit (or direct Anthropic key, QUESTIONS #33) and an API key on the machine that runs: GO given 2026-10-26 (D37, max 3 USD) but no OPENROUTER_API_KEY was available, so monitor, ethics, O1, memory and THINK are still not run | Artem or Adam | OPEN_ISSUES #28, docs/team-artem/REMAINING_RUNS.md |
 | Add the declared deviations to the frozen Deviations sections, if wanted | Artem | QUESTIONS #32, docs/adam/DEVIATIONS_TO_ADD.md |
-| Write the report (D27) and run `tools.check_submission` on the final file with the exact title | authors | docs/team-artem/SUBMISSION_STATUS.md |
+| Review and rewrite the AI-drafted report report/final/REPORT.md (D37): title, Artem's surname, Author Contributions, Hoang, LLM Usage Statement; then `python3 report/final/check_final.py "<exact title>"` and submit the PDF | authors | docs/team-artem/SUBMISSION_STATUS.md |
 | Optional 3 to 5 minute video | team | OPEN_ISSUES #23, script in docs/viz/DEMO.md |
 | Move docs/context/contexte_projet_v7.md out before judging (owner only option) | Artem | OPEN_ISSUES #17, D31 |
 
