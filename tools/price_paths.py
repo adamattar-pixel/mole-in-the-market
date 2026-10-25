@@ -408,7 +408,7 @@ def main(argv=None):
     ap.add_argument("--game-id", default=None, help="also write excerpt.md for this game id")
     ap.add_argument("--include-mock", action="store_true", help="keep mock (dry run) games")
     ap.add_argument("--all-configs", action="store_true", help="keep every config, including smoke and O1")
-    ap.add_argument("--layout", choices=LAYOUTS, default="grid", help="figure layout: grid (one panel per cell) or overlay")
+    ap.add_argument("--layout", choices=LAYOUTS, default="grid", help="figure layout: grid (one panel per family and condition) or overlay (one panel per family, every condition)")
     a = ap.parse_args(argv)
     logs = load_arms(a.runs_dir, a.memory_runs, a.include_mock, a.all_configs)
     out = Path(a.out_dir)
