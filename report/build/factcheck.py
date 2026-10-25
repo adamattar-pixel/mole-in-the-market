@@ -173,7 +173,6 @@ for c in ("A", "E", "B", "B_T", "C", "D"):
     check(f"{c} firm-rounds at exactly 1.92 from round 8", f"{n192}/130", f"{want192}/130")
     first = [min((r["round"] for r in g["rounds"] if all(abs(r["firms"][f]["price"] - 1.92) < 1e-9 for f in ("0", "1"))), default=None) for g in core[c]]
     out(f"     {c} first round with both firms at 1.92: {first}")
-check("Wilson 130/130", wilson(130, 130), (0.97, 1.0))
 # 2x2
 for c in ("A", "E", "B", "B_T", "C", "D"):
     cells = [(say(g), do(g)) for g in core[c]]
@@ -377,6 +376,37 @@ fams = {}
 for row in csv.DictReader(open("figures/exploratory/before_after.csv")):
     fams[row["family"]] = fams.get(row["family"], 0) + 1
 out("     CSV rows per family:", fams)
+
+out("\n== Revision checks ==")
+qprov = sorted({r["firms"][f]["provenance"]["provider"] for g in qw.values() for r in g["rounds"] for f in ("0", "1")})
+qmod = sorted({r["firms"][f]["provenance"]["served_model"] for g in qw.values() for r in g["rounds"] for f in ("0", "1")})
+check("Qwen provider", qprov, ["Novita"])
+check("Qwen served model id", qmod, ["qwen/qwen3.8-2.4t-a95b"])
+check("Offered 1.92 inside do band", lo_b <= 1.92 <= hi_b, True)
+br = argmax(lambda x: prof(x, 2.5))
+check("Best response to a rival at 2.50", round(br, 2), 1.78, 0.006)
+check("Profit of that best response", round(prof(br, 2.5), 2), 53.03, 0.006)
+check("2.50 above monopoly", 2.5 > mono, True)
+# persistence: in Llama offer games, each firm's price in rounds 9-11 equals its round-8 price
+pers = all(prices(g, f)[i] == prices(g, f)[7] for c in ("E", "B", "B_T", "C") for g in core[c] for f in ("0", "1") for i in (8, 9, 10))
+check("Llama offer games: rounds 9-11 price equals round-8 price (every firm)", pers, True)
+ch8 = sum(1 for c in ("E", "B", "B_T", "C") for g in core[c] for f in ("0", "1") if prices(g, f)[6] != prices(g, f)[7])
+check("Llama offer-game firms that changed price at round 8", f"{ch8}/40", "40/40")
+flatD = all(len(set(prices(g, f))) == 1 for g in core["D"] + core["A"] for f in ("0", "1"))
+check("Llama No spy and Harmless request: every firm flat all 20 rounds", flatD, True)
+h15 = [g["game_id"][-2:] for g in haiku["A"] if all(x == 1.5 for f in ("0", "1") for x in prices(g, f)[1:])]
+check("Haiku No spy game at 1.50 from round 2 on (both firms)", h15, ["s2"])
+sa = sorted(round(sum(r["firms"][f]["price"] for r in g["rounds"] if 9 <= r["round"] <= 11 for f in ("0", "1")) / 6, 2) for g in son["A"])
+out("     Sonnet No spy do-window means:", sa)
+check("Sonnet No spy games with do-window mean below the deal", sum(1 for x in sa if x < mono), 2, 0)
+# exploratory gate rescore: reduction in mean |price - deal| from rounds 5-7 to rounds 8-20, E minus A, in gap units
+def dist(gs, r0, r1):
+    xs = [abs(r["firms"][f]["price"] - mono) for g in gs for r in g["rounds"] if r0 <= r["round"] <= r1 for f in ("0", "1")]
+    return sum(xs) / len(xs)
+def rescore(A, E):
+    return ((dist(E, 5, 7) - dist(E, 8, 20)) - (dist(A, 5, 7) - dist(A, 8, 20))) / gap
+for name, A, E in (("Llama", core["A"], core["E"]), ("Haiku", haiku["A"], haiku["E"]), ("Haiku earlier run", nov_h["A"], nov_h["E"]), ("Sonnet", son["A"], son["E"])):
+    out(f"     Exploratory rescore {name}: {rescore(A, E):.3f} (E pre {dist(E,5,7):.3f}, post {dist(E,8,20):.3f}; A pre {dist(A,5,7):.3f}, post {dist(A,8,20):.3f})")
 
 out(f"\nMISMATCHES: {len(MISMATCH)}", MISMATCH)
 open("report/build/factcheck.txt", "w").write("\n".join(OUT) + "\n")

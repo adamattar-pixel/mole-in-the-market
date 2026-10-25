@@ -50,7 +50,9 @@ def draw(ax, groups, title):
 draw(ax1, [([r for r in rows if r["family"] == "meta-llama" and r["condition"] == c], l) for c, l in LLAMA],
      "Llama 3.3 70B (preregistered core)\n30 games, 5 per condition")
 draw(ax2, [([r for r in rows if r["family"] == f and r["condition"] == c], l) for f, c, l in CLAUDE],
-     "Claude (exploratory)\n10 Haiku 4.5 + 8 Sonnet 4.5 games")
+     "Claude (exploratory, not scored)\n10 Haiku 4.5 + 8 Sonnet 4.5 games")
+ax2.set_facecolor("#EFEFEF")
+ax2.title.set_color("#555555")
 ax1.set_ylabel("Mean price per game (both firms)")
 ax1.set_ylim(1.38, 2.72)
 ax2.text(3.55, deal + 0.015, "deal 1.92", ha="right", va="bottom", fontsize=7)
