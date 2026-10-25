@@ -26,14 +26,24 @@ Sources: docs/apart/Guidelines.md (copied before the sprint) and the live sprint
 ## Repo checks before submitting
 
 - [ ] `python -m tools.check_submission <final report file> --title "<exact title>"` (online, so links are checked). Expected: all OK (abstract must be 150 to 250 words)
-- [ ] Every number traced to a [RESULT: ...] source in report/SKELETON.md (SPEC R18, CLAUDE.md rule 2)
-- [ ] `python -m tools.reproduce runs results --viz-dir viz/data --figures-dir figures` rerun at the submission commit; figures in the PDF match
-- [ ] Positive control E reported per family (`python -m tools.validate_e runs`)
+- [ ] Every number traced to a source (SPEC R18): `python -m tools.check_numbers <report file> --sources results results_exploratory --allow 0.10 10% 0.25 0.5 1.47 1.473 1.47293 0.45205 1.8798 1.9702 1.925 3.3 3.8`; each remaining line must be a cited hand computation or log value (docs/adam/DRAFT_NUMBERS_CHECK.md)
+- [ ] `python -m tools.reproduce runs results --deviations run_all_deviations.json --viz-dir viz/data --figures-dir figures` rerun at the submission commit; results/checksums.txt unchanged; figures in the PDF match
+- [ ] Positive control E reported per family on the pilot only (`python -m tools.validate_e runs --config espion_pilot`: Llama PASS 0.929, Haiku FAIL 0.111). Never quote the pooled run without --config (it prints Haiku PASS 0.277, OPEN_ISSUES #24)
 - [ ] Exploratory items labeled; Deviations sections of PREREGISTRATION.md and PREREGISTRATION_ADDENDUM.md quoted (or "none")
 - [ ] Preregistration hashes and tags cited (d5e7ebc / `prereg-frozen`, 8b7b5a1 / `addendum-frozen`)
-- [ ] Tag `preexisting-baseline` exists and is pushed (missing as of 2026-10-24; owner action)
+- [x] Tag `preexisting-baseline` exists and is pushed (fd8c920, checked 2026-10-26)
 - [ ] THIRD_PARTY.md and the report agree on preexisting vs new work (R20)
 - [ ] Dual-use review: rates and representative excerpts only, no playbook (R21)
 - [ ] No secrets in runs/ or anything linked from the report
 - [ ] Wording pass: no "novel", no "significant", no "no effect"; "directional", "to our knowledge"
 - [ ] Repo link in the report points to a public remote
+
+## Must be stated in the report (owner answers 2026-10-26, ops/DECISIONS.md D28-D30)
+- [ ] Declared deviation (QUESTIONS #26): Llama re-pinned from Novita bf16 to CoreWeave fp16; Novita-era logs archived and re-run.
+- [ ] Declared deviation (QUESTIONS #27): Haiku failed the E gate (0.111 < 0.25); the Sonnet fallback could not finish within the credit cap (8 partial games archived, exploratory).
+- [ ] Declared deviation (QUESTIONS #24): core on 1 of 2 preregistered families (Llama only) via `--continue-passing-families`, not the plan B stop; 10 Haiku pilot games excluded (run_all_deviations.json).
+- [ ] The frozen Deviations sections still say "(none)" unless the owner adds the lines of docs/adam/DEVIATIONS_TO_ADD.md (QUESTIONS #32); the report states the three deviations either way.
+- [ ] Invalid replies: the rule "invalid price keeps the previous price" (QUESTIONS #10) never fired: 0 invalid prices and 0 invalid responses in the 44 real logs (tools/insight_checks.py, report/build/factcheck.py).
+- [ ] Limitations: raw pricing reasoning traces of the 2 Qwen showcase games exist in git history (commit 8db26d3); they are untracked now and not purged (D30).
+- [ ] Not run (credit cap): monitor (H6), ethics (H7), memory arm, gpt-oss THINK arm, O1; results/defenses.md shows NOT RUN / n/a, not zero.
+- [ ] Profit at the Nash price: 22.17 is the profit at 1.47; at the exact Nash price 1.4729 it is 22.29 (docs/adam/DRAFT_NUMBERS_CHECK.md).

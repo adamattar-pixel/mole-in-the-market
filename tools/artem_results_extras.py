@@ -17,6 +17,11 @@ Usage:
   python3 -m tools.artem_results_extras RUNS --fallback DIR [--fallback DIR] --think DIR --novita DIR \
       --out-dir results_exploratory/extras
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import json
 import re
@@ -181,11 +186,11 @@ def to_md(res):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir")
-    ap.add_argument("--fallback", action="append", default=[])
-    ap.add_argument("--think", action="append", default=[])
-    ap.add_argument("--novita", action="append", default=[])
-    ap.add_argument("--out-dir", default="results_exploratory/extras")
+    ap.add_argument("runs_dir", help="folder of the preregistered game logs")
+    ap.add_argument("--fallback", action="append", default=[], help="folder of Sonnet fallback pilot logs (repeatable)")
+    ap.add_argument("--think", action="append", default=[], help="folder of THINK arm logs (repeatable)")
+    ap.add_argument("--novita", action="append", default=[], help="folder of earlier provider-era Llama logs (repeatable)")
+    ap.add_argument("--out-dir", default="results_exploratory/extras", help="output folder (default: results_exploratory/extras)")
     a = ap.parse_args(argv)
     runs = [g for g in load_logs(a.runs_dir) if not g.get("mock", True)]
     fb = [g for g in runs if _cfg(g) == "espion_pilot_fb"]

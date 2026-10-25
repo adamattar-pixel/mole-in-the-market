@@ -3,6 +3,9 @@ Purpose: let the team explore results. It displays results, it never produces an
 
 Status: OPTIONAL, Phase 8 (see ops/PLAN.md). The report figure R27 comes first.
 
+## Story mode (default view of index.html, 2026-10-26)
+index.html opens on a story: one Llama Direct offer game (seed 1) played round by round with plain captions, then a comparison of No spy, Direct offer and Harmless request ("what they said" vs "what they did"). The headline and every number are computed from viz/data. The full page below is unchanged and opens with "Explore all games" or #full. Talk track and verification: docs/viz/DEMO.md.
+
 ## Layout
 3 columns then a lower band (stack in one column on narrow screens).
 

@@ -7,8 +7,14 @@ A and D, flag rate per condition, all with Wilson 95% intervals, next to the fam
 The unit is the game.
 
 Usage: python -m tools.score_detectors runs results_detectors [--n-draws 1000 --seed 0]
-(scores every log in the folder; `tools.reproduce` is the official path, with its game filter)
+On an espion_* run folder, smoke and O1 are left out (pilot and core only). A folder of hand-built logs is not filtered.
+(scores every kept log; `tools.reproduce` is the official path, with its own game filter)
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import json
 from pathlib import Path
@@ -114,19 +120,21 @@ def write_outputs(scores, out_dir, params=None):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     data = dict(scores, params=load_detector_params() if params is None else params)
-    (out_dir / "detectors.json").write_text(json.dumps(data, sort_keys=True, indent=1) + "\n", encoding="utf-8")
-    (out_dir / "detectors.md").write_text(tables_md(scores), encoding="utf-8")
+    (out_dir / "detectors.json").write_text(json.dumps(data, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
+    (out_dir / "detectors.md").write_text(tables_md(scores), encoding="utf-8", newline="\n")
     return [out_dir / "detectors.json", out_dir / "detectors.md"]
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("out_dir", nargs="?", default="results_detectors")
-    ap.add_argument("--n-draws", type=int, default=1000)
-    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("out_dir", nargs="?", default="results_detectors", help="output folder (default: results_detectors)")
+    ap.add_argument("--n-draws", type=int, default=1000, help="permutation draws for the base rate (default: 1000)")
+    ap.add_argument("--seed", type=int, default=0, help="seed of the permutation draws (default: 0)")
+    ap.add_argument("--deviations", default=None, help="run_all_deviations.json: exclude the game ids of its declared deviations, as reproduce --deviations does")
     a = ap.parse_args(argv)
-    scores = score_detectors(load_logs(a.runs_dir), n_draws=a.n_draws, seed=a.seed)
+    from tools.cli_logs import deviation_ids, select_standalone_logs
+    scores = score_detectors(select_standalone_logs(load_logs(a.runs_dir), deviation_ids(a.deviations) if a.deviations else None), n_draws=a.n_draws, seed=a.seed)
     write_outputs(scores, a.out_dir)
     print(f"score_detectors: {scores['n_core_games']} core games -> {a.out_dir}")
     return 0

@@ -95,10 +95,10 @@ def export_viz(logs, label_rows, viz_dir, texts, prereg_path, source_checksum, g
     _write_csv(viz_dir / "games.csv", GAMES_COLUMNS, games)
     _write_csv(viz_dir / "rounds.csv", ROUNDS_COLUMNS, rounds)
     _write_csv(viz_dir / "messages.csv", ("condition", "text"), messages)
-    (viz_dir / "meta.json").write_text(json.dumps(meta, sort_keys=True, indent=1) + "\n", encoding="utf-8")
+    (viz_dir / "meta.json").write_text(json.dumps(meta, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
     data = {"games": games, "rounds": rounds, "messages": messages, "meta": meta}
     (viz_dir / "data.js").write_text("window.MM_DATA = " + json.dumps(data, sort_keys=True) + ";\n",
-                                     encoding="utf-8")
+                                     encoding="utf-8", newline="\n")
 
 
 def check_consistency(labels_csv, games_csv, runs_dir, n_excluded=0):

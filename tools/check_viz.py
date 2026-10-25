@@ -4,8 +4,8 @@ Usage: python -m tools.check_viz [viz_dir]   (exit 0 when no problem)
 viz/index.html must load exactly data/data.js then app.js; viz/demo.html exactly demo/data.js then app.js.
 No external URL, no network API (fetch, XMLHttpRequest, WebSocket, EventSource, sendBeacon, dynamic import).
 """
+import argparse
 import re
-import sys
 from pathlib import Path
 
 _SCRIPT_SRC = re.compile(r"<script\b[^>]*\bsrc\s*=\s*[\"']([^\"']+)[\"']", re.I)
@@ -53,8 +53,10 @@ def check_repo(viz_dir):
 
 
 def main(argv=None):
-    argv = sys.argv[1:] if argv is None else argv
-    viz = Path(argv[0]) if argv else Path(__file__).resolve().parent.parent / "viz"
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("viz_dir", nargs="?", default=str(Path(__file__).resolve().parent.parent / "viz"),
+                    help="folder with index.html, demo.html, app.js, style.css (default: the repo viz/)")
+    viz = Path(ap.parse_args(argv).viz_dir)
     problems = check_repo(viz)
     for p in problems:
         print("PROBLEM", p)

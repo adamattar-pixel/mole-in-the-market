@@ -4,16 +4,33 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mole in the Market | Replay</title>
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="mode-story">
 <header class="top">
-  <h1>Mole in the Market <span class="sub">replay of the games</span></h1>
-  <p id="takeaway" class="takeaway"></p>
+  <h1>Mole in the Market <span class="sub">replay of the games</span> <button id="story-back" class="story-back full-only" type="button">Back to the story</button></h1>
+  <p id="takeaway" class="takeaway full-only"></p>
   <div id="excluded" class="excluded" role="note" hidden></div>
 </header>
 <div id="banner" class="banner" hidden></div>
-<main id="app" class="layout">
+<section id="story" class="story story-only" aria-label="The story in one game">
+  <p id="story-headline" class="story-headline"></p>
+  <div id="story-stage" class="story-stage">
+    <div id="story-scene" class="story-scene"></div>
+    <p id="story-caption" class="story-caption" aria-live="polite"></p>
+  </div>
+  <div id="story-compare" class="story-compare" hidden></div>
+  <div class="story-controls">
+    <button id="story-play" class="story-play" type="button">Play the story</button>
+    <button id="story-prev" class="story-nav" type="button" aria-label="Previous round">&larr;</button>
+    <button id="story-next" class="story-nav" type="button" aria-label="Next round">&rarr;</button>
+    <span id="story-step" class="story-step"></span>
+    <button id="story-explore" class="story-explore" type="button">Explore all games</button>
+  </div>
+  <p class="story-keys">Keys: Space play or pause | &larr; &rarr; previous or next round | R restart</p>
+</section>
+<main id="app" class="layout full-only">
   <section class="panel" aria-labelledby="h-grid"><h2 id="h-grid">Pick a game</h2><div class="grid-wrap"><div id="grid"></div><div id="legend" class="legend"></div></div></section>
   <section class="panel" aria-labelledby="h-replay"><h2 id="h-replay">Replay</h2><div id="scene" class="scene"></div>
     <div class="controls"><button id="play" type="button">Play</button>

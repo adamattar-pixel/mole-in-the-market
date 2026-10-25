@@ -17,3 +17,6 @@ results_exploratory/think_showcase/think_excerpts.md
 results_exploratory/think/traces/
 results_exploratory/think/think_traces.md
 results_exploratory/think/think_excerpts.md
+
+# Vercel CLI link folder (project and org ids, local only)
+.vercel/

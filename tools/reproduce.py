@@ -12,6 +12,11 @@ The CLI keeps only real games (log field mock false) from the preregistered conf
 from the game id prefix "<config name>__"). Excluded games are counted in summary.json and tables.md.
 --all-configs and --include-mock bring them back for diagnostics only (never for the report tables).
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import hashlib
 import json
@@ -164,8 +169,8 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     summary["included_configs"] = dict(sorted(Counter(map(config_name, logs)).items()))
     rows = make_labels(logs, n_draws=n_draws, seed=seed, base_rates=base)
     write_labels_csv(rows, out_dir / "labels.csv")
-    (out_dir / "summary.json").write_text(json.dumps(summary, sort_keys=True, indent=1) + "\n", encoding="utf-8")
-    (out_dir / "tables.md").write_text(tables_md(summary), encoding="utf-8")
+    (out_dir / "summary.json").write_text(json.dumps(summary, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
+    (out_dir / "tables.md").write_text(tables_md(summary), encoding="utf-8", newline="\n")
     write_detector_outputs(score_detectors(logs, n_draws=n_draws, seed=seed), out_dir)
     defense_logs, _ = filter_logs(all_logs, score_defenses.DEFENSE_CONFIGS, include_mock, exclude_ids)
     score_defenses.write_outputs(score_defenses.score_defenses(defense_logs), out_dir)
@@ -174,7 +179,7 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
     output_lines = [f"{_sha(out_dir / n)}  out/{n}" for n in ("labels.csv", "summary.json", "tables.md",
                                                                "detectors.json", "detectors.md",
                                                                "defenses.json", "defenses.md")]
-    (out_dir / "checksums.txt").write_text("\n".join(input_lines + output_lines) + "\n", encoding="utf-8")
+    (out_dir / "checksums.txt").write_text("\n".join(input_lines + output_lines) + "\n", encoding="utf-8", newline="\n")
 
     if viz_dir is not None:
         source = hashlib.sha256("\n".join(input_lines).encode("utf-8")).hexdigest()
@@ -196,12 +201,12 @@ def reproduce(runs_dir, out_dir, n_draws=1000, seed=0, viz_dir=None, figures_dir
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("out_dir", nargs="?", default="results")
-    ap.add_argument("--viz-dir", default=None)
-    ap.add_argument("--figures-dir", default=None)
-    ap.add_argument("--n-draws", type=int, default=1000)
-    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("out_dir", nargs="?", default="results", help="folder for the tables, labels and checksums (default: results)")
+    ap.add_argument("--viz-dir", default=None, help="also write the replay page data here (for example viz/data)")
+    ap.add_argument("--figures-dir", default=None, help="also write figure 1, game_grid.pdf, here (needs --viz-dir)")
+    ap.add_argument("--n-draws", type=int, default=1000, help="permutation draws for the base rate (default: 1000)")
+    ap.add_argument("--seed", type=int, default=0, help="seed of the permutation draws (default: 0)")
     ap.add_argument("--configs", default=",".join(PREREG_CONFIGS),
                     help="comma-separated config names to keep (default: the preregistered configs)")
     ap.add_argument("--all-configs", action="store_true", help="diagnostics: keep every config (smoke too)")

@@ -19,7 +19,7 @@ Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline s
   the other, as before; the logs are identical either way. A cap can be passed by at most N calls in flight
   (harness/concurrency.py). Games that raise are reported (exit 4) and not logged; rerun to retry them.
 - Global budget cap (configs/run_all.yaml budget_usd) over every step, starting from the spend already in
-  the logs; each step config keeps its own cap (R17).
+  the logs plus paid calls recorded in _spend.jsonl; each step config keeps its own cap (R17).
 - Resumable: games already logged are skipped (write-once logs, R12).
 - Real mode refuses unless PREREGISTRATION.md and PREREGISTRATION_ADDENDUM.md are FROZEN, no model id is
   `tbd`, every step uses the same families, and OPENROUTER_API_KEY is set (its value is never read here;
@@ -39,6 +39,11 @@ Usage:
                           [--continue-passing-families]
 Exit code: 0 done or stopped as asked, 1 refused, 2 plan B, 3 budget cap hit, 4 some games failed.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import copy
 import json
@@ -47,14 +52,14 @@ from pathlib import Path
 
 import yaml
 
-from harness.clients import BudgetExceeded, MockClient, OpenRouterClient, load_prices
+from harness.clients import AnthropicClient, BudgetExceeded, MockClient, OpenRouterClient, RoutingClient, load_prices
 from harness.concurrency import ConcurrentBudget, fork_client
 from harness.conditions import load_prereg_texts
 from harness.config import GameConfig
 from harness.defenses import addendum_is_frozen
 from harness.dryclient import make_dry_client
 from harness.envfile import load_env
-from harness.runlog import load_logs
+from harness.runlog import load_logs, spend_already
 from harness.runner import (BatchFailed, RealRunRefused, check_workers, family_provider, family_reasoning, run_batch,
                             validate_config)
 from harness.validation import e_validation
@@ -271,9 +276,14 @@ class _RealFactory:
 
     def __init__(self):
         self.client = OpenRouterClient(prices=load_prices())
+        self.anthropic = AnthropicClient(prices=self.client.prices)
 
     def __call__(self, cfg):
-        return self.client
+        # A family marked `client: anthropic` goes to the Anthropic API directly (QUESTIONS #27); others to OpenRouter.
+        direct = {m for fam in cfg.get("families", []) if fam.get("client") == "anthropic" for m in fam["models"].values()}
+        if not direct:
+            return self.client
+        return RoutingClient(self.client, {m: self.anthropic for m in direct})
 
     def check_models(self, ids):
         missing = sorted(set(ids) - set(self.client.prices))
@@ -286,8 +296,9 @@ def default_client_factory(dry, gate):
     if dry:
         e_text = load_prereg_texts()["e_instruction"]
         return lambda cfg: dry_client(cfg, e_text, gate)
-    if not os.environ.get("OPENROUTER_API_KEY"):
-        raise RunAllRefused("OPENROUTER_API_KEY is not set (put it in the repo-root .env, see .env.example, or export it)")
+    if not (os.environ.get("OPENROUTER_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")):
+        raise RunAllRefused("neither OPENROUTER_API_KEY nor ANTHROPIC_API_KEY is set (put them in the repo-root .env, "
+                            "see .env.example, or export them); each client still refuses a call without its own key")
     return _RealFactory()
 
 
@@ -349,7 +360,7 @@ def run_pipeline(root, configs_dir=None, dry=False, client_factory=None, explora
     runs, mem_dir = root / "runs", root / "runs_exploratory" / "memory"
     think_dir = root / "runs_exploratory" / "think"
     tracker = ConcurrentBudget(st["budget_usd"])
-    tracker.total = sum(g["cost_usd"] for p in (runs, mem_dir, think_dir) for g in _logs(p, dry, MANAGED))
+    tracker.total = sum(spend_already(p, MANAGED, mock=dry) for p in (runs, mem_dir, think_dir))
     res = {"status": None, "steps": [], "gate": None, "spent_usd": tracker.total, "dry": dry, "outputs": [],
            "deviations": []}
     mode = "DRY (mock client, not results)" if dry else "REAL"
@@ -566,12 +577,12 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dry", action="store_true", help="mock client into a scratch folder (never runs/)")
     ap.add_argument("--root", default=None, help=f"base folder (default: the repo root real, {DEFAULT_DRY_ROOT} dry)")
-    ap.add_argument("--configs-dir", default=str(CONFIGS))
+    ap.add_argument("--configs-dir", default=str(CONFIGS), help="folder with the step configs and run_all.yaml (default: configs)")
     ap.add_argument("--exploratory", action="store_true", help="memory arm + sensitivity, monitor_view, price_paths")
     ap.add_argument("--think", action="store_true", help="EXPLORATORY THINK arm (reasoning traces), off by default")
     ap.add_argument("--o1", action="store_true", help="option O1 (seeds 6-10 on B, B_T, C, D), last")
-    ap.add_argument("--stop-after", choices=STOP_AFTER, default=None)
-    ap.add_argument("--dry-gate", choices=("pass", "fail"), default="pass")
+    ap.add_argument("--stop-after", choices=STOP_AFTER, default=None, help="stop after this step")
+    ap.add_argument("--dry-gate", choices=("pass", "fail"), default="pass", help="with --dry: make the mock E gate pass or fail (to test the plan B path)")
     ap.add_argument("--allow-settings-mismatch", action="store_true",
                     help="run even if temperature or reasoning differ between pooled or matched steps")
     ap.add_argument("--workers", type=int, default=1,
@@ -579,8 +590,8 @@ def main(argv=None):
     ap.add_argument(CONTINUE_FLAG, action="store_true",
                     help="DEVIATION: if a family fails the E gate after its fallback, go on with the passing "
                          "families instead of plan B (owner decision, ops/QUESTIONS.md)")
-    ap.add_argument("--n-draws", type=int, default=1000)
-    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--n-draws", type=int, default=1000, help="permutation draws for the base rate (default: 1000)")
+    ap.add_argument("--seed", type=int, default=0, help="seed of the permutation draws (default: 0)")
     a = ap.parse_args(argv)
     root = a.root or (DEFAULT_DRY_ROOT if a.dry else ROOT)
     try:

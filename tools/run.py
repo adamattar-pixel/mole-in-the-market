@@ -7,6 +7,11 @@ Real configs (mock: false) use OpenRouter and are refused unless the preregistra
 the model ids are real (no "tbd") and OPENROUTER_API_KEY is set (owner's GO, hard stop H2). The repo-root
 .env is loaded at startup (harness/envfile.py), never overriding the shell.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 from pathlib import Path
 
@@ -23,7 +28,7 @@ from harness.runner import BatchFailed, run_batch, validate_config
 def main(argv=None):
     load_env()  # repo-root .env, if any; never overrides the shell, never printed
     ap = argparse.ArgumentParser()
-    ap.add_argument("config")
+    ap.add_argument("config", help="config file, for example configs/espion_dry.yaml")
     ap.add_argument("--out-dir", default=None, help="override the config out_dir (tests, dry runs)")
     ap.add_argument("--workers", type=int, default=1, help="games run at the same time (default 1)")
     a = ap.parse_args(argv)

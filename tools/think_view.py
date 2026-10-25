@@ -13,6 +13,11 @@ full traces of those rounds, sidecar). Dual-use: publish codes and a few short e
 
 Usage: python -m tools.think_view runs_exploratory/think results_exploratory/think [--coder PATH]
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import csv
 import json
@@ -240,8 +245,8 @@ def export_traces(logs, out_dir, cap=1500):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("runs_dir", nargs="?", default="runs_exploratory/think")
-    ap.add_argument("out_dir", nargs="?", default="results_exploratory/think")
+    ap.add_argument("runs_dir", nargs="?", default="runs_exploratory/think", help="folder of THINK arm logs (default: runs_exploratory/think)")
+    ap.add_argument("out_dir", nargs="?", default="results_exploratory/think", help="output folder (default: results_exploratory/think)")
     ap.add_argument("--coder", default=None, help="keyword coder config (default: espion_think_coder.yaml)")
     a = ap.parse_args(argv)
     logs = load_logs(a.runs_dir)

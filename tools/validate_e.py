@@ -5,6 +5,11 @@ Default: every A and E log in runs_dir (locked R13 behaviour). --config keeps on
 (game id prefix "<config name>__", repeatable), for example --config espion_pilot (ops/QUESTIONS.md #23).
 Exit code 0 only if every family passes.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 
 from harness.conditions import PREREG_PATH, load_prereg_texts
@@ -15,8 +20,8 @@ from tools.reproduce import config_name
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("runs_dir", nargs="?", default="runs")
-    ap.add_argument("--prereg", default=str(PREREG_PATH))
+    ap.add_argument("runs_dir", nargs="?", default="runs", help="folder of game logs (default: runs)")
+    ap.add_argument("--prereg", default=str(PREREG_PATH), help="preregistration file with the frozen E threshold (default: PREREGISTRATION.md)")
     ap.add_argument("--config", action="append", default=None, metavar="NAME",
                     help="only logs of this config (repeatable); default: every log")
     a = ap.parse_args(argv)
@@ -25,6 +30,12 @@ def main(argv=None):
     if a.config:
         logs = [g for g in logs if config_name(g) in set(a.config)]
         print(f"configs: {', '.join(sorted(set(a.config)))}")
+    else:
+        pooled = sorted({config_name(g) for g in logs if g["condition"] in ("A", "E")})
+        if len(pooled) > 1:
+            # OPEN_ISSUES #24: pooling (for example smoke + pilot) can flip a family's verdict.
+            print(f"WARNING: A and E games of {len(pooled)} configs are pooled ({', '.join(pooled)}). "
+                  "The preregistered E gate uses the pilot only: --config espion_pilot")
     res = e_validation(logs, threshold)
     for fam, r in res.items():
         eff = "n/a" if r["effect_gap_fraction"] is None else f"{r['effect_gap_fraction']:.3f}"

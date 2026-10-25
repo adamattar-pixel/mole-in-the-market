@@ -18,6 +18,11 @@ Writes before_after.pdf, before_after.png and before_after.csv. Like tools/price
 keep only real games (mock false) from the preregistered configs by default; --exploratory folders keep any
 config and are drawn with hollow markers, flagged "exploratory" in the legend.
 """
+import sys
+from pathlib import Path as _BootPath
+if __name__ == "__main__" and __package__ in (None, ""):
+    sys.path.insert(0, str(_BootPath(__file__).resolve().parent.parent))
+
 import argparse
 import csv
 import random
@@ -210,12 +215,12 @@ def load_points(runs_dirs, exploratory_dirs=(), include_mock=False, all_configs=
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("runs_dirs", nargs="+")
+    ap.add_argument("runs_dirs", nargs="+", help="one or more folders of game logs")
     ap.add_argument("--exploratory", action="append", default=[], metavar="DIR",
                     help="runs folder of an exploratory arm (hollow markers); repeatable")
-    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR)
-    ap.add_argument("--include-mock", action="store_true")
-    ap.add_argument("--all-configs", action="store_true")
+    ap.add_argument("--out-dir", default=DEFAULT_OUT_DIR, help="output folder")
+    ap.add_argument("--include-mock", action="store_true", help="keep mock (dry run) games")
+    ap.add_argument("--all-configs", action="store_true", help="keep every config, including smoke and O1")
     ap.add_argument("--seed", type=int, default=JITTER_SEED, help="jitter seed")
     a = ap.parse_args(argv)
     logs, points, skipped = load_points(a.runs_dirs, a.exploratory, a.include_mock, a.all_configs)
