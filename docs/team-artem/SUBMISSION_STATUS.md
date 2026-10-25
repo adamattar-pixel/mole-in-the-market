@@ -25,3 +25,15 @@ The authors' sections report/draft/*.md were concatenated in reading order into 
 
 ## Final run before submitting
 `python -m tools.check_submission <final report file> --title "<exact title>"` (online) must show every line OK except page count (manual).
+
+## Tag gate-4 (owner action after the PR is merged, D35)
+Claude never creates or moves tags. After the PR `wip/phase-4-adam-final-demo` -> `wip/phase-4` (and `wip/phase-4` -> `main`)
+is merged and CI is green, the owner runs:
+```
+git fetch origin
+git switch main && git pull --ff-only origin main
+python3 -m pytest -q && python3 -m tools.check_ops          # green before tagging
+git tag -a gate-4 -m "gate-4: Phase 4 closed with declared deviations (Llama-only core, QUESTIONS #24 #26 #27, D29)"
+git push origin gate-4
+```
+
