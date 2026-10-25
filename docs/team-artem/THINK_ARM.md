@@ -1,7 +1,10 @@
 # THINK arm - EXPLORATORY, not preregistered
 
-Status: code, configs and tests only. Not run. No result exists for this arm. It is not part of the frozen
-design in PREREGISTRATION.md and must never be reported as a preregistered result.
+Status (2026-10-25): the Qwen 3.8 showcase ran (2 games, B and E, seed 1, provider Novita; logs in
+`runs_exploratory/think_showcase`, results in docs/team-artem/RESULTS_SUMMARY.md "THINK showcase"). The
+DeepSeek showcase was stopped before any game completed. The full gpt-oss arm described below was not run
+(credit cap). This arm is not part of the frozen design in PREREGISTRATION.md and must never be reported as a
+preregistered result.
 
 ## Why
 The main design measures what a seller says (accept / decline) and what it does (prices). A reasoning model
