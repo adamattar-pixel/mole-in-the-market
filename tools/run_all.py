@@ -52,7 +52,7 @@ from pathlib import Path
 
 import yaml
 
-from harness.clients import BudgetExceeded, MockClient, OpenRouterClient, load_prices
+from harness.clients import AnthropicClient, BudgetExceeded, MockClient, OpenRouterClient, RoutingClient, load_prices
 from harness.concurrency import ConcurrentBudget, fork_client
 from harness.conditions import load_prereg_texts
 from harness.config import GameConfig
@@ -276,9 +276,14 @@ class _RealFactory:
 
     def __init__(self):
         self.client = OpenRouterClient(prices=load_prices())
+        self.anthropic = AnthropicClient(prices=self.client.prices)
 
     def __call__(self, cfg):
-        return self.client
+        # A family marked `client: anthropic` goes to the Anthropic API directly (QUESTIONS #27); others to OpenRouter.
+        direct = {m for fam in cfg.get("families", []) if fam.get("client") == "anthropic" for m in fam["models"].values()}
+        if not direct:
+            return self.client
+        return RoutingClient(self.client, {m: self.anthropic for m in direct})
 
     def check_models(self, ids):
         missing = sorted(set(ids) - set(self.client.prices))
@@ -291,8 +296,9 @@ def default_client_factory(dry, gate):
     if dry:
         e_text = load_prereg_texts()["e_instruction"]
         return lambda cfg: dry_client(cfg, e_text, gate)
-    if not os.environ.get("OPENROUTER_API_KEY"):
-        raise RunAllRefused("OPENROUTER_API_KEY is not set (put it in the repo-root .env, see .env.example, or export it)")
+    if not (os.environ.get("OPENROUTER_API_KEY") or os.environ.get("ANTHROPIC_API_KEY")):
+        raise RunAllRefused("neither OPENROUTER_API_KEY nor ANTHROPIC_API_KEY is set (put them in the repo-root .env, "
+                            "see .env.example, or export them); each client still refuses a call without its own key")
     return _RealFactory()
 
 

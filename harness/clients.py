@@ -200,20 +200,103 @@ class OpenRouterClient:
         return text, charged
 
 
+ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_VERSION = "2023-06-01"
+# OpenRouter model id (used in configs, logs and configs/prices.yaml) -> Anthropic Messages API id.
+# Never called by any test; check the ids against the Anthropic model list before the first real run.
+ANTHROPIC_MODEL_IDS = {"anthropic/claude-haiku-4.5": "claude-haiku-4-5",
+                       "anthropic/claude-sonnet-4.5": "claude-sonnet-4-5"}
+
+
 class AnthropicClient:
-    """Direct Anthropic Messages API client (QUESTIONS #27). Skeleton."""
+    """Direct Anthropic Messages API client for the Anthropic family (QUESTIONS #27: no OpenRouter credit needed).
+
+    The key is read from ANTHROPIC_API_KEY at call time and never logged. Anthropic returns token counts but no
+    cost, so a price table is required (configs/prices.yaml) and each call is charged tokens x price (R17); a model
+    with no price, an unknown model, a reasoning setting or a provider other than "anthropic" is refused before any
+    request. The Messages API has no seed parameter: last_call records seed_sent False. The system message goes to
+    the top-level "system" field.
+    """
     is_mock = False
 
     def __init__(self, timeout=DEFAULT_TIMEOUT_S, prices=None):
-        raise NotImplementedError
+        self.timeout = timeout
+        self.prices = prices
+        self.last_call = None
 
     def complete(self, messages, model, seed, temperature=None, reasoning=None, provider=None, max_tokens=None):
-        raise NotImplementedError
+        key = os.environ.get("ANTHROPIC_API_KEY")
+        if not key:
+            raise MissingAPIKey("ANTHROPIC_API_KEY is not set")
+        self.last_call = None
+        if model not in ANTHROPIC_MODEL_IDS:
+            raise ValueError(f"{model!r} has no Anthropic API id in ANTHROPIC_MODEL_IDS: refused before any request")
+        if self.prices is None or model not in self.prices:
+            raise MissingPrice(f"no price for {model!r} in configs/prices.yaml: refused before any request (R17)")
+        if reasoning is not None:
+            raise ValueError("reasoning settings are not supported by the direct Anthropic client")
+        if provider is not None and "anthropic" not in [str(o).lower() for o in (provider.get("order") or [])]:
+            raise ValueError(f"provider {provider!r} does not allow the Anthropic API")
+        system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
+        payload = {"model": ANTHROPIC_MODEL_IDS[model], "max_tokens": max_tokens or MAX_TOKENS_DEFAULT,
+                   "messages": [{"role": m["role"], "content": m["content"]} for m in messages if m["role"] != "system"]}
+        if system:
+            payload["system"] = system
+        if temperature is not None:
+            payload["temperature"] = temperature
+        req = urllib.request.Request(ANTHROPIC_URL, data=json.dumps(payload).encode("utf-8"), method="POST", headers={
+            "x-api-key": key, "anthropic-version": ANTHROPIC_VERSION, "content-type": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            raise urllib.error.HTTPError(req.full_url, exc.code, _http_message(exc, key), exc.headers, None) from None
+        text = "".join(b.get("text", "") for b in data.get("content") or [] if isinstance(b, dict) and b.get("type") == "text")
+        usage = data.get("usage") or {}
+        tokens = [usage.get("input_tokens"), usage.get("output_tokens")]
+        if not all(not isinstance(n, bool) and isinstance(n, int) and n >= 0 for n in tokens):
+            raise RuntimeError("Anthropic response has no token counts: the cost cannot be computed (R17)")
+        price = self.prices[model]
+        cost = (tokens[0] * price["input"] + tokens[1] * price["output"]) / 1e6
+        self.last_call = {"served_model": data.get("model"), "provider": "anthropic (direct)", "usage": usage,
+                          "reasoning_tokens": None, "max_tokens": payload["max_tokens"], "seed_sent": False,
+                          "finish_reason": data.get("stop_reason"), "cost_computed": cost, "cost_charged": cost,
+                          "cost_source": "token_price"}
+        return text, cost
 
 
 class RoutingClient:
-    """Sends each model to its own client. Skeleton."""
+    """Sends each model id to its own client (routes), every other model to the default client.
+
+    Used by tools/run_all when a family is marked `client: anthropic`. last_call is the last used client's.
+    Setting timeout sets it on every client. prices are the default client's (the same table for both).
+    """
 
     def __init__(self, default, routes):
-        raise NotImplementedError
+        self.default = default
+        self.routes = dict(routes)
+        self.last_call = None
 
+    @property
+    def is_mock(self):
+        return all(getattr(c, "is_mock", True) for c in [self.default] + list(self.routes.values()))
+
+    @property
+    def prices(self):
+        return getattr(self.default, "prices", None)
+
+    @property
+    def timeout(self):
+        return getattr(self.default, "timeout", None)
+
+    @timeout.setter
+    def timeout(self, value):
+        for c in [self.default] + list(self.routes.values()):
+            c.timeout = value
+
+    def complete(self, messages, model, seed, **settings):
+        client = self.routes.get(model, self.default)
+        try:
+            return client.complete(messages, model, seed, **settings)
+        finally:
+            self.last_call = getattr(client, "last_call", None)
