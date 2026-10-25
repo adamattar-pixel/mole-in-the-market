@@ -1,6 +1,6 @@
 # STATE - where the repo stands (resume here)
 This is the single "resume here". ops/PROGRESS.md keeps only the history log. Update this file in the same
-commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-24 23:30 HKT.
+commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-25.
 
 ## Branches
 | Branch | Tip | What it is for |
@@ -11,6 +11,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3) |
 
 ## Tests
+- Current: `python3 -m pytest -q` -> 894 passed, 0 failed (branch artem, 2026-10-25).
 - Last green: a6b6022 (`artem-owner-approval`), `python3 -m pytest` -> 653 passed, 0 failed. On `artem-ops-reorg` (2b2b6b3): 678 passed (+25 for tools/check_ops).
 - Install and test: `python3 -m pip install -r requirements.txt` then `python3 -m pytest`.
 - Whole pipeline dry (mock client, no key, no cost): `python3 -m tools.run_all --dry --exploratory --think --o1` (add `--workers 4` to run the games of each step 4 at a time; same logs).
@@ -39,4 +40,4 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | Keep docs/context/contexte_projet_v7.md public or not | Artem | OPEN_ISSUES #17 |
 
 ## Next action
-1. Owner reviews docs/team-artem/RESULTS_SUMMARY.md and the deviations. 2. Decide on more credit or a stop. 3. Report writing from report/SKELETON.md (the team writes it). Deadline Sunday Oct 25 23:59 AoE = Monday 19:59 HKT.
+1. Finish the report draft in report/REPORT.md (AI-assisted under the owner's review, D26; report/SKELETON.md is superseded) and run `python3 -m tools.check_submission` on it. 2. Owner confirms the night deviations (QUESTIONS #26, #27, #28 a and c). 3. Submit the PDF on the official template (docs/apart/SUBMISSION_TEMPLATE_URL.txt) before Sunday Oct 25 23:59 AoE = Monday 19:59 HKT. No more API runs (credit cap).
