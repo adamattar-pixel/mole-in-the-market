@@ -1,18 +1,18 @@
 # STATE - where the repo stands (resume here)
 This is the single "resume here". ops/PROGRESS.md keeps only the history log. Update this file in the same
-commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-26 (final demo branch).
+commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-26 (project closed on the code and report side, D38).
 
 ## Branches
 | Branch | Tip | What it is for |
 |---|---|---|
-| `main` (origin) | see git log | Merge of `wip/phase-4-adam-final-demo` on 2026-10-26 (D36): everything below is on main. Gates are `gate-N` tags (gate-4 still to tag, owner) |
+| `main` (origin) | see git log | Merge of `wip/phase-4-adam-report` on 2026-10-26 (D38) on top of D36. Gates are `gate-N` tags (gate-4 exists) |
 | `wip/phase-4` (origin) | 764b623 | Shared phase branch: everything merged (R28-R36, provider pins, THINK arm, workers, retries, key figure, insight checks), real run data, results summary |
 | `wip/phase-4-hoang` (origin) | 6c07574 | Hoang: spend ledger, resilient runner, CLI filters, entry points, help texts, demo allowlist. Merged into `wip/phase-4-final` (d30493e) |
 | `wip/phase-4-artem-viz`, `wip/phase-4-artem-grid` (local, in progress) | see git log | Replay page on real data; Figure 1 label fix |
 | `wip/phase-4-adam-numbers` (origin) | 429f1c4 | Adam (Claude): R18 tools/check_numbers.py, numbers and references audits, OPEN_ISSUES #19. Merged into `wip/phase-4-final` (a0a56f6) |
 | `wip/phase-4-final` (origin) | see git log | Adam (Claude), 2026-10-26: wip/phase-4 + both branches above + OPEN_ISSUES #24-#27 fixes. Ready for a PR into `wip/phase-4` (no gh on this machine); full suite 970 passed |
 | `wip/phase-4-adam-final-demo` (origin) | see git log | Adam (Claude), 2026-10-26: wip/phase-4-final + owner answers (D28-D35), results/defenses.md NOT RUN labels (QUESTIONS #31), replay page story mode (docs/viz/DEMO.md), direct Anthropic client (mock only), docs/team-artem/SUBMISSION_STATUS.md and REMAINING_RUNS.md. Full suite 994 passed. Ready for a PR into `wip/phase-4` (opened by a human) |
-| `wip/phase-4-adam-report` (origin) | see git log | Adam (Claude), 2026-10-26: D37, AI-drafted report in report/final/ (md, docx, pdf; main body 6 pages), affiliations, consistency fixes. Not merged into main; to review |
+| `wip/phase-4-adam-report` (origin) | see git log | Adam (Claude), 2026-10-26: D37, D38, AI-drafted report in report/final/ (main body 6.09 pages), author placeholders, final check script. Merged into main (D38) |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3) |
 
 ## Tests
@@ -45,18 +45,14 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | (done) Affiliations: HKUST, Hong Kong (report/AUTHORS.md); Artem's surname still missing in report/final/REPORT.md | Artem | OPEN_ISSUES #3 |
 | Keep docs/context/contexte_projet_v7.md public or not | Artem | OPEN_ISSUES #17 |
 
-## Human blockers (2026-10-26, only these are left)
+## Human actions left (project closed on the code and report side, D38)
 | What | Who | Ref |
 |---|---|---|
-| (done) merged into main directly on Adam's request (D36); `wip/phase-4` not updated | - | ops/DECISIONS.md D36 |
-| (done) Tag gate-4 exists on origin (points to ad043fc) | - | D35 |
-| (done) Affiliations: HKUST, Hong Kong (report/AUTHORS.md); Artem's surname still missing in report/final/REPORT.md | Artem | OPEN_ISSUES #3 |
-| Add Hoang as author or not | team | QUESTIONS #30, D33 |
-| Credit (or direct Anthropic key, QUESTIONS #33) and an API key on the machine that runs: GO given 2026-10-26 (D37, max 3 USD) but no OPENROUTER_API_KEY was available, so monitor, ethics, O1, memory and THINK are still not run | Artem or Adam | OPEN_ISSUES #28, docs/team-artem/REMAINING_RUNS.md |
-| Add the declared deviations to the frozen Deviations sections, if wanted | Artem | QUESTIONS #32, docs/adam/DEVIATIONS_TO_ADD.md |
-| Review and rewrite the AI-drafted report report/final/REPORT.md (D37): title, Artem's surname, Author Contributions, Hoang, LLM Usage Statement; then `python3 report/final/check_final.py "<exact title>"` and submit the PDF | authors | docs/team-artem/SUBMISSION_STATUS.md |
-| Optional 3 to 5 minute video | team | OPEN_ISSUES #23, script in docs/viz/DEMO.md |
-| Move docs/context/contexte_projet_v7.md out before judging (owner only option) | Artem | OPEN_ISSUES #17, D31 |
+| Fill the 3 yellow fields of the report (6 author names and affiliations, Author Contributions, LLM usage detail) | the 6 authors | report/final/TODO_AUTHORS.md |
+| Run `python3 report/final/check_final.py "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"` (must end with "ERREURS: aucune") | authors | report/final/README_AUTHORS.md |
+| Submit report/final/REPORT.pdf on the Apart form with the exact title, before Monday Oct 26, 11:59 UTC | authors | docs/apart/Guidelines.md |
+
+Abandoned or closed by D38: remaining runs (0 USD, declared not run), frozen-file deviation lines (QUESTIONS #32), video (OPEN_ISSUES #23).
 
 ## Next action
-1. Finish the report draft in report/ (written by the authors) (AI-assisted under the owner's review, D26; report/SKELETON.md is superseded) and run `python3 -m tools.check_submission` on it. 2. Owner confirms the night deviations (QUESTIONS #26, #27, #28 a and c). 3. Submit the PDF on the official template (docs/apart/SUBMISSION_TEMPLATE_URL.txt) before Sunday Oct 25 23:59 AoE = Monday 19:59 HKT. No more API runs (credit cap).
+Nothing on the code side. The authors fill report/final/TODO_AUTHORS.md, run the final check and submit before 11:59 UTC.

@@ -1,9 +1,10 @@
 """Build report/final/REPORT.docx (on the official Apart template's styles) and REPORT.pdf from REPORT.md.
 
 Run from the repo root:  python3 report/final/build_report.py
-Needs python-docx and LibreOffice (soffice) for the PDF. No network. The Markdown file is the source of truth.
-Bracketed placeholders [like this] and the AI-DRAFTED banner are highlighted in yellow so the authors see them.
-Prints the page count of the main body (title page to the end of section 6, before "Code and Data").
+Optional: python3 report/final/build_report.py <source.md> <out.docx>  (used to test the page budget on a filled copy)
+Needs python-docx, pymupdf and LibreOffice (soffice) for the PDF. No API key, no network. REPORT.md is the source.
+Bracketed placeholders [like this] and the AI-DRAFTED banner are highlighted in yellow; HTML comments are not printed.
+Prints the main-body length in pages: from the top of page 1 to the "Code and Data" heading (limit 8).
 """
 import re
 import shutil
@@ -22,7 +23,6 @@ ROOT = HERE.parent.parent
 SRC = HERE / "REPORT.md"
 TEMPLATE = ROOT / "report" / "template" / "apart_template.docx"
 OUT_DOCX = HERE / "REPORT.docx"
-OUT_PDF = HERE / "REPORT.pdf"
 
 INLINE = re.compile(r"(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]*\](?!\())")
 
@@ -53,17 +53,15 @@ def add_runs(par, text, highlight_all=False):
 def clear_body(document):
     body = document.element.body
     for child in list(body):
-        if child.tag.endswith("}sectPr"):
-            continue
-        body.remove(child)
+        if not child.tag.endswith("}sectPr"):
+            body.remove(child)
 
 
 def add_table(document, rows):
     cells = [[c.strip() for c in r.strip().strip("|").split("|")] for r in rows]
     cells = [r for r in cells if not all(re.fullmatch(r"-{3,}", c) for c in r)]
     table = document.add_table(rows=len(cells), cols=len(cells[0]))
-    # The template has no table style: draw thin borders directly.
-    borders = OxmlElement("w:tblBorders")
+    borders = OxmlElement("w:tblBorders")  # the template has no table style: thin borders
     for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
         el = OxmlElement(f"w:{edge}")
         el.set(qn("w:val"), "single")
@@ -82,14 +80,14 @@ def add_table(document, rows):
     document.add_paragraph()
 
 
-def build():
-    lines = SRC.read_text(encoding="utf-8").split("\n")
+def build(src=SRC, out_docx=OUT_DOCX):
+    lines = Path(src).read_text(encoding="utf-8").split("\n")
     document = docx.Document(str(TEMPLATE))
     clear_body(document)
     i = 0
     while i < len(lines):
         line = lines[i]
-        if not line.strip():
+        if not line.strip() or line.strip().startswith("<!--"):
             i += 1
             continue
         if line.startswith("> "):
@@ -114,38 +112,38 @@ def build():
             add_runs(cap, m.group(1))
             for run in cap.runs:
                 run.font.size = Pt(9)
-        elif re.match(r"^(\d+)\. ", line):
-            add_runs(document.add_paragraph(), line)
         elif line.startswith("- "):
             add_runs(document.add_paragraph(), "\u2022 " + line[2:])
         else:
             add_runs(document.add_paragraph(), line)
         i += 1
-    document.save(str(OUT_DOCX))
-    print("wrote", OUT_DOCX.relative_to(ROOT))
+    document.save(str(out_docx))
+    print("wrote", out_docx)
 
 
-def to_pdf():
-    soffice = shutil.which("soffice") or r"C:\Program Files\LibreOffice\program\soffice.exe"
-    subprocess.run([soffice, "--headless", "--convert-to", "pdf", "--outdir", str(HERE), str(OUT_DOCX)], check=True,
-                   capture_output=True)
-    print("wrote", OUT_PDF.relative_to(ROOT))
+def to_pdf(docx_path=OUT_DOCX):
+    soffice = shutil.which("soffice") or str(Path("C:/Program Files/LibreOffice/program/soffice.exe"))
+    subprocess.run([soffice, "--headless", "--convert-to", "pdf", "--outdir", str(Path(docx_path).parent), str(docx_path)],
+                   check=True, capture_output=True)
+    print("wrote", Path(docx_path).with_suffix(".pdf"))
 
 
-def body_pages():
-    from pypdf import PdfReader
-    reader = PdfReader(str(OUT_PDF))
-    end = None
-    for n, page in enumerate(reader.pages, start=1):
-        if "Code and Data" in (page.extract_text() or ""):
-            end = n
-            break
-    print(f"PDF pages: {len(reader.pages)}; main body ends on page {end} (the page where 'Code and Data' starts)")
-    return len(reader.pages), end
+def body_pages(pdf_path):
+    """Main body length in pages, from the top of page 1 to the "Code and Data" heading."""
+    import pymupdf
+    doc = pymupdf.open(str(pdf_path))
+    for n, page in enumerate(doc, start=1):
+        hits = page.search_for("Code and Data")
+        if hits:
+            length = (n - 1) + hits[0].y0 / page.rect.height
+            print(f"PDF pages: {len(doc)}; main body: {length:.2f} pages (limit 8, margin {8 - length:.2f} pages)")
+            return len(doc), length
+    raise SystemExit("heading 'Code and Data' not found in the PDF")
 
 
 if __name__ == "__main__":
-    build()
-    to_pdf()
-    if "--no-count" not in sys.argv:
-        body_pages()
+    src = Path(sys.argv[1]) if len(sys.argv) > 2 else SRC
+    out = Path(sys.argv[2]) if len(sys.argv) > 2 else OUT_DOCX
+    build(src, out)
+    to_pdf(out)
+    body_pages(Path(out).with_suffix(".pdf"))

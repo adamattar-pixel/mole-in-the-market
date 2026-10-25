@@ -11,7 +11,7 @@ The authors' sections report/draft/*.md were concatenated in reading order into 
 | Abstract 150 to 250 words | FAIL: no "Abstract" heading in the drafts | Write the abstract (150 to 250 words, live sprint rule) under a heading "Abstract" |
 | Appendix "Limitations and Dual-Use / Ethical Considerations" | OK (report/draft/91_appendix_a.md) | keep the exact heading |
 | Authors line | FAIL: no "Authors:" line in the drafts | Add the author block of report/AUTHORS.md; affiliations still "to be filled" (OPEN_ISSUES #3) |
-| Title identical on every submission | NOT RUN: no title chosen yet (report/SKELETON.md "TEAM: pick once") | Choose the title, then run the checker with `--title "<exact title>"` |
+| Title identical on every submission | OK: "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers" (report/final/REPORT.md, docx, pdf, check_final.py) | Choose the title, then run the checker with `--title "<exact title>"` |
 | Web links | 16 of 17 OK; papers.ssrn.com/abstract=6832662 answers HTTP 403 to scripts | Open the SSRN link in a browser; keep it if it loads (docs/adam/REFERENCES_CHECK.md) |
 | Local links | OK from report/draft (../figures/key_figure.png exists) | If the final file moves, links are resolved from its own folder |
 | Page count, main body <= 8 pages | MANUAL. Main-body sections total about 4,480 words (00 134, 01 1,429, 03 869, 04 1,673, 05 378) | Paste into the official template (docs/apart/SUBMISSION_TEMPLATE_URL.txt) and count pages |
@@ -24,7 +24,7 @@ The authors' sections report/draft/*.md were concatenated in reading order into 
 - results/defenses.md regenerated (QUESTIONS #31): not-run cells read NOT RUN / n/a.
 
 ## Final run before submitting
-`python -m tools.check_submission <final report file> --title "<exact title>"` (online) must show every line OK except page count (manual).
+`python3 report/final/check_final.py "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"` (online) must end with "ERREURS: aucune"; it lists the 3 fields left for the authors (report/final/TODO_AUTHORS.md).
 
 ## Tag gate-4 (owner action after the PR is merged, D35)
 Claude never creates or moves tags. After the PR `wip/phase-4-adam-final-demo` -> `wip/phase-4` (and `wip/phase-4` -> `main`)
@@ -37,3 +37,5 @@ git tag -a gate-4 -m "gate-4: Phase 4 closed with declared deviations (Llama-onl
 git push origin gate-4
 ```
 
+## Final report (2026-10-26, D37, D38)
+report/final/REPORT.md, REPORT.docx, REPORT.pdf, title "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers". Main body 6.09 pages (6.24 with the author fields filled in a test copy). Only the 3 fields of report/final/TODO_AUTHORS.md are left, then submission before 11:59 UTC.

@@ -1,8 +1,9 @@
 > **AI-DRAFTED, authors must review and rewrite before submission (D37).** Bracketed items [like this] are unknown to the drafter and must be filled or removed by the authors.
 
-# [TITLE TO CONFIRM] Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers
+# Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers
 
-Authors: Artem [SURNAME], HKUST, Hong Kong; Adam Attar, HKUST, Hong Kong; [Hoang: author or acknowledgement, team to decide]
+<!-- The final list of the 6 authors (names and affiliations) is a human decision of the team. -->
+Authors: [AUTHORS: write the 6 author names and their affiliations here, one "Name, Affiliation" per author]
 
 With Apart Research
 
@@ -119,7 +120,7 @@ A scripted spy that offers a price deal is a cheap, reproducible way to create l
 
 ## Author Contributions
 
-[TO BE WRITTEN BY THE AUTHORS: who designed the study, who ran the experiments and analysis, who wrote and reviewed the report; and whether Hoang is listed.]
+[TEAM: write the Author Contributions here, one or two sentences per author, say who did what]
 
 ## References
 
@@ -163,4 +164,6 @@ A scripted spy that offers a price deal is a cheap, reproducible way to create l
 
 ## LLM Usage Statement
 
-The code was written with an AI coding assistant (Claude Code) under the authors' review, and every result was produced by committed scripts from committed logs. This report was drafted by Claude (decision D37) from the repository's results, figures and logs; every number was checked against committed outputs or the recomputations in `report/build/factcheck.py`. The authors reviewed the draft and rewrote the following parts in their own words: [AUTHORS: list the sections you rewrote, or state that the draft was edited only lightly].
+The code was written with an AI coding assistant (Claude Code) under the authors' review, and every result was produced by committed scripts from committed logs. This report was drafted by Claude (decision D37) from the repository's results, figures and logs; every number was checked against committed outputs or the recomputations in `report/build/factcheck.py`. The authors reviewed and edited the draft.
+
+[AUTHORS: say which parts you rewrote or checked yourselves]
