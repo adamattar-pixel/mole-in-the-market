@@ -1,19 +1,20 @@
 # STATE - where the repo stands (resume here)
 This is the single "resume here". ops/PROGRESS.md keeps only the history log. Update this file in the same
-commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-25.
+commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-26.
 
 ## Branches
 | Branch | Tip | What it is for |
 |---|---|---|
 | `main` (origin) | 55553c0 | Reviewed, CI-green work (D24). Up to date with wip/phase-4 as of PR #3 (21:01); gates are `gate-N` tags |
 | `wip/phase-4` (origin) | 764b623 | Shared phase branch: everything merged (R28-R36, provider pins, THINK arm, workers, retries, key figure, insight checks), real run data, results summary |
-| `wip/phase-4-hoang` | this branch | Hoang: dropped-call spend ledger, one failed game no longer stops the step, HTTP errors keep the server text, a log that appears mid-batch is kept |
+| `wip/phase-4-hoang` (origin) | 6c07574 | Hoang: spend ledger, resilient runner, CLI filters, entry points, help texts, demo allowlist. Merged into `wip/phase-4-final` (d30493e) |
 | `wip/phase-4-artem-viz`, `wip/phase-4-artem-grid` (local, in progress) | see git log | Replay page on real data; Figure 1 label fix |
-| `wip/phase-4-adam-numbers` (origin) | see git log | Adam (Claude), 2026-10-25: R18 tools/check_numbers.py + numbers audit, OPEN_ISSUES #19 (byte-identical reproduce on Windows). No PR yet (no gh); merge notes in docs/adam/README.md |
+| `wip/phase-4-adam-numbers` (origin) | 429f1c4 | Adam (Claude): R18 tools/check_numbers.py, numbers and references audits, OPEN_ISSUES #19. Merged into `wip/phase-4-final` (a0a56f6) |
+| `wip/phase-4-final` (origin) | see git log | Adam (Claude), 2026-10-26: wip/phase-4 + both branches above + OPEN_ISSUES #24-#27 fixes. Ready for a PR into `wip/phase-4` (no gh on this machine); full suite 970 passed |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3) |
 
 ## Tests
-- Current: `python3 -m pytest -q` -> 894 passed, 0 failed (branch artem, 2026-10-25).
+- Current: on `wip/phase-4-final`, `python -m pytest -o addopts=""` -> 970 passed, 0 failed (2026-10-26). wip/phase-4 alone: 894 passed.
 - Last green: a6b6022 (`artem-owner-approval`), `python3 -m pytest` -> 653 passed, 0 failed. On `artem-ops-reorg` (2b2b6b3): 678 passed (+25 for tools/check_ops).
 - Install and test: `python3 -m pip install -r requirements.txt` then `python3 -m pytest`.
 - Whole pipeline dry (mock client, no key, no cost): `python3 -m tools.run_all --dry --exploratory --think --o1` (add `--workers 4` to run the games of each step 4 at a time; same logs).

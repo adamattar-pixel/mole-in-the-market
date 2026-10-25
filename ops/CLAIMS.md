@@ -35,5 +35,5 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 ## Active claims
 | Who | Branch | Files / areas | Started | Expected end |
 |---|---|---|---|---|
-| Adam (Claude) | wip/phase-4-final | merge of wip/phase-4-hoang and wip/phase-4-adam-numbers, OPEN_ISSUES #8 #9 #10 #11 #19 #21 (tools/, harness/runlog.py, harness/runner.py, harness/clients.py, harness/vizexport.py, .gitattributes, viz/demo/), README.md Run section, tests for these | 2026-10-25 18:30 +08:00 | 2026-10-25 23:00 +08:00 |
+| Adam (Claude) | wip/phase-4-final | merge of wip/phase-4-hoang and wip/phase-4-adam-numbers, OPEN_ISSUES #8 #9 #10 #11 #19 #21 (tools/, harness/runlog.py, harness/runner.py, harness/clients.py, harness/vizexport.py, .gitattributes, viz/demo/), README.md Run section, tests for these | 2026-10-25 18:30 +08:00 | 2026-10-26 20:00 +08:00 |
 | Hoang | wip/phase-4-hoang | harness/clients.py, harness/runner.py, harness/runlog.py, harness/concurrency.py, tools/run_all.py, tools/cli_logs.py, tools/price_paths.py, tools/make_demo_data.py, tests/test_run_resilience.py, tests/test_cli_housekeeping.py, README.md | 2026-10-25 01:50 +08:00 | 2026-10-26 20:00 +08:00 |
