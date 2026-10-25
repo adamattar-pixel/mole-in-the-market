@@ -198,3 +198,22 @@ class OpenRouterClient:
         self.last_call.update(cost_reported=cost, cost_computed=computed, cost_charged=charged,
                               cost_source="usage_cost" if cost >= computed else "token_price")
         return text, charged
+
+
+class AnthropicClient:
+    """Direct Anthropic Messages API client (QUESTIONS #27). Skeleton."""
+    is_mock = False
+
+    def __init__(self, timeout=DEFAULT_TIMEOUT_S, prices=None):
+        raise NotImplementedError
+
+    def complete(self, messages, model, seed, temperature=None, reasoning=None, provider=None, max_tokens=None):
+        raise NotImplementedError
+
+
+class RoutingClient:
+    """Sends each model to its own client. Skeleton."""
+
+    def __init__(self, default, routes):
+        raise NotImplementedError
+
