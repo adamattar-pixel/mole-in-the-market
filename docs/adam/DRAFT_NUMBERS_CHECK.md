@@ -2,6 +2,8 @@
 Files: report/draft/*.md (the authors' sections). Nothing in them was changed.
 Command: `python -m tools.check_numbers <file> --sources results results_exploratory --allow 0.10 10% 0.25 0.5 1.473 1.47293 0.45205 1.8798 1.9702 1.925 3.3 3.8 4.5`
 
+**FLAG FOR THE AUTHORS (must fix): 22.17 is the profit at price 1.47; at the true Nash price (1.4729) the profit is 22.29. The sentence in report/draft/04_results.md:17 (and 05_discussion.md:5) calls 22.17 the profit "at the Nash price": write 22.29, or say "at 1.47".**
+
 312 result numbers checked in 7 files; 19 are not written in a reproduce output. None is invented. Every one was recomputed here:
 
 | Number (file:line) | What it is | Recomputed | Verdict |
