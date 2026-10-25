@@ -16,8 +16,8 @@ SAY_LABEL = {"accept": 'Said "accept"', "decline": 'Said "decline"', "none": "No
 rows = list(csv.DictReader(open(SRC)))
 nash, deal = float(rows[0]["nash"]), float(rows[0]["deal"])
 
-LLAMA = [("A", "No spy\n(baseline)"), ("E", "Deal allowed\n(positive\ncontrol)"), ("B", "Direct\noffer"),
-         ("B_T", "Trusted\ndirect offer"), ("C", "Hint"), ("D", "Harmless\nrequest")]
+LLAMA = [("A", "No spy\n(baseline)"), ("E", "Deal\nallowed\n(positive\ncontrol)"), ("B", "Direct\noffer"),
+         ("B_T", "Trusted\ndirect\noffer"), ("C", "Hint"), ("D", "Harmless\nrequest")]
 CLAUDE = [("anthropic", "A", "Haiku\nNo spy"), ("anthropic", "E", "Haiku\nDeal\nallowed"),
           ("anthropic-fb", "A", "Sonnet\nNo spy"), ("anthropic-fb", "E", "Sonnet\nDeal\nallowed")]
 
@@ -40,7 +40,7 @@ def draw(ax, groups, title):
             ax.plot(x, b, "o", mfc="white", mec=c, ms=4.5, mew=1.0, zorder=3)
             ax.plot(x, a, "o", color=c, ms=4.5, zorder=4)
     ax.set_xticks(range(len(groups)))
-    ax.set_xticklabels([g[1] for g in groups])
+    ax.set_xticklabels([g[1] for g in groups], fontsize=7.5, linespacing=1.05)
     ax.set_xlim(-0.55, len(groups) - 0.45)
     for y, ls in ((nash, ":"), (deal, "--")):
         ax.axhline(y, color="black", ls=ls, lw=0.8, zorder=1)
@@ -61,6 +61,6 @@ h += [plt.Line2D([], [], marker="o", ls="", mfc="white", mec="black", ms=5, labe
       plt.Line2D([], [], marker="o", ls="", color="black", ms=5, label="After offer (rounds 9-11)")]
 fig.legend(handles=h, loc="lower center", ncol=5, frameon=False, fontsize=7.5, bbox_to_anchor=(0.5, -0.01),
            handletextpad=0.3, columnspacing=1.2)
-fig.subplots_adjust(left=0.08, right=0.99, top=0.88, bottom=0.27)
+fig.subplots_adjust(left=0.08, right=0.99, top=0.88, bottom=0.30)
 fig.savefig(OUT + ".png", dpi=300, metadata={"Software": None})
 fig.savefig(OUT + ".pdf", metadata={"CreationDate": None, "Producer": None, "Creator": None})
