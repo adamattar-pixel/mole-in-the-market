@@ -9,6 +9,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 | `wip/phase-4` (origin) | 764b623 | Shared phase branch: everything merged (R28-R36, provider pins, THINK arm, workers, retries, key figure, insight checks), real run data, results summary |
 | `wip/phase-4-hoang` | this branch | Hoang: dropped-call spend ledger, one failed game no longer stops the step, HTTP errors keep the server text, a log that appears mid-batch is kept |
 | `wip/phase-4-artem-viz`, `wip/phase-4-artem-grid` (local, in progress) | see git log | Replay page on real data; Figure 1 label fix |
+| `wip/phase-4-adam-numbers` (origin) | see git log | Adam (Claude), 2026-10-25: R18 tools/check_numbers.py + numbers audit, OPEN_ISSUES #19 (byte-identical reproduce on Windows). No PR yet (no gh); merge notes in docs/adam/README.md |
 | `wip/phase-3` (origin) | da4011c | Historical (gate-3) |
 
 ## Tests

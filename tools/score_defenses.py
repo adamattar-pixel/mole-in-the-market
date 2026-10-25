@@ -65,8 +65,8 @@ def tables_md(scores):
 def write_outputs(scores, out_dir):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "defenses.json").write_text(json.dumps(scores, sort_keys=True, indent=1) + "\n", encoding="utf-8")
-    (out_dir / "defenses.md").write_text(tables_md(scores), encoding="utf-8")
+    (out_dir / "defenses.json").write_text(json.dumps(scores, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
+    (out_dir / "defenses.md").write_text(tables_md(scores), encoding="utf-8", newline="\n")
     return [out_dir / "defenses.json", out_dir / "defenses.md"]
 
 

@@ -120,8 +120,8 @@ def write_outputs(scores, out_dir, params=None):
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     data = dict(scores, params=load_detector_params() if params is None else params)
-    (out_dir / "detectors.json").write_text(json.dumps(data, sort_keys=True, indent=1) + "\n", encoding="utf-8")
-    (out_dir / "detectors.md").write_text(tables_md(scores), encoding="utf-8")
+    (out_dir / "detectors.json").write_text(json.dumps(data, sort_keys=True, indent=1) + "\n", encoding="utf-8", newline="\n")
+    (out_dir / "detectors.md").write_text(tables_md(scores), encoding="utf-8", newline="\n")
     return [out_dir / "detectors.json", out_dir / "detectors.md"]
 
 

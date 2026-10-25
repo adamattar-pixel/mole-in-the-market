@@ -7,6 +7,7 @@ The project has no version numbers; sections are named after the git tags. All d
 On `wip/phase-4`, PR #1 (`artem-owner-approval`) and `artem-ops-reorg`. No real run yet (H2).
 
 ### Added
+- R18 `tools/check_numbers.py` (2026-10-25, `wip/phase-4-adam-numbers`): checks that every result number of a document (decimals, percentages, k/n counts) is found in the reproduce outputs; audit of the team documents in docs/adam/NUMBERS_AUDIT.md (no invented number found).
 - Exploratory analyses, tests first: seller memory arm (opt-in, writes `runs_exploratory/memory/`), say/do sensitivity grid (`tools/sensitivity.py`), message vs action monitor table (`tools/monitor_view.py`), price path and do-window price shift figures (`tools/price_paths.py`).
 - Client settings: temperature, reasoning control and provider provenance in every log.
 - R28-R30: rule-based detectors D1 price level, D2 message, D3 lag dependence, scored against the spy ground truth with Wilson intervals; `reproduce` writes the detector tables.
@@ -27,6 +28,7 @@ On `wip/phase-4`, PR #1 (`artem-owner-approval`) and `artem-ops-reorg`. No real 
 - Process docs moved to ops/: PROGRESS, PLAN, QUESTIONS, AUDIT, TRACEABILITY, HANDOFF, and docs/context/DECISIONS.md. HANDOFF.md is now a historical snapshot. CLAUDE.md addresses the owner (Artem) in English and points to ops/.
 
 ### Fixed
+- OPEN_ISSUES #19 (2026-10-25, `wip/phase-4-adam-numbers`): `.gitattributes` forces LF in every working copy and the reproduce chain writes LF only, so `reproduce` gives byte-identical results and checksums on Windows and macOS (docs/adam/REPRO_CHECK.md); viz/demo regenerated with the frozen prereg hash.
 - Review majors M1-M4: per-config budget kept across reruns; resume refused when logged games used other settings; run_all keeps each step's family settings and checks pooled steps match; `reproduce` writes the defenses tables. Minors m2 (reasoning effort `max`, effort with max_tokens refused) and m4 (real-mode root = repo).
 - Family label `<provider>-fb` accepted for fallbacks.
 
