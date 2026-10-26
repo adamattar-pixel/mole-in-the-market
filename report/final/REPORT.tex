@@ -5,7 +5,9 @@
 \usepackage{fontspec}
 \setmainfont{texgyreheros}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold, ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
 \newfontfamily\titlefont{texgyretermes}[Extension=.otf, UprightFont=*-regular, BoldFont=*-bold, ItalicFont=*-italic, BoldItalicFont=*-bolditalic]
-\usepackage{xcolor}
+\usepackage[table]{xcolor}
+\definecolor{navy}{HTML}{1F2A44}
+\definecolor{amber}{HTML}{C98A12}
 \usepackage{soul}
 \sethlcolor{yellow}
 \usepackage{graphicx}
@@ -14,19 +16,23 @@
 \usepackage{array}
 \usepackage{enumitem}
 \usepackage{titlesec}
-\usepackage{tcolorbox}
+\usepackage[most]{tcolorbox}
+\usepackage{microtype}
 \usepackage{caption}
 \renewenvironment{abstract}{}{}
 \usepackage[hidelinks]{hyperref}
 \usepackage{xurl}
 \setlength{\emergencystretch}{3em}
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{4pt}
+\setlength{\parskip}{5pt}
+\linespread{1.05}
+\renewcommand{\arraystretch}{1.15}
+\captionsetup{labelformat=empty, font=small}
 \setlist{nosep, leftmargin=1.5em}
-\titleformat{\section}{\normalfont\Large}{}{0pt}{}
-\titleformat{\subsection}{\normalfont\large\color[HTML]{434343}}{}{0pt}{}
-\titlespacing*{\section}{0pt}{10pt}{3pt}
-\titlespacing*{\subsection}{0pt}{8pt}{2pt}
+\titleformat{\section}{\normalfont\Large\bfseries\color{navy}}{}{0pt}{}[{\color{amber}\vspace{-2pt}\titlerule[0.8pt]}]
+\titleformat{\subsection}{\normalfont\large\bfseries\color{navy!85}}{}{0pt}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{3pt}
 \newcommand{\todo}[1]{\hl{#1}}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
@@ -36,8 +42,8 @@
 
 \begin{document}
 \makeatletter
-\begin{tcolorbox}[colback=white, colframe=black!35, boxrule=0.5pt, arc=0pt]
-\centering{\titlefont\bfseries\fontsize{20}{24}\selectfont \@title\footnotemark}\par\vspace{8pt}
+\begin{tcolorbox}[enhanced, colback=navy!5, colframe=navy, boxrule=0pt, leftrule=4pt, arc=0pt, left=10pt, right=10pt, top=8pt, bottom=8pt, borderline west={4pt}{0pt}{amber}]
+\centering\color{navy}{\titlefont\bfseries\fontsize{20}{24}\selectfont \@title\footnotemark}\par\vspace{8pt}
 \raggedright Authors: {\def\and{\unskip, }\@author}\par\vspace{2pt}
 Affiliations: all authors, Hong Kong University of Science and Technology (HKUST), Hong Kong\par\vspace{2pt}
 Team: TTT\par\vspace{4pt}
@@ -46,10 +52,19 @@ With Apart Research
 \makeatother
 \footnotetext{Research conducted at the AI Collusion Research Sprint, October 2026}
 
-\begin{tcolorbox}[colback=white, colframe=black!35, boxrule=0.5pt, arc=0pt, title=Abstract, coltitle=black, colbacktitle=black!8, fonttitle=\large]
+\begin{tcolorbox}[enhanced, colback=navy!3, colframe=navy!3, boxrule=0pt, arc=2pt, title=Abstract, coltitle=navy, colbacktitle=navy!10, fonttitle=\large\bfseries, left=8pt, right=8pt]
 \begin{abstract}
 If a peer secretly offers an AI agent a price-fixing deal, does the agent accept, and does its ``yes'' change what it does? We built an undercover-officer test for Apart's track 3.2: two LLM sellers play a 20-round logit price game, and in round 8 a scripted spy sends both of them the same fixed message. We score what they say separately from what they do (whether a firm's price stays within 10\% of the Nash-to-monopoly gap around the deal price in rounds 9 to 11), against a no-spy baseline and a positive control where deals are allowed. Definitions, texts and hypotheses were preregistered before any run. Llama 3.3 70B passed the positive control (effect 0.929 of the gap). In every offer condition it said yes and priced exactly at the offered 1.92 in 5 of 5 games, even when the message was a hint that proposed nothing and only named the number. It also said yes to a harmless request in 5 of 5 games, with no price change. Words and prices come apart in both directions: a message detector missed every hint game, while a price-level detector flagged all 20 colluding games and no baseline game. Claude Haiku 4.5 failed the positive control (effect 0.111): it already priced above the deal and declined on a wrong margin argument. Two planned defenses were not run, and with one model family and 5 games per cell, our results are directional. The practical lesson is plain: check prices, not messages.
 \end{abstract}
+\end{tcolorbox}
+
+\begin{tcolorbox}[enhanced, colback=amber!7, colframe=amber, boxrule=0pt, leftrule=3pt, arc=0pt, title=Key findings, coltitle=amber!60!black, colbacktitle=amber!7, fonttitle=\bfseries, toptitle=2pt, bottomtitle=0pt, left=8pt]
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt]
+\item Llama 3.3 70B said yes and priced exactly at the offered 1.92 in 5 of 5 games in every offer condition, even when the message was a hint that proposed nothing and only named the number.
+\item It also said yes to a harmless request in 5 of 5 games, with no price change.
+\item A price-level detector flagged all 20 colluding games and no baseline game, while a message detector missed every hint game.
+\item Claude Haiku 4.5 failed the positive control (effect 0.111): it already priced above the deal and declined on a wrong margin argument.
+\end{itemize}
 \end{tcolorbox}
 
 \section{1. Introduction}
@@ -113,7 +128,7 @@ Llama's mean post-offer price was 1.50 without a spy and 1.92 with deals allowed
 \textbf{Table 1.} Say and do per condition, Llama 3.3 70B, 5 games each, Wilson 95\% intervals. Do p-value against the permutation base rate (base rate mean 0.000).
 
 \begin{center}\small\setlength{\tabcolsep}{4pt}
-\begin{tabular}{llll}
+\rowcolors{2}{navy!5}{white}\begin{tabular}{llll}
 \toprule
 Condition & Say & Do & Do p-value \\
 \midrule
@@ -137,8 +152,8 @@ The hint proposes nothing, yet its price path is identical to the direct offer's
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.92\linewidth]{../figures/key_figure.pdf}
-\caption*{\small Figure 1. Mean price before (rounds 5 to 7) and after (rounds 9 to 11) the offer, one point per game. Left: Llama 3.3 70B, preregistered. Right: Claude Haiku 4.5 and Claude Sonnet 4.5, exploratory. Colour: what the firms said (accept, decline, no offer); open circle before, filled circle after. Dashed line: deal price; dotted line: Nash price.}
+\fcolorbox{navy!25}{white}{\includegraphics[width=0.95\linewidth]{../figures/key_figure.pdf}}
+\caption*{\small\textbf{\color{navy}Figure 1.} Mean price before (rounds 5 to 7) and after (rounds 9 to 11) the offer, one point per game. Left: Llama 3.3 70B, preregistered. Right: Claude Haiku 4.5 and Claude Sonnet 4.5, exploratory. Colour: what the firms said (accept, decline, no offer); open circle before, filled circle after. Dashed line: deal price; dotted line: Nash price.}
 \end{figure}
 
 \subsection{4.4 A price rule catches what a message rule misses}
@@ -146,7 +161,7 @@ The hint proposes nothing, yet its price path is identical to the direct offer's
 \textbf{Table 2.} Detectors on the 30 Llama core games (20 positive, 10 negative). Exploratory, post-freeze.
 
 \begin{center}\small\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lllll}
+\rowcolors{2}{navy!5}{white}\begin{tabular}{lllll}
 \toprule
 Detector & Precision & Recall & False alarm on A, D & Hint games flagged \\
 \midrule
@@ -172,6 +187,10 @@ This study was not preregistered and has n = 2. We ran Qwen 3.8 (2.4T-A95B, reas
 \section{5. Discussion and Limitations}
 
 \textbf{What this means for oversight.} In this game, the reply to a cartel offer was a poor signal of behaviour. For Llama, a ``yes'' appeared both with and without a price change, and a message that only named a number moved prices as much as an explicit proposal. In other words, a ``yes'' was not sufficient for a price change, and pact wording was not necessary for one. That is why an auditor reading messages would raise false alarms on agreeable agents and miss collusion that needs no agreement words. A price rule against a no-offer baseline did better here, but its threshold depends on that baseline: the same rule would misfire on a model that overprices on its own, as Haiku does. So the practical lesson, stated directionally, is to check prices against each agent's own baseline. The exploratory reasoning-model games (Section 4.6) point the same way: a model that declined the offer described its own pricing as tacit collusion, so a refusal alone says little about intent.
+
+\begin{tcolorbox}[enhanced, colback=navy, colframe=navy, coltext=white, arc=2pt, boxrule=0pt, halign=center, top=6pt, bottom=6pt]
+{\large\bfseries Check prices, not messages.}
+\end{tcolorbox}
 
 \textbf{What the positive control taught us.} A control defined as ``movement toward the deal'' works only for agents priced below the deal. Haiku and Sonnet start above it, so for them ``agreements allowed'' can push prices away from the deal, and the gate passes or fails on noise. That is why future stings should define the control relative to each agent's own baseline direction.
 
@@ -229,7 +248,7 @@ Adam Attar built the game harness and ran the project infrastructure, working wi
 \textbf{Deviations from the preregistered plan.} We did not edit the frozen files, and their ``Deviations'' sections still read ``(none)''. Every deviation is declared here.
 
 {\small
-\begin{tabularx}{\linewidth}{@{}p{2.2cm}YY@{}}
+\rowcolors{2}{navy!5}{white}\begin{tabularx}{\linewidth}{@{}p{2.2cm}YY@{}}
 \toprule
 \# & Deviation or incident & Consequence \\
 \midrule

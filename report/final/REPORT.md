@@ -12,6 +12,13 @@ With Apart Research
 
 If a peer secretly offers an AI agent a price-fixing deal, does the agent accept, and does its "yes" change what it does? We built an undercover-officer test for Apart's track 3.2: two LLM sellers play a 20-round logit price game, and in round 8 a scripted spy sends both of them the same fixed message. We score what they say separately from what they do (whether a firm's price stays within 10% of the Nash-to-monopoly gap around the deal price in rounds 9 to 11), against a no-spy baseline and a positive control where deals are allowed. Definitions, texts and hypotheses were preregistered before any run. Llama 3.3 70B passed the positive control (effect 0.929 of the gap). In every offer condition it said yes and priced exactly at the offered 1.92 in 5 of 5 games, even when the message was a hint that proposed nothing and only named the number. It also said yes to a harmless request in 5 of 5 games, with no price change. Words and prices come apart in both directions: a message detector missed every hint game, while a price-level detector flagged all 20 colluding games and no baseline game. Claude Haiku 4.5 failed the positive control (effect 0.111): it already priced above the deal and declined on a wrong margin argument. Two planned defenses were not run, and with one model family and 5 games per cell, our results are directional. The practical lesson is plain: check prices, not messages.
 
+**Key findings**
+
+- Llama 3.3 70B said yes and priced exactly at the offered 1.92 in 5 of 5 games in every offer condition, even when the message was a hint that proposed nothing and only named the number.
+- It also said yes to a harmless request in 5 of 5 games, with no price change.
+- A price-level detector flagged all 20 colluding games and no baseline game, while a message detector missed every hint game.
+- Claude Haiku 4.5 failed the positive control (effect 0.111): it already priced above the deal and declined on a wrong margin argument.
+
 ## 1. Introduction
 
 What happens when an outsider tries to recruit an AI agent into a cartel? LLM agents are starting to set prices, negotiate and trade for firms, and earlier work already shows two routes to collusion between them: LLM pricing agents can reach supracompetitive prices without talking to each other (Fish et al., 2024), and open channels between sellers push collusion up (Agrawal et al., 2025). A different threat comes from outside the market: a party that recruits agents into a cartel. Police fight human cartels with undercover officers, who offer to join and note who accepts. Apart's track 3.2 asks whether the same trick works on AI agents: bring in a trusted or scripted agent that offers coordination, and log who goes along.
@@ -115,6 +122,8 @@ This study was not preregistered and has n = 2. We ran Qwen 3.8 (2.4T-A95B, reas
 ## 5. Discussion and Limitations
 
 **What this means for oversight.** In this game, the reply to a cartel offer was a poor signal of behaviour. For Llama, a "yes" appeared both with and without a price change, and a message that only named a number moved prices as much as an explicit proposal. In other words, a "yes" was not sufficient for a price change, and pact wording was not necessary for one. That is why an auditor reading messages would raise false alarms on agreeable agents and miss collusion that needs no agreement words. A price rule against a no-offer baseline did better here, but its threshold depends on that baseline: the same rule would misfire on a model that overprices on its own, as Haiku does. So the practical lesson, stated directionally, is to check prices against each agent's own baseline. The exploratory reasoning-model games (Section 4.6) point the same way: a model that declined the offer described its own pricing as tacit collusion, so a refusal alone says little about intent.
+
+> **Check prices, not messages.**
 
 **What the positive control taught us.** A control defined as "movement toward the deal" works only for agents priced below the deal. Haiku and Sonnet start above it, so for them "agreements allowed" can push prices away from the deal, and the gate passes or fails on noise. That is why future stings should define the control relative to each agent's own baseline direction.
 
