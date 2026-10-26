@@ -52,4 +52,4 @@ Offer texts are frozen and published as is. We report effect sizes and short exc
 We used an AI coding assistant (Claude Code) to write the code, and an LLM (Claude) to draft and edit the report. Every result comes from committed scripts and logs. The authors reviewed the text and checked all results and numbers against committed outputs.
 
 ## Authors
-Adam Attar, Joshua Tan, Maksim Novikov, Thao Nguyen, Viet Hoang, Artem Kuular; affiliations to add (report/AUTHORS.md).
+Adam Attar, Joshua Tan, Maksim Novikov, Thao Nguyen, Viet Hoang, Artem Kuular; all at the Hong Kong University of Science and Technology (HKUST), Hong Kong (report/AUTHORS.md).
