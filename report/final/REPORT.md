@@ -1,6 +1,8 @@
 # Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers
 
-Authors: [AUTHORS: write the 6 author names and their affiliations here, one "Name, Affiliation" per author]
+Authors: Adam Kuular, Joshua Tan, Maksim Novikov, Thao Nguyen, [AUTHORS: name of author 5], [AUTHORS: name of author 6]
+
+Affiliations: [AUTHORS: affiliation of each of the 6 authors]
 
 With Apart Research
 
@@ -170,4 +172,4 @@ A scripted spy that offers a price deal is a cheap, reproducible way to create l
 
 ## LLM Usage Statement
 
-The code was written with an AI coding assistant (Claude Code) under the authors' review, and every result was produced by committed scripts from committed logs. This report was drafted by Claude from the repository's results, figures and logs. Every number was checked against committed outputs or the recomputations in `report/build/factcheck.py`. The authors reviewed the draft and rewrote the following parts in their own words: [AUTHORS: list the sections you rewrote, or state that the draft was edited only lightly].
+We used an AI coding assistant (Claude Code) to write the code, and an LLM (Claude) to draft and edit the report. Every result comes from committed scripts and logs. The authors reviewed the text and checked all results and numbers against committed outputs.
