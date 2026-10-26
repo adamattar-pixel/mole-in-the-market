@@ -1,6 +1,6 @@
 # STATE - where the repo stands (resume here)
 This is the single "resume here". ops/PROGRESS.md keeps only the history log. Update this file in the same
-commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-26 (report in LaTeX, D39).
+commit as any change of state (merge, gate, new branch, owner decision). Last updated: 2026-10-26 (authors and LLM statement, D40).
 
 ## Branches
 | Branch | Tip | What it is for |
@@ -48,7 +48,7 @@ commit as any change of state (merge, gate, new branch, owner decision). Last up
 ## Human actions left (project closed on the code and report side, D38)
 | What | Who | Ref |
 |---|---|---|
-| Fill the 3 yellow fields of the report in REPORT.tex and REPORT.md (6 author names and affiliations, Author Contributions, LLM usage detail), then `bash report/final/build_tex.sh` | the 6 authors | report/final/TODO_AUTHORS.md |
+| Fill the yellow fields of the report in REPORT.tex and REPORT.md (names of authors 5 and 6, affiliations, Author Contributions), then `bash report/final/build_tex.sh` | the authors | report/final/TODO_AUTHORS.md |
 | Run `python3 report/final/check_final.py "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"` (must end with "ERREURS: aucune") | authors | report/final/README_AUTHORS.md |
 | Submit report/final/REPORT.pdf on the Apart form with the exact title, before Monday Oct 26, 11:59 UTC | authors | docs/apart/Guidelines.md |
 

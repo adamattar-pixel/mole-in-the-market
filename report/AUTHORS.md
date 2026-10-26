@@ -1,6 +1,12 @@
-# Report author block (copy into the official Apart template)
+# Report author block
 
-- Artem (affiliation: HKUST, Hong Kong)
-- Adam Attar (affiliation: HKUST, Hong Kong)
+- Adam Kuular (affiliation: to add)
+- Joshua Tan (affiliation: to add)
+- Maksim Novikov (affiliation: to add)
+- Thao Nguyen (affiliation: to add)
+- Author 5: to add
+- Author 6: to add
 
-The report text is written by the authors in their own words (ops/DECISIONS.md D14, D21).
+To confirm with the owner: the earlier version of this file listed Artem and Adam Attar, both HKUST, Hong Kong.
+
+The report source is report/final/REPORT.tex (report/final/TODO_AUTHORS.md lists the fields left to fill).

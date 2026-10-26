@@ -31,14 +31,15 @@
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
 \title{Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers}
-\author{\todo{[AUTHORS: write the 6 author names and their affiliations here, one "Name, Affiliation" per author]}}
+\author{Adam Kuular \and Joshua Tan \and Maksim Novikov \and Thao Nguyen \and \todo{[AUTHORS: name of author 5]} \and \todo{[AUTHORS: name of author 6]}}
 \date{}
 
 \begin{document}
 \makeatletter
 \begin{tcolorbox}[colback=white, colframe=black!35, boxrule=0.5pt, arc=0pt]
 \centering{\titlefont\bfseries\fontsize{20}{24}\selectfont \@title\footnotemark}\par\vspace{8pt}
-\raggedright Authors: \@author\par\vspace{4pt}
+\raggedright Authors: {\def\and{\unskip, }\@author}\par\vspace{2pt}
+Affiliations: \todo{[AUTHORS: affiliation of each of the 6 authors]}\par\vspace{4pt}
 With Apart Research
 \end{tcolorbox}
 \makeatother
@@ -239,6 +240,6 @@ DV7 & The team let an AI assistant draft this report, which the authors then rev
 
 \section*{LLM Usage Statement}
 
-The code was written with an AI coding assistant (Claude Code) under the authors' review, and every result was produced by committed scripts from committed logs. This report was drafted by Claude from the repository's results, figures and logs. Every number was checked against committed outputs or the recomputations in \texttt{report/build/factcheck.py}. The authors reviewed the draft and rewrote the following parts in their own words: \todo{[AUTHORS: list the sections you rewrote, or state that the draft was edited only lightly]}.
+We used an AI coding assistant (Claude Code) to write the code, and an LLM (Claude) to draft and edit the report. Every result comes from committed scripts and logs. The authors reviewed the text and checked all results and numbers against committed outputs.
 
 \end{document}

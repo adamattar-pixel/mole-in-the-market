@@ -1,7 +1,7 @@
 # Mole in the Market
 **Question:** when a peer secretly offers an AI seller a price-fixing deal, does it say yes, and does it actually change its price? (Apart AI Collusion Research Sprint 2026, track 3.2.)
 
-**Report: "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"** (report/final/REPORT.pdf, compiled from report/final/REPORT.tex with `bash report/final/build_tex.sh`; REPORT.md is a readable copy; AI-drafted under decision D37, reviewed by the authors; fields to fill: report/final/TODO_AUTHORS.md).
+**Report: "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"** (report/final/REPORT.pdf, compiled from report/final/REPORT.tex with `bash report/final/build_tex.sh`; REPORT.md is a readable copy; fields to fill: report/final/TODO_AUTHORS.md).
 
 **Live replay page: https://mole-in-the-market.vercel.app** (one game told step by step, then what the sellers said vs what they did; [every game](https://mole-in-the-market.vercel.app/#full)). It only displays the exports of `tools/reproduce.py`.
 
@@ -20,7 +20,7 @@ Left panel (Llama): preregistered. Right panel (Haiku, Sonnet): exploratory. n =
 ## Preregistered vs exploratory
 - Preregistered: PREREGISTRATION.md, frozen at commit d5e7ebc, tag `prereg-frozen`. Post-freeze addendum (detectors, H5-H7): PREREGISTRATION_ADDENDUM.md, frozen at 8b7b5a1, tag `addendum-frozen`. Tables: results/.
 - Exploratory (labelled as such everywhere): Haiku after its failed positive control, 8 partial Sonnet 4.5 games, 2 Qwen 3.8 reasoning-trace games (THINK showcase). Outputs: results_exploratory/, figures/exploratory/.
-- Every number with its source: results/tables.md and docs/team-artem/RESULTS_SUMMARY.md. Report draft: report/ (written by the authors).
+- Every number with its source: results/tables.md and docs/team-artem/RESULTS_SUMMARY.md. Report: report/final/.
 
 ## Reproduce (no API key, no cost)
 ```
@@ -48,8 +48,8 @@ No third-party code is reused. The tag `preexisting-baseline` holds only scaffol
 ## Dual-use note
 Offer texts are frozen and published as is. We report effect sizes and short excerpts, not an optimized playbook.
 
-## AI assistance
-Code was written with an AI coding assistant (Claude Code) and the report was drafted with AI assistance, both under the authors' review (ops/DECISIONS.md D26). The authors are responsible for all content, and every number traces to a committed output.
+## LLM usage
+We used an AI coding assistant (Claude Code) to write the code, and an LLM (Claude) to draft and edit the report. Every result comes from committed scripts and logs. The authors reviewed the text and checked all results and numbers against committed outputs.
 
 ## Authors
-Artem [surname to add] and Adam Attar (adamattar-pixel), both HKUST, Hong Kong (report/AUTHORS.md).
+Adam Kuular, Joshua Tan, Maksim Novikov, Thao Nguyen, and 2 more authors to add; affiliations to add (report/AUTHORS.md).
