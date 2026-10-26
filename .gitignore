@@ -20,3 +20,6 @@ results_exploratory/think/think_excerpts.md
 
 # Vercel CLI link folder (project and org ids, local only)
 .vercel/
+
+# LaTeX build log (report/final/build_tex.sh)
+report/final/build_tex.log

@@ -15,7 +15,7 @@ MIN_ABSTRACT_WORDS = 150
 MAX_ABSTRACT_WORDS = 250
 
 _WORD = re.compile(r"[A-Za-z0-9]+(?:[-'.\u2019][A-Za-z0-9]+)*")
-_URL = re.compile(r"https?://[^\s<>()\[\]\"']+")
+_URL = re.compile(r"https?://[^\s<>()\[\]\"'{}\\]+")  # braces and backslash end a URL (LaTeX links, OPEN_ISSUES #29)
 _MD_HEADING = re.compile(r"^(#+)\s*(.*?)\s*#*\s*$")
 _TEX_HEADING = re.compile(r"\\(?:sub)*section\*?\{(.*?)\}")
 
