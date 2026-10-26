@@ -2,7 +2,7 @@
 
 Authors: Adam Attar, Joshua Tan, Maksim Novikov, Thao Nguyen, Viet Hoang, Artem Kuular
 
-Affiliations: [AUTHORS: affiliation of each of the 6 authors]
+Affiliations: All authors: Hong Kong University of Science and Technology (HKUST), Hong Kong
 
 With Apart Research
 
