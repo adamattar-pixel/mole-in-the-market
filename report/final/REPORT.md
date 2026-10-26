@@ -1,6 +1,6 @@
 # Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers
 
-Authors: Adam Kuular, Joshua Tan, Maksim Novikov, Thao Nguyen, [AUTHORS: name of author 5], [AUTHORS: name of author 6]
+Authors: Adam Attar, Joshua Tan, Maksim Novikov, Thao Nguyen, Viet Hoang, Artem Kuular
 
 Affiliations: [AUTHORS: affiliation of each of the 6 authors]
 
@@ -125,10 +125,6 @@ A scripted spy that offers a price deal is a cheap, reproducible way to create l
 - Code repository: https://github.com/adamattar-pixel/mole-in-the-market (preregistration tags prereg-frozen and addendum-frozen; tag preexisting-baseline marks the scaffolding that predates the sprint code).
 - Data: the 44 real game logs in `runs/`. Every table rebuilds with `python3 -m tools.reproduce runs results --deviations run_all_deviations.json --viz-dir viz/data --figures-dir figures` (no API key; two runs give identical checksums).
 - Interactive replay of the games: https://mole-in-the-market.vercel.app (all games: https://mole-in-the-market.vercel.app/#full).
-
-## Author Contributions
-
-[TEAM: write the Author Contributions here, one or two sentences per author, say who did what]
 
 ## References
 
