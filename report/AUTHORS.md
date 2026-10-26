@@ -1,12 +1,11 @@
 # Report author block
 
-- Adam Kuular (affiliation: to add)
-- Joshua Tan (affiliation: to add)
-- Maksim Novikov (affiliation: to add)
-- Thao Nguyen (affiliation: to add)
-- Author 5: to add
-- Author 6: to add
+Team: TTT
 
-To confirm with the owner: the earlier version of this file listed Artem and Adam Attar, both HKUST, Hong Kong.
+1. Maksim Novikov, Hong Kong University of Science and Technology (HKUST), Hong Kong
+2. Joshua Tan, Hong Kong University of Science and Technology (HKUST), Hong Kong
+3. Adam Attar, Hong Kong University of Science and Technology (HKUST), Hong Kong
+4. Thao Nguyen, Hong Kong University of Science and Technology (HKUST), Hong Kong
+5. Artem Kuular, Hong Kong University of Science and Technology (HKUST), Hong Kong
 
-The report source is report/final/REPORT.tex (report/final/TODO_AUTHORS.md lists the fields left to fill).
+The report source is report/final/REPORT.tex (readable copy: report/final/REPORT.md). The Author Contributions paragraph is a draft to confirm with the team (search "AUTHOR CONTRIBUTIONS DRAFT").
