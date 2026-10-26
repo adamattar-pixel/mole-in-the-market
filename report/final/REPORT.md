@@ -1,6 +1,6 @@
 # Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers
 
-Authors: Adam Attar, Joshua Tan, Maksim Novikov, Thao Nguyen, Viet Hoang, Artem Kuular
+Authors: Adam Attar, Artem Kuular, Joshua Tan, Maksim Novikov, Thao Nguyen, Viet Hoang
 
 Affiliations: All authors: Hong Kong University of Science and Technology (HKUST), Hong Kong
 
