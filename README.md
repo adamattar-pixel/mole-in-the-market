@@ -1,7 +1,7 @@
 # Mole in the Market
 **Question:** when a peer secretly offers an AI seller a price-fixing deal, does it say yes, and does it actually change its price? (Apart AI Collusion Research Sprint 2026, track 3.2.)
 
-**Report: "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"** (report/final/REPORT.pdf, AI-drafted under decision D37, reviewed by the authors; fields to fill: report/final/TODO_AUTHORS.md).
+**Report: "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"** (report/final/REPORT.pdf, compiled from report/final/REPORT.tex with `bash report/final/build_tex.sh`; REPORT.md is a readable copy; AI-drafted under decision D37, reviewed by the authors; fields to fill: report/final/TODO_AUTHORS.md).
 
 **Live replay page: https://mole-in-the-market.vercel.app** (one game told step by step, then what the sellers said vs what they did; [every game](https://mole-in-the-market.vercel.app/#full)). It only displays the exports of `tools/reproduce.py`.
 

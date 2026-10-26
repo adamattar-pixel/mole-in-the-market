@@ -11,7 +11,7 @@ The authors' sections report/draft/*.md were concatenated in reading order into 
 | Abstract 150 to 250 words | FAIL: no "Abstract" heading in the drafts | Write the abstract (150 to 250 words, live sprint rule) under a heading "Abstract" |
 | Appendix "Limitations and Dual-Use / Ethical Considerations" | OK (report/draft/91_appendix_a.md) | keep the exact heading |
 | Authors line | FAIL: no "Authors:" line in the drafts | Add the author block of report/AUTHORS.md; affiliations still "to be filled" (OPEN_ISSUES #3) |
-| Title identical on every submission | OK: "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers" (report/final/REPORT.md, docx, pdf, check_final.py) | Choose the title, then run the checker with `--title "<exact title>"` |
+| Title identical on every submission | OK: "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers" (report/final/REPORT.tex, REPORT.md, REPORT.pdf, check_final.py) | Choose the title, then run the checker with `--title "<exact title>"` |
 | Web links | 16 of 17 OK; papers.ssrn.com/abstract=6832662 answers HTTP 403 to scripts | Open the SSRN link in a browser; keep it if it loads (docs/adam/REFERENCES_CHECK.md) |
 | Local links | OK from report/draft (../figures/key_figure.png exists) | If the final file moves, links are resolved from its own folder |
 | Page count, main body <= 8 pages | MANUAL. Main-body sections total about 4,480 words (00 134, 01 1,429, 03 869, 04 1,673, 05 378) | Paste into the official template (docs/apart/SUBMISSION_TEMPLATE_URL.txt) and count pages |
@@ -39,3 +39,6 @@ git push origin gate-4
 
 ## Final report (2026-10-26, D37, D38)
 report/final/REPORT.md, REPORT.docx, REPORT.pdf, title "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers". Main body 6.09 pages (6.24 with the author fields filled in a test copy). Only the 3 fields of report/final/TODO_AUTHORS.md are left, then submission before 11:59 UTC.
+
+## LaTeX version (2026-10-26, D39)
+report/final/REPORT.pdf is now compiled from report/final/REPORT.tex (`bash report/final/build_tex.sh`), main body 5.67 pages. The text was rewritten at the owner's request without changing any fact; REPORT.md holds the same text. The Word copy (REPORT.docx, REPORT_docx.pdf) is optional.

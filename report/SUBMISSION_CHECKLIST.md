@@ -25,7 +25,7 @@ Sources: docs/apart/Guidelines.md (copied before the sprint) and the live sprint
 
 ## Repo checks before submitting
 
-- [ ] `python3 report/final/check_final.py "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"` (online, so links are checked; it runs check_submission with the exact title "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"). Expected: all OK (abstract must be 150 to 250 words)
+- [ ] `python3 report/final/check_final.py "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"` (online, so links are checked; it compiles REPORT.tex and runs check_submission on it with the exact title "Saying Yes Is Not Doing It: A Scripted Price-Fixing Offer to LLM Sellers"). Expected: all OK (abstract must be 150 to 250 words)
 - [ ] Every number traced to a source (SPEC R18): `python -m tools.check_numbers <report file> --sources results results_exploratory --allow 0.10 10% 0.25 0.5 1.47 1.473 1.47293 0.45205 1.8798 1.9702 1.925 3.3 3.8`; each remaining line must be a cited hand computation or log value (docs/adam/DRAFT_NUMBERS_CHECK.md)
 - [ ] `python -m tools.reproduce runs results --deviations run_all_deviations.json --viz-dir viz/data --figures-dir figures` rerun at the submission commit; results/checksums.txt unchanged; figures in the PDF match
 - [ ] Positive control E reported per family on the pilot only (`python -m tools.validate_e runs --config espion_pilot`: Llama PASS 0.929, Haiku FAIL 0.111). Never quote the pooled run without --config (it prints Haiku PASS 0.277, OPEN_ISSUES #24)

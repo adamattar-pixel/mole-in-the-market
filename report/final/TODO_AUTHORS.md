@@ -1,13 +1,12 @@
 # Fields the authors must fill before submission
-All three are in `report/final/REPORT.md`, highlighted in yellow in the docx and pdf. Search for the exact text, replace it, then rebuild.
+All three are in `report/final/REPORT.tex` (the PDF source, highlighted in yellow) and, with the same text, in `report/final/REPORT.md` (the readable copy). Search for the exact text, replace the whole bracket in both files, then recompile with `bash report/final/build_tex.sh`.
+In REPORT.tex the bracket sits inside `\todo{...}`: replace `\todo{[...]}` with plain text so the yellow goes away.
 
-| # | File | Section | Text to search (replace the whole bracket) | What to write |
-|---|---|---|---|---|
-| 1 | report/final/REPORT.md | header, line starting with "Authors:" | `[AUTHORS: write the 6 author names and their affiliations here, one "Name, Affiliation" per author]` | the 6 authors, one "Name, Affiliation" per author; keep the word "Authors:" at the start of the line |
-| 2 | report/final/REPORT.md | Author Contributions | `[TEAM: write the Author Contributions here, one or two sentences per author, say who did what]` | one or two sentences per author |
-| 3 | report/final/REPORT.md | LLM Usage Statement | `[AUTHORS: say which parts you rewrote or checked yourselves]` | which parts you rewrote or checked yourselves |
-
-Also remove the first line ("AI-DRAFTED, authors must review and rewrite before submission (D37)...") once you have reviewed and rewritten the draft.
+| # | Section | Text to search (replace the whole bracket) | What to write |
+|---|---|---|---|
+| 1 | header (`\author{...}` in REPORT.tex, line starting with "Authors:" in REPORT.md) | `[AUTHORS: write the 6 author names and their affiliations here, one "Name, Affiliation" per author]` | the 6 authors, one "Name, Affiliation" per author (in REPORT.tex keep `\author{...}` on one line, separate authors with `\and`) |
+| 2 | Author Contributions | `[TEAM: write the Author Contributions here, one or two sentences per author, say who did what]` | one or two sentences per author |
+| 3 | LLM Usage Statement | `[AUTHORS: list the sections you rewrote, or state that the draft was edited only lightly]` | the sections you rewrote, or that the draft was edited only lightly |
 
 Final command (must end with "ERREURS: aucune"):
 ```
