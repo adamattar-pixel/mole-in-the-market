@@ -1,8 +1,8 @@
 # ops/ - process docs for agents and people
 
 Everything about HOW the work is run lives here: state, plans, decisions, questions, audits, coordination.
-The human-facing docs stay at the root: README.md, CONTRIBUTING.md, SPEC.md, RUNBOOK_REAL_RUNS.md,
-THIRD_PARTY.md, CHANGELOG.md. CLAUDE.md stays at the root because Claude Code loads it from there.
+The human-facing docs: README.md, CONTRIBUTING.md and THIRD_PARTY.md at the root; docs/SPEC.md,
+docs/RUNBOOK_REAL_RUNS.md and docs/CHANGELOG.md in docs/. CLAUDE.md stays at the root because Claude Code loads it from there.
 PREREGISTRATION.md and PREREGISTRATION_ADDENDUM.md stay at the root and are FROZEN (code and tags read them by path).
 
 Path convention: repo docs write paths from the repo root (`ops/STATE.md`). Inside ops/, a bare name of a
@@ -13,10 +13,10 @@ bare names for files that now live here.
 1. `ops/STATE.md` - where things stand right now (one screen).
 2. `ops/CLAIMS.md` - who is working on what. Check it before touching anything.
 3. `CLAUDE.md` - the rules (tests first, hard stops H1-H6, git rules).
-4. `ops/DECISIONS.md` - owner decisions; they win over SPEC.md and docs/context/contexte_projet_v7.md.
+4. `ops/DECISIONS.md` - owner decisions; they win over docs/SPEC.md and docs/context/contexte_projet_v7.md.
 5. `ops/OPEN_ISSUES.md` - the backlog; pick work from here.
-6. `SPEC.md`, `PREREGISTRATION.md`, `PREREGISTRATION_ADDENDUM.md` - what to build and the frozen definitions.
-7. As needed: `ops/PLAN.md`, `ops/TRACEABILITY.md`, `ops/QUESTIONS.md`, `ops/AUDIT.md`, `RUNBOOK_REAL_RUNS.md`.
+6. `docs/SPEC.md`, `PREREGISTRATION.md`, `PREREGISTRATION_ADDENDUM.md` - what to build and the frozen definitions.
+7. As needed: `ops/PLAN.md`, `ops/TRACEABILITY.md`, `ops/QUESTIONS.md`, `ops/AUDIT.md`, `docs/RUNBOOK_REAL_RUNS.md`.
 
 ## Files
 | File | What it is for | Who writes it | When |

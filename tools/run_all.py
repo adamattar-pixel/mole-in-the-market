@@ -1,4 +1,4 @@
-"""R36: one command for the whole pipeline (SPEC.md R36, ops/DECISIONS.md D20, RUNBOOK_REAL_RUNS.md).
+"""R36: one command for the whole pipeline (docs/SPEC.md R36, ops/DECISIONS.md D20, docs/RUNBOOK_REAL_RUNS.md).
 
 Order: smoke -> pilot (A, E) -> E gate -> core -> monitor -> ethics -> offline scoring
        [-> --exploratory: memory arm, sensitivity, monitor_view, price_paths] [-> --think: THINK arm]

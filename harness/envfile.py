@@ -1,4 +1,4 @@
-"""Tiny .env loader, no dependency (D23, RUNBOOK_REAL_RUNS.md step 1).
+"""Tiny .env loader, no dependency (D23, docs/RUNBOOK_REAL_RUNS.md step 1).
 
 Reads KEY=VALUE lines from the repo-root .env if it exists. A variable already set in the environment is never
 overridden. Comments (#) and blank lines are ignored, one pair of matching quotes around a value is stripped.

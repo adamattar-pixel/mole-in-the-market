@@ -3,7 +3,7 @@ Audits are done in a FRESH Claude session (new chat, no memory of writing the co
 The author of the code must not audit it alone.
 
 ## Checklist (tick only with evidence, put the evidence in the log below)
-- [ ] Every requirement in SPEC.md has a test or a MANUAL check, listed in TRACEABILITY.md
+- [ ] Every requirement in docs/SPEC.md has a test or a MANUAL check, listed in TRACEABILITY.md
 - [ ] Definitions in code match PREREGISTRATION.md word for word (verbal, behavioral, false positive, base rate)
 - [x] B and B_T texts differ only by the label
 - [ ] No hardcoded result, no expected value copied from the code's own output

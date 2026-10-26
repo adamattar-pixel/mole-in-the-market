@@ -11,7 +11,7 @@ piece of work. `python3 -m tools.check_ops` checks the rows of the table below.
 4. **Release on merge.** Remove your row in the last commit of the PR, so the merge releases the claim. If you abandon the work, remove the row and push.
 5. **Stay inside the claim.** Need another area? Check, then extend your row in a new commit, before editing it.
 6. **Always off limits** without the owner (hard stop H6): PREREGISTRATION.md, PREREGISTRATION_ADDENDUM.md, locked tests, docs/context/contexte_projet_v7.md, git config, secrets.
-7. Shared files touched by everyone (ops/STATE.md, ops/PROGRESS.md, ops/OPEN_ISSUES.md, CHANGELOG.md): no claim needed, but edit only your own rows or lines and keep the edits small.
+7. Shared files touched by everyone (ops/STATE.md, ops/PROGRESS.md, ops/OPEN_ISSUES.md, docs/CHANGELOG.md): no claim needed, but edit only your own rows or lines and keep the edits small.
 
 ## Row format
 `| Who | Branch | Files / areas | Started | Expected end |`

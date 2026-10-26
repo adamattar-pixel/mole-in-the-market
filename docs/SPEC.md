@@ -1,5 +1,5 @@
 # SPEC - single source of truth (derived from docs/context/contexte_projet_v7.md)
-If SPEC.md and the code disagree, the code is wrong. If SPEC.md and v7 disagree, stop and ask the owner.
+If docs/SPEC.md and the code disagree, the code is wrong. If docs/SPEC.md and v7 disagree, stop and ask the owner.
 Each requirement needs at least one automated test (see ops/TRACEABILITY.md) except those marked MANUAL.
 
 | ID | Requirement | Acceptance test (what must be true) |

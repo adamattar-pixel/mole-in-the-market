@@ -3,7 +3,7 @@
 ## Resume in 5 steps
 1. `git clone https://github.com/adamattar-pixel/mole-in-the-market` (or `git fetch` in an existing clone).
 2. `git checkout wip/phase-<N>` (the current branch is named in ops/STATE.md). If there is no wip branch, start from `main`.
-3. Read in the cold-start order of ops/README.md: ops/STATE.md, ops/CLAIMS.md, CLAUDE.md (rules), ops/DECISIONS.md, ops/OPEN_ISSUES.md, then SPEC.md and the preregistration.
+3. Read in the cold-start order of ops/README.md: ops/STATE.md, ops/CLAIMS.md, CLAUDE.md (rules), ops/DECISIONS.md, ops/OPEN_ISSUES.md, then docs/SPEC.md and the preregistration.
 4. `pip install -r requirements.txt` (Python 3.11 or later).
 5. `python -m pytest` and compare with the expected result written in ops/STATE.md.
 
@@ -24,6 +24,6 @@
 - ops/STATE.md updated: branches and last commit, red tests and why, next action, owner decisions pending.
 
 ## Rules that do not change
-- Tests first (decision D1): tests written from SPEC.md and PREREGISTRATION.md, shown red, locked in a `test(Rxx-Ryy): add failing tests from spec (locked)` commit, then implementation without touching them. A gap = a new test in a separate commit.
+- Tests first (decision D1): tests written from docs/SPEC.md and PREREGISTRATION.md, shown red, locked in a `test(Rxx-Ryy): add failing tests from spec (locked)` commit, then implementation without touching them. A gap = a new test in a separate commit.
 - Hard stops H1 to H6 (CLAUDE.md) are reserved to the owner (Artem): preregistration freeze, real API calls and spend, definition ambiguities, a locked test that looks wrong, the same failure 3 times, frozen items, secrets, force push, git config, deleting logs.
 - Never fabricate results. Every number in the report comes from `python -m tools.reproduce`.
