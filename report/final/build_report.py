@@ -1,8 +1,9 @@
-"""Build report/final/REPORT.docx (on the official Apart template's styles) and REPORT.pdf from REPORT.md.
+"""Optional Word copy: build report/final/REPORT.docx (on the official Apart template's styles) and REPORT_docx.pdf from REPORT.md.
+The submitted REPORT.pdf is compiled from REPORT.tex by build_tex.sh (D39); this script never overwrites it.
 
 Run from the repo root:  python3 report/final/build_report.py
 Optional: python3 report/final/build_report.py <source.md> <out.docx>  (used to test the page budget on a filled copy)
-Needs python-docx, pymupdf and LibreOffice (soffice) for the PDF. No API key, no network. REPORT.md is the source.
+Needs python-docx, pymupdf and LibreOffice (soffice) for the PDF. No API key, no network.
 Bracketed placeholders [like this] and the AI-DRAFTED banner are highlighted in yellow; HTML comments are not printed.
 Prints the main-body length in pages: from the top of page 1 to the "Code and Data" heading (limit 8).
 """
@@ -122,10 +123,17 @@ def build(src=SRC, out_docx=OUT_DOCX):
 
 
 def to_pdf(docx_path=OUT_DOCX):
+    """Writes <name>_docx.pdf next to the docx; REPORT.pdf itself is compiled from REPORT.tex (build_tex.sh, D39)."""
+    import tempfile
     soffice = shutil.which("soffice") or str(Path("C:/Program Files/LibreOffice/program/soffice.exe"))
-    subprocess.run([soffice, "--headless", "--convert-to", "pdf", "--outdir", str(Path(docx_path).parent), str(docx_path)],
-                   check=True, capture_output=True)
-    print("wrote", Path(docx_path).with_suffix(".pdf"))
+    docx_path = Path(docx_path)
+    out = docx_path.with_name(docx_path.stem + "_docx.pdf")
+    with tempfile.TemporaryDirectory() as tmp:
+        subprocess.run([soffice, "--headless", "--convert-to", "pdf", "--outdir", tmp, str(docx_path)],
+                       check=True, capture_output=True)
+        shutil.move(str(Path(tmp) / (docx_path.stem + ".pdf")), str(out))
+    print("wrote", out)
+    return out
 
 
 def body_pages(pdf_path):
@@ -145,5 +153,4 @@ if __name__ == "__main__":
     src = Path(sys.argv[1]) if len(sys.argv) > 2 else SRC
     out = Path(sys.argv[2]) if len(sys.argv) > 2 else OUT_DOCX
     build(src, out)
-    to_pdf(out)
-    body_pages(Path(out).with_suffix(".pdf"))
+    body_pages(to_pdf(out))
